@@ -1,0 +1,9 @@
+{
+  "plugins": [
+    {
+      "name": "claude-company-of-one",
+      "description": "Claude for solopreneur — Enterprise-grade agent pipelines for solo developers",
+      "path": "."
+    }
+  ]
+}
