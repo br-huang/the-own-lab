@@ -1,6 +1,6 @@
 {
   "name": "claude-company-of-one",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Claude 一人公司 — Enterprise-grade agent pipelines for solo developers",
   "author": {
     "name": "Brian Huang",
