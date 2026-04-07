@@ -15,9 +15,13 @@ export class KBSettingTab extends PluginSettingTab {
 
     containerEl.createEl("h2", { text: "Obsidian KB Settings" });
 
+    // ─── Chat Section ───
+
+    containerEl.createEl("h3", { text: "Chat (LLM)" });
+
     new Setting(containerEl)
       .setName("OpenAI API Key")
-      .setDesc("Your OpenAI API key for embeddings and chat.")
+      .setDesc("Required for chat responses. Embedding runs locally — no API key needed for indexing.")
       .addText((text) =>
         text
           .setPlaceholder("sk-...")
@@ -45,20 +49,9 @@ export class KBSettingTab extends PluginSettingTab {
           })
       );
 
-    new Setting(containerEl)
-      .setName("Embedding Model")
-      .setDesc("OpenAI model for generating embeddings.")
-      .addDropdown((dropdown) =>
-        dropdown
-          .addOption("text-embedding-3-small", "text-embedding-3-small")
-          .addOption("text-embedding-3-large", "text-embedding-3-large")
-          .setValue(this.plugin.settings.embeddingModel)
-          .onChange(async (value) => {
-            this.plugin.settings.embeddingModel = value;
-            await this.plugin.saveSettings();
-            this.plugin.refreshProvider();
-          })
-      );
+    // ─── Advanced Section ───
+
+    containerEl.createEl("h3", { text: "Advanced" });
 
     new Setting(containerEl)
       .setName("Top-K Results")

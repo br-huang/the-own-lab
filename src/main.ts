@@ -1,6 +1,7 @@
 import { Plugin, WorkspaceLeaf, FileSystemAdapter } from "obsidian";
 import { PluginSettings, DEFAULT_SETTINGS } from "./types";
 import { OpenAIProvider } from "./llm/openai";
+import { LocalEmbeddingProvider } from "./llm/local-embeddings";
 import { VectorStore } from "./core/vector-store";
 import { VaultIndexer } from "./core/vault-indexer";
 import { RagEngine } from "./core/rag-engine";
@@ -13,6 +14,7 @@ export default class ObsidianKBPlugin extends Plugin {
   vaultIndexer!: VaultIndexer;
   ragEngine!: RagEngine;
   private llmProvider!: OpenAIProvider;
+  private embeddingProvider!: LocalEmbeddingProvider;
   private statusBarEl!: HTMLElement;
 
   private getVaultPath(): string {
@@ -31,8 +33,10 @@ export default class ObsidianKBPlugin extends Plugin {
     this.llmProvider = new OpenAIProvider(
       this.settings.openaiApiKey,
       this.settings.chatModel,
-      this.settings.embeddingModel,
     );
+
+    // Embedding always runs locally — no API key needed
+    this.embeddingProvider = new LocalEmbeddingProvider();
 
     this.vectorStore = new VectorStore(vaultPath);
     await this.vectorStore.initialize();
@@ -43,7 +47,7 @@ export default class ObsidianKBPlugin extends Plugin {
     this.vaultIndexer = new VaultIndexer(
       this.app.vault,
       this.vectorStore,
-      this.llmProvider,
+      this.embeddingProvider,
       this.settings,
       this.statusBarEl,
     );
@@ -51,6 +55,7 @@ export default class ObsidianKBPlugin extends Plugin {
     this.ragEngine = new RagEngine(
       this.vectorStore,
       this.llmProvider,
+      this.embeddingProvider,
       this.settings,
     );
 
@@ -72,14 +77,11 @@ export default class ObsidianKBPlugin extends Plugin {
 
     this.addSettingTab(new KBSettingTab(this.app, this));
 
+    // Local embedding needs no API key — always start indexing
     this.app.workspace.onLayoutReady(async () => {
       try {
-        if (this.settings.openaiApiKey) {
-          await this.vaultIndexer.initialIndex();
-          this.vaultIndexer.watchForChanges();
-        } else {
-          this.statusBarEl.setText("KB: Set API key in settings");
-        }
+        await this.vaultIndexer.initialIndex();
+        this.vaultIndexer.watchForChanges();
       } catch (err) {
         console.error("KB: Failed during initial indexing", err);
         this.statusBarEl.setText("KB: Indexing failed — check console");
@@ -92,18 +94,11 @@ export default class ObsidianKBPlugin extends Plugin {
     this.llmProvider = new OpenAIProvider(
       this.settings.openaiApiKey,
       this.settings.chatModel,
-      this.settings.embeddingModel,
-    );
-    this.vaultIndexer = new VaultIndexer(
-      this.app.vault,
-      this.vectorStore,
-      this.llmProvider,
-      this.settings,
-      this.statusBarEl,
     );
     this.ragEngine = new RagEngine(
       this.vectorStore,
       this.llmProvider,
+      this.embeddingProvider,
       this.settings,
     );
   }

@@ -8,10 +8,13 @@ export interface LLMProvider {
    * Stream chat completions. Yields one string per token/chunk.
    */
   chat(messages: Message[], options?: ChatOptions): AsyncIterable<string>;
+}
 
-  /**
-   * Generate embeddings for a batch of texts.
-   * Returns one embedding vector per input text.
-   */
+/**
+ * Standalone embedding provider interface.
+ * Allows using a different provider for embeddings vs chat.
+ */
+export interface EmbeddingProvider {
+  readonly name: string;
   embed(texts: string[]): Promise<number[][]>;
 }

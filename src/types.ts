@@ -3,7 +3,6 @@
 export interface PluginSettings {
   openaiApiKey: string;
   chatModel: string;
-  embeddingModel: string;
   topK: number;
   embeddingBatchSize: number;
   chunkSize: number;
@@ -13,7 +12,6 @@ export interface PluginSettings {
 export const DEFAULT_SETTINGS: PluginSettings = {
   openaiApiKey: "",
   chatModel: "gpt-4o",
-  embeddingModel: "text-embedding-3-small",
   topK: 5,
   embeddingBatchSize: 20,
   chunkSize: 500,

@@ -5,12 +5,12 @@ import * as path from "path";
 import { PluginSettings, FileHashManifest, VectorChunk } from "../types";
 import { chunk as chunkText } from "./chunker";
 import { VectorStore } from "./vector-store";
-import { LLMProvider } from "../llm/provider";
+import { EmbeddingProvider } from "../llm/provider";
 
 export class VaultIndexer {
   private vault: Vault;
   private vectorStore: VectorStore;
-  private llmProvider: LLMProvider;
+  private embeddingProvider: EmbeddingProvider;
   private settings: PluginSettings;
   private statusBarEl: HTMLElement;
   private manifest: FileHashManifest = {};
@@ -21,13 +21,13 @@ export class VaultIndexer {
   constructor(
     vault: Vault,
     vectorStore: VectorStore,
-    llmProvider: LLMProvider,
+    embeddingProvider: EmbeddingProvider,
     settings: PluginSettings,
     statusBarEl: HTMLElement,
   ) {
     this.vault = vault;
     this.vectorStore = vectorStore;
-    this.llmProvider = llmProvider;
+    this.embeddingProvider = embeddingProvider;
     this.settings = settings;
     this.statusBarEl = statusBarEl;
     const vaultPath = (this.vault.adapter as any).basePath as string;
@@ -71,7 +71,7 @@ export class VaultIndexer {
 
       if (allChunkTexts.length > 0) {
         try {
-          const embeddings = await this.llmProvider.embed(allChunkTexts);
+          const embeddings = await this.embeddingProvider.embed(allChunkTexts);
           const vectorChunks: VectorChunk[] = [];
           let embeddingIdx = 0;
 
@@ -183,7 +183,7 @@ export class VaultIndexer {
       }
 
       const chunkTexts = chunks.map(c => c.text);
-      const embeddings = await this.llmProvider.embed(chunkTexts);
+      const embeddings = await this.embeddingProvider.embed(chunkTexts);
       const vectorChunks: VectorChunk[] = chunks.map((c, i) => ({
         id: c.metadata.filePath + "::" + c.metadata.chunkIndex,
         text: c.text,

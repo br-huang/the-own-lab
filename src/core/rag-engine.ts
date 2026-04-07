@@ -1,6 +1,6 @@
 import { PluginSettings, RagResponse, SourceReference, Message } from "../types";
 import { VectorStore } from "./vector-store";
-import { LLMProvider } from "../llm/provider";
+import { LLMProvider, EmbeddingProvider } from "../llm/provider";
 
 const SYSTEM_PROMPT = `You are a helpful assistant that answers questions based on the user's personal notes.
 You MUST only use the provided context to answer. Do not use external knowledge.
@@ -11,15 +11,18 @@ say "I don't have enough information in your notes to answer this question."`;
 export class RagEngine {
   private vectorStore: VectorStore;
   private llmProvider: LLMProvider;
+  private embeddingProvider: EmbeddingProvider;
   private settings: PluginSettings;
 
   constructor(
     vectorStore: VectorStore,
     llmProvider: LLMProvider,
+    embeddingProvider: EmbeddingProvider,
     settings: PluginSettings,
   ) {
     this.vectorStore = vectorStore;
     this.llmProvider = llmProvider;
+    this.embeddingProvider = embeddingProvider;
     this.settings = settings;
   }
 
@@ -38,7 +41,7 @@ export class RagEngine {
       return;
     }
 
-    const [questionEmbedding] = await this.llmProvider.embed([userQuestion]);
+    const [questionEmbedding] = await this.embeddingProvider.embed([userQuestion]);
     const results = await this.vectorStore.query(questionEmbedding, this.settings.topK);
 
     const context = results.map(r =>

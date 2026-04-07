@@ -7,11 +7,9 @@ export class OpenAIProvider implements LLMProvider {
   readonly maxTokens: number;
   private client: OpenAI;
   private chatModel: string;
-  private embeddingModel: string;
 
-  constructor(apiKey: string, chatModel: string, embeddingModel: string) {
+  constructor(apiKey: string, chatModel: string) {
     this.chatModel = chatModel;
-    this.embeddingModel = embeddingModel;
     this.maxTokens = 128000;
     this.client = new OpenAI({
       apiKey,
@@ -35,25 +33,6 @@ export class OpenAIProvider implements LLMProvider {
           yield content;
         }
       }
-    } catch (error) {
-      if ((error as any).status === 401) {
-        throw new Error("Invalid OpenAI API key. Please check your settings.");
-      }
-      if ((error as any).status === 429) {
-        throw new Error("OpenAI rate limit exceeded. Please wait a moment and try again.");
-      }
-      throw new Error("OpenAI API error: " + (error as Error).message);
-    }
-  }
-
-  async embed(texts: string[]): Promise<number[][]> {
-    try {
-      const response = await this.client.embeddings.create({
-        model: this.embeddingModel,
-        input: texts,
-      });
-
-      return response.data.map(item => item.embedding);
     } catch (error) {
       if ((error as any).status === 401) {
         throw new Error("Invalid OpenAI API key. Please check your settings.");
