@@ -20,8 +20,6 @@ const context = await esbuild.context({
     "@lezer/common",
     "@lezer/highlight",
     "@lezer/lr",
-    "@lancedb/lancedb",
-    "apache-arrow",
   ],
   platform: "node",
   format: "cjs",

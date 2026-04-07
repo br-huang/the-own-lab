@@ -1,94 +1,94 @@
-import * as lancedb from "@lancedb/lancedb";
-import type { Table } from "@lancedb/lancedb";
 import * as fs from "fs";
 import * as path from "path";
 import { VectorChunk } from "../types";
 
+/**
+ * Pure JS vector store — stores embeddings as JSON, searches via cosine similarity.
+ * No native binary dependencies. Data persisted at {vault}/.obsidian-kb/vectors.json
+ */
 export class VectorStore {
-  private dbPath: string;
-  private db: lancedb.Connection | null = null;
-  private table: Table | null = null;
-  private tableReady = false;
+  private storagePath: string;
+  private chunks: VectorChunk[] = [];
+  private dirty = false;
 
   constructor(vaultPath: string) {
-    this.dbPath = path.join(vaultPath, ".obsidian-kb", "vectors");
+    const dir = path.join(vaultPath, ".obsidian-kb");
+    fs.mkdirSync(dir, { recursive: true });
+    this.storagePath = path.join(dir, "vectors.json");
   }
 
   async initialize(): Promise<void> {
-    fs.mkdirSync(this.dbPath, { recursive: true });
-    this.db = await lancedb.connect(this.dbPath);
-
     try {
-      this.table = await this.db.openTable("chunks");
-      this.tableReady = true;
+      const data = fs.readFileSync(this.storagePath, "utf-8");
+      this.chunks = JSON.parse(data);
     } catch {
-      this.tableReady = false;
+      this.chunks = [];
     }
   }
 
-  async upsert(chunks: VectorChunk[]): Promise<void> {
-    if (chunks.length === 0) {
+  async upsert(newChunks: VectorChunk[]): Promise<void> {
+    if (newChunks.length === 0) {
       return;
     }
 
-    const data = chunks.map(c => ({
-      id: c.id,
-      text: c.text,
-      filePath: c.filePath,
-      fileTitle: c.fileTitle,
-      chunkIndex: c.chunkIndex,
-      vector: c.vector,
-    }));
+    const filePaths = new Set(newChunks.map(c => c.filePath));
 
-    const uniqueFilePaths = [...new Set(chunks.map(c => c.filePath))];
+    // Delete existing chunks for these files (delete-then-insert)
+    this.chunks = this.chunks.filter(c => !filePaths.has(c.filePath));
 
-    if (!this.tableReady) {
-      this.table = await this.db!.createTable("chunks", data);
-      this.tableReady = true;
-      return;
-    }
-
-    for (const filePath of uniqueFilePaths) {
-      await this.table!.delete(
-        'filePath = "' + filePath.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"'
-      );
-    }
-    await this.table!.add(data);
+    // Insert new chunks
+    this.chunks.push(...newChunks);
+    this.dirty = true;
+    this.persist();
   }
 
   async query(embedding: number[], topK: number): Promise<VectorChunk[]> {
-    if (!this.tableReady) {
+    if (this.chunks.length === 0) {
       return [];
     }
 
-    const results = await this.table!.search(embedding).limit(topK).toArray();
-
-    return results.map(row => ({
-      id: row.id,
-      text: row.text,
-      filePath: row.filePath,
-      fileTitle: row.fileTitle,
-      chunkIndex: row.chunkIndex,
-      vector: Array.from(row.vector),
+    // Compute cosine similarity for each chunk
+    const scored = this.chunks.map(chunk => ({
+      chunk,
+      score: cosineSimilarity(embedding, chunk.vector),
     }));
+
+    // Sort by similarity descending, take top-k
+    scored.sort((a, b) => b.score - a.score);
+
+    return scored.slice(0, topK).map(s => s.chunk);
   }
 
   async delete(filePath: string): Promise<void> {
-    if (!this.tableReady) {
-      return;
+    const before = this.chunks.length;
+    this.chunks = this.chunks.filter(c => c.filePath !== filePath);
+    if (this.chunks.length !== before) {
+      this.dirty = true;
+      this.persist();
     }
-
-    await this.table!.delete(
-      'filePath = "' + filePath.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"'
-    );
   }
 
   async isEmpty(): Promise<boolean> {
-    if (!this.tableReady) {
-      return true;
-    }
-
-    const count = await this.table!.countRows();
-    return count === 0;
+    return this.chunks.length === 0;
   }
+
+  private persist(): void {
+    if (!this.dirty) return;
+    fs.writeFileSync(this.storagePath, JSON.stringify(this.chunks));
+    this.dirty = false;
+  }
+}
+
+/** Cosine similarity between two vectors */
+function cosineSimilarity(a: number[], b: number[]): number {
+  let dot = 0;
+  let normA = 0;
+  let normB = 0;
+  for (let i = 0; i < a.length; i++) {
+    dot += a[i] * b[i];
+    normA += a[i] * a[i];
+    normB += b[i] * b[i];
+  }
+  const denom = Math.sqrt(normA) * Math.sqrt(normB);
+  return denom === 0 ? 0 : dot / denom;
 }
