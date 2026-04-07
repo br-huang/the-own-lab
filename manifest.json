@@ -1,0 +1,9 @@
+{
+  "id": "obsidian-kb",
+  "name": "Obsidian KB",
+  "version": "0.1.0",
+  "minAppVersion": "1.4.0",
+  "description": "RAG-powered knowledge base chat for your Obsidian vault",
+  "author": "Brian",
+  "isDesktopOnly": true
+}
