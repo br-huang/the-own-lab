@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+/*
+ * Phase 1 temporary prose styles.
+ * Tailwind v4 typography plugin may be added later.
+ * For now, basic content styling via custom CSS.
+ */
+.prose h1 { @apply text-3xl font-bold mt-8 mb-4; }
+.prose h2 { @apply text-2xl font-semibold mt-6 mb-3; }
+.prose h3 { @apply text-xl font-semibold mt-4 mb-2; }
+.prose p { @apply my-3 leading-7; }
+.prose ul { @apply list-disc pl-6 my-3; }
+.prose ol { @apply list-decimal pl-6 my-3; }
+.prose li { @apply my-1; }
+.prose code { @apply bg-gray-100 px-1.5 py-0.5 rounded text-sm; }
+.prose pre { @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4; }
+.prose pre code { @apply bg-transparent p-0; }
+.prose a { @apply text-blue-600 underline; }
+.prose blockquote { @apply border-l-4 border-gray-300 pl-4 italic my-4; }
