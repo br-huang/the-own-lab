@@ -70,25 +70,31 @@ export class VaultIndexer {
       }
 
       if (allChunkTexts.length > 0) {
-        const embeddings = await this.llmProvider.embed(allChunkTexts);
-        const vectorChunks: VectorChunk[] = [];
-        let embeddingIdx = 0;
+        try {
+          const embeddings = await this.llmProvider.embed(allChunkTexts);
+          const vectorChunks: VectorChunk[] = [];
+          let embeddingIdx = 0;
 
-        for (const { chunks } of batchChunks) {
-          for (const c of chunks) {
-            vectorChunks.push({
-              id: c.metadata.filePath + "::" + c.metadata.chunkIndex,
-              text: c.text,
-              filePath: c.metadata.filePath,
-              fileTitle: c.metadata.fileTitle,
-              chunkIndex: c.metadata.chunkIndex,
-              vector: embeddings[embeddingIdx],
-            });
-            embeddingIdx++;
+          for (const { chunks } of batchChunks) {
+            for (const c of chunks) {
+              vectorChunks.push({
+                id: c.metadata.filePath + "::" + c.metadata.chunkIndex,
+                text: c.text,
+                filePath: c.metadata.filePath,
+                fileTitle: c.metadata.fileTitle,
+                chunkIndex: c.metadata.chunkIndex,
+                vector: embeddings[embeddingIdx],
+              });
+              embeddingIdx++;
+            }
           }
-        }
 
-        await this.vectorStore.upsert(vectorChunks);
+          await this.vectorStore.upsert(vectorChunks);
+        } catch (err) {
+          console.error("KB: Embedding batch failed, skipping batch", err);
+          this.statusBarEl.setText("KB: Indexing error — check console");
+          continue;
+        }
       }
 
       for (const { file, hash } of batch) {

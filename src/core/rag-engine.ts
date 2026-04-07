@@ -28,6 +28,11 @@ export class RagEngine {
       throw new Error("Please enter a question.");
     }
 
+    if (!this.settings.openaiApiKey) {
+      yield { type: "error", message: "Please configure your OpenAI API key in the plugin settings." } as RagResponse;
+      return;
+    }
+
     if (await this.vectorStore.isEmpty()) {
       yield { type: "error", message: "No notes have been indexed yet. Please wait for indexing to complete." } as RagResponse;
       return;

@@ -22,7 +22,7 @@ export function chunk(
     return [];
   }
 
-  const separators = ["\n## ", "\n### ", "\n\n", "\n", ". "];
+  const separators = ["\n# ", "\n## ", "\n### ", "\n\n", "\n", ". "];
 
   const sections = splitText(content, 0, separators, chunkSize);
   const merged = mergeSections(sections, chunkSize);
@@ -46,7 +46,13 @@ function splitText(
   }
 
   if (sepIndex >= separators.length) {
-    return [text];
+    // Hard-cut fallback: split by character count when no separator works
+    const maxChars = chunkSize * 4;
+    const parts: string[] = [];
+    for (let i = 0; i < text.length; i += maxChars) {
+      parts.push(text.slice(i, i + maxChars));
+    }
+    return parts;
   }
 
   const separator = separators[sepIndex];
@@ -80,8 +86,11 @@ function mergeSections(sections: string[], chunkSize: number): string[] {
       continue;
     }
 
+    // Don't merge across heading boundaries — keep heading sections separate
+    const startsWithHeading = /^#{1,6}\s/.test(section);
+
     const combined = buffer + section;
-    if (estimateTokens(combined) <= chunkSize) {
+    if (!startsWithHeading && estimateTokens(combined) <= chunkSize) {
       buffer = combined;
     } else {
       merged.push(buffer);
