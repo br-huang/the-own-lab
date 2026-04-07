@@ -1,4 +1,5 @@
 import { Plugin, WorkspaceLeaf, FileSystemAdapter } from "obsidian";
+import * as path from "path";
 import { PluginSettings, DEFAULT_SETTINGS } from "./types";
 import { OpenAIProvider } from "./llm/openai";
 import { LocalEmbeddingProvider } from "./llm/local-embeddings";
@@ -36,7 +37,11 @@ export default class ObsidianKBPlugin extends Plugin {
     );
 
     // Embedding always runs locally — no API key needed
-    this.embeddingProvider = new LocalEmbeddingProvider();
+    // Pass plugin directory so it can resolve @xenova/transformers via absolute path
+    const pluginDir = (this.manifest as any).dir
+      ? path.join(vaultPath, (this.manifest as any).dir)
+      : path.join(vaultPath, ".obsidian", "plugins", this.manifest.id);
+    this.embeddingProvider = new LocalEmbeddingProvider(pluginDir);
 
     this.vectorStore = new VectorStore(vaultPath);
     await this.vectorStore.initialize();

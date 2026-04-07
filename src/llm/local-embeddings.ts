@@ -1,7 +1,6 @@
 import { EmbeddingProvider } from "./provider";
+import * as path from "path";
 
-// Dynamic import to avoid bundling issues — Transformers.js loaded at runtime
-let pipeline: any = null;
 let extractor: any = null;
 
 const DEFAULT_MODEL = "Xenova/bge-small-en-v1.5";
@@ -9,13 +8,18 @@ const DEFAULT_MODEL = "Xenova/bge-small-en-v1.5";
 /**
  * Local embedding provider using Transformers.js (runs entirely in-process).
  * No API key needed, no network required after first model download.
+ *
+ * Uses require() with absolute path because Obsidian's Electron renderer
+ * cannot resolve bare module specifiers via dynamic import().
  */
 export class LocalEmbeddingProvider implements EmbeddingProvider {
   readonly name = "local";
   private model: string;
+  private pluginDir: string;
   private initPromise: Promise<void> | null = null;
 
-  constructor(model?: string) {
+  constructor(pluginDir: string, model?: string) {
+    this.pluginDir = pluginDir;
     this.model = model || DEFAULT_MODEL;
   }
 
@@ -30,9 +34,10 @@ export class LocalEmbeddingProvider implements EmbeddingProvider {
   }
 
   private async loadModel(): Promise<void> {
-    // Dynamic import — Transformers.js is a large library
-    const { pipeline: pipelineFn } = await import("@xenova/transformers");
-    pipeline = pipelineFn;
+    // Use absolute path require — Obsidian cannot resolve bare specifiers
+    const modulePath = path.join(this.pluginDir, "node_modules", "@xenova", "transformers");
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { pipeline } = require(modulePath);
     extractor = await pipeline("feature-extraction", this.model, {
       quantized: true,
     });
@@ -42,7 +47,6 @@ export class LocalEmbeddingProvider implements EmbeddingProvider {
     await this.init();
 
     const results: number[][] = [];
-    // Process one at a time to avoid OOM on large batches
     for (const text of texts) {
       const output = await extractor(text, {
         pooling: "cls",
