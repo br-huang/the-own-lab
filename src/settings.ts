@@ -25,6 +25,7 @@ export class KBSettingTab extends PluginSettingTab {
           .onChange(async (value) => {
             this.plugin.settings.openaiApiKey = value;
             await this.plugin.saveSettings();
+            this.plugin.refreshProvider();
           })
           .then((text) => { text.inputEl.type = "password"; })
       );
@@ -40,6 +41,7 @@ export class KBSettingTab extends PluginSettingTab {
           .onChange(async (value) => {
             this.plugin.settings.chatModel = value;
             await this.plugin.saveSettings();
+            this.plugin.refreshProvider();
           })
       );
 
@@ -54,6 +56,7 @@ export class KBSettingTab extends PluginSettingTab {
           .onChange(async (value) => {
             this.plugin.settings.embeddingModel = value;
             await this.plugin.saveSettings();
+            this.plugin.refreshProvider();
           })
       );
 

@@ -50,7 +50,7 @@ export class VectorStore {
 
     for (const filePath of uniqueFilePaths) {
       await this.table!.delete(
-        'filePath = "' + filePath.replace(/"/g, '\\"') + '"'
+        'filePath = "' + filePath.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"'
       );
     }
     await this.table!.add(data);
@@ -79,7 +79,7 @@ export class VectorStore {
     }
 
     await this.table!.delete(
-      'filePath = "' + filePath.replace(/"/g, '\\"') + '"'
+      'filePath = "' + filePath.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"'
     );
   }
 

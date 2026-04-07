@@ -1,4 +1,4 @@
-import { Plugin, WorkspaceLeaf } from "obsidian";
+import { Plugin, WorkspaceLeaf, FileSystemAdapter } from "obsidian";
 import { PluginSettings, DEFAULT_SETTINGS } from "./types";
 import { OpenAIProvider } from "./llm/openai";
 import { VectorStore } from "./core/vector-store";
@@ -9,16 +9,26 @@ import { KBSettingTab } from "./settings";
 
 export default class ObsidianKBPlugin extends Plugin {
   settings: PluginSettings = DEFAULT_SETTINGS;
-  private vectorStore!: VectorStore;
-  private vaultIndexer!: VaultIndexer;
-  private ragEngine!: RagEngine;
+  vectorStore!: VectorStore;
+  vaultIndexer!: VaultIndexer;
+  ragEngine!: RagEngine;
+  private llmProvider!: OpenAIProvider;
+  private statusBarEl!: HTMLElement;
+
+  private getVaultPath(): string {
+    const adapter = this.app.vault.adapter;
+    if (adapter instanceof FileSystemAdapter) {
+      return adapter.getBasePath();
+    }
+    throw new Error("KB: Unsupported vault adapter. This plugin requires a local filesystem vault.");
+  }
 
   async onload(): Promise<void> {
     await this.loadSettings();
 
-    const vaultPath = (this.app.vault.adapter as any).basePath as string;
+    const vaultPath = this.getVaultPath();
 
-    const llmProvider = new OpenAIProvider(
+    this.llmProvider = new OpenAIProvider(
       this.settings.openaiApiKey,
       this.settings.chatModel,
       this.settings.embeddingModel,
@@ -27,20 +37,20 @@ export default class ObsidianKBPlugin extends Plugin {
     this.vectorStore = new VectorStore(vaultPath);
     await this.vectorStore.initialize();
 
-    const statusBarEl = this.addStatusBarItem();
-    statusBarEl.setText("KB: Initializing...");
+    this.statusBarEl = this.addStatusBarItem();
+    this.statusBarEl.setText("KB: Initializing...");
 
     this.vaultIndexer = new VaultIndexer(
       this.app.vault,
       this.vectorStore,
-      llmProvider,
+      this.llmProvider,
       this.settings,
-      statusBarEl,
+      this.statusBarEl,
     );
 
     this.ragEngine = new RagEngine(
       this.vectorStore,
-      llmProvider,
+      this.llmProvider,
       this.settings,
     );
 
@@ -63,13 +73,39 @@ export default class ObsidianKBPlugin extends Plugin {
     this.addSettingTab(new KBSettingTab(this.app, this));
 
     this.app.workspace.onLayoutReady(async () => {
-      if (this.settings.openaiApiKey) {
-        await this.vaultIndexer.initialIndex();
-        this.vaultIndexer.watchForChanges();
-      } else {
-        statusBarEl.setText("KB: Set API key in settings");
+      try {
+        if (this.settings.openaiApiKey) {
+          await this.vaultIndexer.initialIndex();
+          this.vaultIndexer.watchForChanges();
+        } else {
+          this.statusBarEl.setText("KB: Set API key in settings");
+        }
+      } catch (err) {
+        console.error("KB: Failed during initial indexing", err);
+        this.statusBarEl.setText("KB: Indexing failed — check console");
       }
     });
+  }
+
+  /** Rebuild LLM provider with current settings (called after settings change) */
+  refreshProvider(): void {
+    this.llmProvider = new OpenAIProvider(
+      this.settings.openaiApiKey,
+      this.settings.chatModel,
+      this.settings.embeddingModel,
+    );
+    this.vaultIndexer = new VaultIndexer(
+      this.app.vault,
+      this.vectorStore,
+      this.llmProvider,
+      this.settings,
+      this.statusBarEl,
+    );
+    this.ragEngine = new RagEngine(
+      this.vectorStore,
+      this.llmProvider,
+      this.settings,
+    );
   }
 
   async onunload(): Promise<void> {
