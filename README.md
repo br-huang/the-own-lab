@@ -1,64 +1,118 @@
 # Claude Code Statusline
 
-一個依照 `docs/specs/2026-04-08-plan-claude-code-statusline` 建立的 local-first TypeScript Claude Code statusline MVP。
+A local-first TypeScript statusline for Claude Code.
 
-## 特色
+It renders a compact, high-signal statusline from Claude Code `stdin` JSON and prints the final result to `stdout`. The project is designed for fast local execution, clean extensibility, and practical daily use across multiple Claude Code sessions.
 
-- 讀取 Claude Code 從 `stdin` 傳入的 JSON
-- 分層架構：`input`、`providers`、`widgets`、`renderers`、`config`
-- MVP widgets：`model`、`cwd`、`git`、`context`、`session`
-- 同時支援 `plain` 與 `powerline` renderer
-- 支援 JSON config 與 theme token 覆寫
-- Git branch 具 5 秒快取
-- transcript 可抓最後一條 user prompt
-- Nerd Font 與 ASCII fallback
+## Install
 
-## 安裝與建置
+This package is published as a scoped npm package because the unscoped `claude-code-statusline` package name is already taken.
 
 ```bash
-pnpm install
-pnpm build
+npm install -g @johnnyboy11234/claude-code-statusline
 ```
 
-## 開發與驗證
+After installation, the global command is:
 
 ```bash
-pnpm test
-pnpm demo
+claude-code-statusline
 ```
 
-## Claude Code 設定
+## Use With Claude Code
 
-先建置一次：
-
-```bash
-pnpm build
-```
-
-把下列設定放進 Claude Code 的 `settings.json`：
+Add this to your Claude Code `settings.json`:
 
 ```json
 {
   "statusLine": {
     "type": "command",
-    "command": "/Users/rong/Workspaces/1-Projects/11-Brian-Projects/114-claude-code-statusline/bin/claude-statusline",
+    "command": "claude-code-statusline",
     "padding": 0
   }
 }
 ```
 
-## Config
+That is all another machine needs:
 
-專案根目錄的 [`.claude-code-statusline.json`](/Users/rong/Workspaces/1-Projects/11-Brian-Projects/114-claude-code-statusline/.claude-code-statusline.json) 是預設範例。
+1. Install Node.js 20 or newer
+2. Run `npm install -g @johnnyboy11234/claude-code-statusline`
+3. Set Claude Code `statusLine.command` to `claude-code-statusline`
 
-支援：
+## Features
 
-- `renderer`: `plain` 或 `powerline`
-- `widgets`: widget 顯示順序
-- `nerdFont`: 是否使用 Nerd Font separator
-- `theme`: tone 顏色與 separator 覆寫
+- Local-first CLI with no server requirement
+- TypeScript architecture with clear separation between input, providers, widgets, and renderers
+- MVP widgets: `model`, `cwd`, `git`, `context`, `session`
+- `plain` and `powerline` renderers
+- ANSI color output with Nerd Font and ASCII fallback support
+- Short-lived cache for git and transcript-derived metadata
+- JSON config with schema validation via `zod`
 
-## 專案結構
+## Configuration
+
+Supported config locations:
+
+- Project config: `.claude-best-statusline.json`
+- Backward-compatible project config: `.claude-code-statusline.json`
+- User config: `~/.config/claude-best-statusline/config.json`
+- Backward-compatible user config: `~/.config/claude-code-statusline/config.json`
+
+Supported config fields:
+
+- `renderer`: `plain` or `powerline`
+- `widgets`: ordered widget list
+- `nerdFont`: enable Nerd Font separators
+- `theme`: override tone colors and separators
+
+Example:
+
+```json
+{
+  "renderer": "powerline",
+  "widgets": ["model", "cwd", "git", "context", "session"],
+  "nerdFont": true,
+  "theme": {
+    "info": { "fg": "255", "bg": "25" },
+    "success": { "fg": "16", "bg": "78" },
+    "warning": { "fg": "16", "bg": "220" },
+    "danger": { "fg": "255", "bg": "160" }
+  }
+}
+```
+
+## Local Development
+
+```bash
+pnpm install
+pnpm build
+pnpm test
+```
+
+Useful commands:
+
+```bash
+pnpm demo
+./bin/claude-statusline < sample-input.json
+```
+
+## Publish
+
+Publish flow:
+
+```bash
+pnpm build
+pnpm test
+env npm_config_cache=/tmp/claude-code-statusline-npm-cache npm pack --dry-run
+env npm_config_cache=/tmp/claude-code-statusline-npm-cache npm publish
+```
+
+If npm 2FA is enabled:
+
+```bash
+env npm_config_cache=/tmp/claude-code-statusline-npm-cache npm publish --otp=<code>
+```
+
+## Project Structure
 
 ```text
 bin/
@@ -87,3 +141,7 @@ src/
 test/
   input.test.ts
 ```
+
+## License
+
+MIT

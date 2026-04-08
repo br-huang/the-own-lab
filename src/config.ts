@@ -33,7 +33,9 @@ export const defaultConfig: Config = {
 
 function configPaths(cwd: string): string[] {
   return [
+    path.join(cwd, ".claude-best-statusline.json"),
     path.join(cwd, ".claude-code-statusline.json"),
+    path.join(os.homedir(), ".config", "claude-best-statusline", "config.json"),
     path.join(os.homedir(), ".config", "claude-code-statusline", "config.json")
   ];
 }
