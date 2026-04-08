@@ -1,0 +1,12 @@
+{
+  "renderer": "powerline",
+  "widgets": ["model", "cwd", "git", "context", "session"],
+  "nerdFont": true,
+  "theme": {
+    "info": { "fg": "255", "bg": "25" },
+    "muted": { "fg": "255", "bg": "240" },
+    "success": { "fg": "16", "bg": "78" },
+    "warning": { "fg": "16", "bg": "220" },
+    "danger": { "fg": "255", "bg": "160" }
+  }
+}
