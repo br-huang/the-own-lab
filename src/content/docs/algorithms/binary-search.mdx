@@ -4,6 +4,8 @@ description: "A walkthrough of the binary search algorithm."
 order: 1
 ---
 
+import { BinarySearchAlgoViz, BinarySearchParamDemo } from "@/components/islands/BinarySearchViz";
+
 # Binary Search
 
 Binary search finds an element in a sorted array in O(log n) time.
@@ -14,6 +16,14 @@ Binary search finds an element in a sorted array in O(log n) time.
 2. If the target matches, return the index.
 3. If the target is less, search the left half.
 4. If the target is greater, search the right half.
+
+## Step-Through Visualization
+
+<BinarySearchAlgoViz client:visible />
+
+## Array Size Impact
+
+<BinarySearchParamDemo client:visible />
 
 ## Implementation
 
