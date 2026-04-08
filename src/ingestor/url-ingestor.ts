@@ -56,7 +56,11 @@ export class UrlIngestor {
     const markdown = this.htmlToMarkdown(article.content);
     const fullContent = frontmatter + "\n" + markdown;
 
-    await this.vault.create(filePath, fullContent);
+    try {
+      await this.vault.create(filePath, fullContent);
+    } catch (err) {
+      throw new Error(`Failed to save note: ${(err as Error).message}`);
+    }
 
     return { title: article.title, filePath };
   }
@@ -124,7 +128,7 @@ export class UrlIngestor {
     ingestedAt: string;
   }): string {
     const lines: string[] = ["---"];
-    lines.push(`url: "${meta.url}"`);
+    lines.push(`url: "${meta.url.replace(/"/g, '\\"')}"`);
     lines.push(`title: "${meta.title.replace(/"/g, '\\"')}"`);
     if (meta.author) {
       lines.push(`author: "${meta.author.replace(/"/g, '\\"')}"`);
@@ -147,7 +151,7 @@ export class UrlIngestor {
       slug = "ingested-page";
     }
 
-    return slug.substring(0, 60);
+    return slug.substring(0, 60).replace(/-$/, "");
   }
 
   private async resolveFilePath(folder: string, slug: string): Promise<string> {

@@ -116,6 +116,10 @@ export class ChatView extends ItemView {
 
     try {
       const contentEl = bubbleEl.querySelector(".kb-chat-content") as HTMLElement;
+      if (contentEl) {
+        contentEl.empty();
+        contentEl.setText("Ingesting URL...");
+      }
 
       const result = await this.urlIngestor.ingest(url, (phase: IngestPhase) => {
         if (contentEl) {
