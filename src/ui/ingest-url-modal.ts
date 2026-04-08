@@ -60,6 +60,13 @@ export class IngestUrlModal extends Modal {
     const trimmed = url.trim();
     if (!trimmed) return;
 
+    if (!/^https?:\/\/.+/i.test(trimmed)) {
+      this.statusEl.show();
+      this.statusEl.addClass("kb-ingest-error");
+      this.statusEl.setText("Please enter a valid URL starting with http:// or https://");
+      return;
+    }
+
     // Disable input and button during ingestion
     this.urlInput.disabled = true;
     this.ingestBtn.disabled = true;

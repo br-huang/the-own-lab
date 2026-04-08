@@ -179,11 +179,21 @@ export class UrlIngestor {
     let current = "";
     for (const part of parts) {
       current = current ? `${current}/${part}` : part;
-      if (!this.vault.getAbstractFileByPath(current)) {
-        try {
-          await this.vault.createFolder(current);
-        } catch {
-          // Folder may have been created by another process; ignore
+      const node = this.vault.getAbstractFileByPath(current);
+      if (node) {
+        // If a file (not folder) exists with this name, we can't create the folder
+        if (!("children" in node)) {
+          throw new Error(`Failed to save note: "${current}" exists as a file, not a folder.`);
+        }
+        continue;
+      }
+      try {
+        await this.vault.createFolder(current);
+      } catch (err) {
+        // Race condition: folder created between check and create — verify it exists
+        const recheck = this.vault.getAbstractFileByPath(current);
+        if (!recheck || !("children" in recheck)) {
+          throw new Error(`Failed to save note: could not create folder "${current}".`);
         }
       }
     }
