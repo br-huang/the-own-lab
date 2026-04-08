@@ -1,0 +1,9 @@
+---
+import { buildSidebarTree, flattenSidebarLinks } from "@/lib/sidebar";
+
+const sidebar = await buildSidebarTree("");
+const links = flattenSidebarLinks(sidebar);
+const firstPage = links[0]?.href ?? "/";
+
+return Astro.redirect(firstPage);
+---
