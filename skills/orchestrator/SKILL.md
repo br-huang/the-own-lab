@@ -5,66 +5,40 @@ disable-model-invocation: false
 user-invocable: false
 ---
 
-# Orchestrator — Medium & Large Tasks Only
+# Orchestrator — Team Coordinator
 
-You only need this file when the session-start context told you to upgrade from Small.
-If the task is Small, stop reading and just do the work.
+You coordinate a team of agents. Not a linear pipeline — a team working in parallel.
 
----
-
-## Sizing Confirmation
-
-Before proceeding, confirm the size is correct:
-
-| Size | Criteria | Flow |
-|------|----------|------|
-| **Small** | Single file, clear, <2 min | STOP READING. Just code it. |
-| **Medium** | 2-5 files, some design, 5-15 min | Use the Medium flow below. |
-| **Large** | Cross-module, architectural, >15 min | Read pipeline reference file. |
-
-**Default to Small. Only upgrade if you see clear signals:**
-- Multiple modules/files → Medium
-- Architecture decision needed → Large
-- User explicitly asks to plan/design → Large
-- "just", "quickly", "simple" → stay Small even if 2-3 files
+**Default to Small.** Only upgrade when clearly needed.
 
 ---
 
-## Medium Flow
+## Sizing → Execution Model
 
-**1. Announce + TaskCreate (same message):**
+| Size | Execution | Agents |
+|------|-----------|--------|
+| **Small** | Just do it. No team. | You alone. |
+| **Medium** | Partial parallel. 2-3 agents. | Brief plan → implement → test+review → merge |
+| **Large** | Full team. Wave-based parallel. | Read pipeline reference for wave details. |
+
+---
+
+## Medium Flow (partial parallel)
+
+**1. Announce + TaskCreate:**
 ```
 [Medium] {type}: {description}
-
-TaskCreate: "Brief Plan"
-TaskCreate: "Implement"
-TaskCreate: "Test & Review"
-TaskCreate: "Merge"
+TaskCreate: "Brief Plan" / "Implement" / "Test & Review" / "Merge"
 ```
 
-**2. Brief Plan** (the ONLY gate):
-- 3-5 bullet points INLINE: what to change, why, test strategy
-- User confirms or adjusts
-- TaskUpdate → completed
-
-**3. Implement**:
-- Create branch: `feature/{slug}` or `fix/{slug}`
-- TDD: test → implement → verify → commit
-- TaskUpdate → completed
-
-**4. Test & Review**:
-- Run tests. Quick review inline (no REVIEW.md).
-- Issues? Fix once. Still broken? Report to user.
-- TaskUpdate → completed
-
-**5. Merge**:
-- Update CHANGELOG.md
-- Squash merge. Delete branch.
-- TaskUpdate → completed
+**2. Brief Plan** — 3-5 bullets inline. User confirms (only gate).
+**3. Implement** — branch + TDD.
+**4. Test & Review** — run tests + quick review. 1 fix round max. Both inline.
+**5. Merge** — CHANGELOG + squash merge.
 
 ---
 
-## Large Flow
+## Large Flow (full team, wave-based)
 
 Read the appropriate pipeline reference:
 - Develop → `${CLAUDE_SKILL_DIR}/references/pipeline-develop.md`
@@ -73,12 +47,20 @@ Read the appropriate pipeline reference:
 - Plan → `${CLAUDE_SKILL_DIR}/references/pipeline-plan.md`
 - Review → `${CLAUDE_SKILL_DIR}/references/pipeline-review.md`
 
-Create specs directory: `docs/specs/{YYYY-MM-DD}-{type}-{slug}/`
+### Key principle: WAVES, not stages
 
-**Max 2 hard gates** for Large pipelines:
-- Gate 1: Design/Diagnosis approval (confirm approach before coding)
-- Gate 2: Review approval (confirm quality before merging)
-- All other stages auto-proceed.
+```
+Wave = a set of agents working in PARALLEL
+Sync = wait for all agents in the wave to finish
+Gate = wait for USER approval (max 2 per pipeline)
+```
+
+Launch parallel agents using multiple Agent tool calls in the SAME message.
+After a wave completes, start the next wave immediately (unless there's a gate).
+
+### Max 2 hard gates for Large:
+1. **Design approval** — before implementation starts
+2. **Review approval** — before merge
 
 ---
 
@@ -86,12 +68,12 @@ Create specs directory: `docs/specs/{YYYY-MM-DD}-{type}-{slug}/`
 
 Signals: frontend, UI, UX, layout, page, screen, component, button, form, modal, theme, dark mode, responsive, CSS, style, visual
 
-If detected → insert UI Wireframe stage (ui-designer agent) between Design and Plan.
+If detected → add ui-designer to Wave 2 (parallel with architect + QA).
 
 ---
 
 ## Review-Fix Loop
 
-- Medium: 1 round max, inline
-- Large: 2 rounds max, REVIEW.md produced
+- Medium: 1 round, inline
+- Large: 2 rounds max, reviewer → developer auto-fix → reviewer re-verify
 - Critical issues always go to user

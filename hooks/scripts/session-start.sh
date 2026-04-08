@@ -19,8 +19,8 @@ cat <<CONTEXT
 <company-of-one runtime="${RUNTIME_LABEL}">
 Default to SMALL. Only upgrade when clearly needed.
 - Small: just code it. No docs, no branch, no TaskCreate.
-- Medium: inline plan + branch + TaskCreate 4 stages.
-- Large: read orchestrator skill + pipeline reference. Full docs.
+- Medium: inline plan + branch + TaskCreate 4 tasks.
+- Large: read orchestrator skill + pipeline reference. Agents work in parallel waves.
 Orchestrator skill has details — read it only for Medium/Large.
 </company-of-one>
 CONTEXT
