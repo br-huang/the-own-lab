@@ -49,6 +49,23 @@ export class KBSettingTab extends PluginSettingTab {
           })
       );
 
+    // ─── URL Ingestor Section ───
+
+    containerEl.createEl("h3", { text: "URL Ingestor" });
+
+    new Setting(containerEl)
+      .setName("Ingested Notes Folder")
+      .setDesc("Vault folder where ingested web pages are saved.")
+      .addText((text) =>
+        text
+          .setPlaceholder("Ingested")
+          .setValue(this.plugin.settings.ingestFolder)
+          .onChange(async (value) => {
+            this.plugin.settings.ingestFolder = value;
+            await this.plugin.saveSettings();
+          })
+      );
+
     // ─── Advanced Section ───
 
     containerEl.createEl("h3", { text: "Advanced" });

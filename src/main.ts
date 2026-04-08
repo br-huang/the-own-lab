@@ -8,6 +8,8 @@ import { VaultIndexer } from "./core/vault-indexer";
 import { RagEngine } from "./core/rag-engine";
 import { ChatView, CHAT_VIEW_TYPE } from "./ui/chat-view";
 import { KBSettingTab } from "./settings";
+import { UrlIngestor } from "./ingestor/url-ingestor";
+import { IngestUrlModal } from "./ui/ingest-url-modal";
 
 export default class ObsidianKBPlugin extends Plugin {
   settings: PluginSettings = DEFAULT_SETTINGS;
@@ -17,6 +19,7 @@ export default class ObsidianKBPlugin extends Plugin {
   private llmProvider!: OpenAIProvider;
   private embeddingProvider!: LocalEmbeddingProvider;
   private statusBarEl!: HTMLElement;
+  private urlIngestor!: UrlIngestor;
 
   private getVaultPath(): string {
     const adapter = this.app.vault.adapter;
@@ -64,8 +67,13 @@ export default class ObsidianKBPlugin extends Plugin {
       this.settings,
     );
 
+    this.urlIngestor = new UrlIngestor(
+      this.app.vault,
+      () => this.settings.ingestFolder,
+    );
+
     this.registerView(CHAT_VIEW_TYPE, (leaf: WorkspaceLeaf) => {
-      return new ChatView(leaf, this.ragEngine);
+      return new ChatView(leaf, this.ragEngine, this.urlIngestor);
     });
 
     this.addRibbonIcon("message-square", "Open KB Chat", () => {
@@ -77,6 +85,14 @@ export default class ObsidianKBPlugin extends Plugin {
       name: "Open KB Chat",
       callback: () => {
         this.activateChatView();
+      },
+    });
+
+    this.addCommand({
+      id: "kb-ingest-url",
+      name: "KB: Ingest URL",
+      callback: () => {
+        new IngestUrlModal(this.app, this.urlIngestor).open();
       },
     });
 

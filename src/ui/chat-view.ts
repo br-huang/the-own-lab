@@ -1,11 +1,13 @@
 import { ItemView, WorkspaceLeaf, MarkdownRenderer } from "obsidian";
 import { RagEngine } from "../core/rag-engine";
 import { SourceReference } from "../types";
+import { UrlIngestor, IngestPhase } from "../ingestor/url-ingestor";
 
 export const CHAT_VIEW_TYPE = "obsidian-kb-chat";
 
 export class ChatView extends ItemView {
   private ragEngine: RagEngine;
+  private urlIngestor: UrlIngestor;
   private messagesEl!: HTMLElement;
   private inputEl!: HTMLTextAreaElement;
   private sendBtn!: HTMLButtonElement;
@@ -13,9 +15,10 @@ export class ChatView extends ItemView {
   private fullResponseText = "";
   private renderThrottleTimer: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(leaf: WorkspaceLeaf, ragEngine: RagEngine) {
+  constructor(leaf: WorkspaceLeaf, ragEngine: RagEngine, urlIngestor: UrlIngestor) {
     super(leaf);
     this.ragEngine = ragEngine;
+    this.urlIngestor = urlIngestor;
   }
 
   getViewType(): string {
@@ -69,6 +72,13 @@ export class ChatView extends ItemView {
       return;
     }
 
+    // URL detection: if the entire message is a single URL, treat as ingest request
+    if (/^https?:\/\/\S+$/.test(trimmed)) {
+      this.inputEl.value = "";
+      await this.handleUrlIngest(trimmed);
+      return;
+    }
+
     this.inputEl.value = "";
     this.setInputEnabled(false);
     this.addUserMessage(trimmed);
@@ -89,6 +99,39 @@ export class ChatView extends ItemView {
       this.renderError(bubbleEl, (err as Error).message);
     } finally {
       this.renderMarkdown(bubbleEl);
+      this.setInputEnabled(true);
+    }
+  }
+
+  private async handleUrlIngest(url: string): Promise<void> {
+    this.setInputEnabled(false);
+    this.addUserMessage(url);
+    const bubbleEl = this.addAssistantMessage();
+
+    const phaseText: Record<IngestPhase, string> = {
+      fetching: "Fetching page...",
+      extracting: "Extracting content...",
+      saving: "Saving note...",
+    };
+
+    try {
+      const contentEl = bubbleEl.querySelector(".kb-chat-content") as HTMLElement;
+
+      const result = await this.urlIngestor.ingest(url, (phase: IngestPhase) => {
+        if (contentEl) {
+          contentEl.empty();
+          contentEl.setText(phaseText[phase]);
+          this.scrollToBottom();
+        }
+      });
+
+      if (contentEl) {
+        contentEl.empty();
+        contentEl.setText(`Ingested: "${result.title}" → ${result.filePath}`);
+      }
+    } catch (err) {
+      this.renderError(bubbleEl, (err as Error).message);
+    } finally {
       this.setInputEnabled(true);
     }
   }

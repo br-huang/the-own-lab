@@ -7,6 +7,7 @@ export interface PluginSettings {
   embeddingBatchSize: number;
   chunkSize: number;
   chunkOverlap: number;
+  ingestFolder: string;
 }
 
 export const DEFAULT_SETTINGS: PluginSettings = {
@@ -16,6 +17,7 @@ export const DEFAULT_SETTINGS: PluginSettings = {
   embeddingBatchSize: 20,
   chunkSize: 500,
   chunkOverlap: 50,
+  ingestFolder: "Ingested",
 };
 
 // ─── Chunking ───
