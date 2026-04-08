@@ -4,8 +4,12 @@
 
 set -euo pipefail
 
-PLUGIN_DATA="${CLAUDE_PLUGIN_DATA:-$HOME/.claude/plugin-data/claude-company-of-one}"
-MEMORY_DIR="$PLUGIN_DATA/memory"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source=hooks/scripts/lib/common.sh
+. "$SCRIPT_DIR/lib/common.sh"
+
+PLUGIN_DATA="$(company_of_one_plugin_data)"
+MEMORY_DIR="$(company_of_one_memory_dir)"
 
 # Restore pipeline state if active
 if [ -f "$PLUGIN_DATA/pipeline-state.json" ]; then

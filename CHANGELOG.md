@@ -5,6 +5,17 @@ All notable changes to Claude 一人公司 will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Codex plugin scaffold under `plugins/claude-company-of-one/`
+- Codex marketplace manifest under `.agents/plugins/marketplace.json`
+- Shared hook runtime helper `hooks/scripts/lib/common.sh` for plugin root and data directory resolution
+
+### Changed
+- Hook scripts now resolve storage via platform-neutral `COMPANY_OF_ONE_PLUGIN_*` variables with Claude and Codex fallbacks
+- Learning docs now refer to the shared plugin data location instead of Claude-only environment variables
+
 ## [0.4.0] - 2026-04-07
 
 ### Added

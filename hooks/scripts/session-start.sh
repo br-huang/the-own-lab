@@ -4,16 +4,22 @@
 
 set -euo pipefail
 
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(dirname "$(dirname "$(dirname "$0")")")}"
-PLUGIN_DATA="${CLAUDE_PLUGIN_DATA:-$HOME/.claude/plugin-data/claude-company-of-one}"
-MEMORY_DIR="$PLUGIN_DATA/memory"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# Shared runtime helpers let the same repo run under Claude and Codex.
+# shellcheck source=hooks/scripts/lib/common.sh
+. "$SCRIPT_DIR/lib/common.sh"
 
-mkdir -p "$MEMORY_DIR/patterns" "$MEMORY_DIR/decisions" "$MEMORY_DIR/retros"
+PLUGIN_ROOT="$(company_of_one_plugin_root)"
+PLUGIN_DATA="$(company_of_one_plugin_data)"
+MEMORY_DIR="$(company_of_one_memory_dir)"
+RUNTIME_LABEL="$(company_of_one_runtime_label)"
+
+company_of_one_init_storage
 
 # ── Orchestrator Activation ──────────────────────────────────
-cat <<'ORCHESTRATOR'
-<claude-company-of-one>
-You are Claude 一人公司 (Company of One).
+cat <<ORCHESTRATOR
+<company-of-one>
+You are Company of One running inside ${RUNTIME_LABEL}.
 
 WORKFLOW — follow this for EVERY user message that implies work:
 
@@ -47,7 +53,7 @@ CRITICAL RULES:
 
 Agents: product-owner, architect, developer, qa, reviewer, debugger, devops, ui-designer
 Commands (shortcuts): /develop, /debug, /refactor, /review, /plan, /learn
-</claude-company-of-one>
+</company-of-one>
 ORCHESTRATOR
 
 # ── Project Context ──────────────────────────────────────────

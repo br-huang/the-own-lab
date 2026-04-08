@@ -62,7 +62,7 @@ A pattern at 0.3 is a tentative observation. A pattern at 0.7+ is well-establish
 Pattern and context data is stored in:
 
 ```
-${CLAUDE_PLUGIN_DATA}/memory/
+${COMPANY_OF_ONE_PLUGIN_DATA}/memory/
   patterns/       # Extracted patterns with confidence scores
   context/        # Project-specific context (tech stack, conventions)
   sessions/       # Per-session state for continuity

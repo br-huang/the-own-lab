@@ -5,7 +5,7 @@ description: "Review and manage learned patterns from pipeline executions. Use t
 
 # /learn — Learning & Pattern Management
 
-You are managing the learning system for Claude 一人公司 (Company of One).
+You are managing the learning system for Company of One.
 This command lets you review, accept, reject, and manually create patterns.
 
 ## Usage
@@ -56,7 +56,7 @@ For each pending pattern suggestion:
 
 ## Pattern File Format
 
-Patterns are stored in `${CLAUDE_PLUGIN_DATA}/memory/patterns/`:
+Patterns are stored in `${COMPANY_OF_ONE_PLUGIN_DATA}/memory/patterns/`:
 
 ```markdown
 ---

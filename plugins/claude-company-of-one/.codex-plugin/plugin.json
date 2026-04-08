@@ -1,0 +1,41 @@
+{
+  "name": "claude-company-of-one",
+  "version": "0.4.0",
+  "description": "Company of One workflows for solo builders across Claude Code and Codex.",
+  "author": {
+    "name": "Brian Huang",
+    "email": "ronggg27825@gmail.com"
+  },
+  "homepage": "https://github.com/br-huang/Claude-company-of-one",
+  "repository": "https://github.com/br-huang/Claude-company-of-one",
+  "license": "MIT",
+  "keywords": [
+    "company-of-one",
+    "claude",
+    "codex",
+    "solo-dev",
+    "pipeline"
+  ],
+  "skills": "./skills/",
+  "hooks": "./hooks.json",
+  "interface": {
+    "displayName": "Company of One",
+    "shortDescription": "Agent pipelines, memory hooks, and reusable workflows for a solo engineering practice",
+    "longDescription": "Company of One packages the repo's shared agents, commands, rules, templates, skills, and session-memory hooks so the same operating model can run under Claude Code and Codex.",
+    "developerName": "Brian Huang",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/br-huang/Claude-company-of-one",
+    "defaultPrompt": [
+      "Review this task, size it, and run the right Company of One pipeline",
+      "Use the shared agent setup to plan, implement, test, and review a change",
+      "Load saved project memory and resume the active pipeline state"
+    ],
+    "brandColor": "#1F6FEB",
+    "screenshots": []
+  }
+}
