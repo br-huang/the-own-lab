@@ -248,7 +248,12 @@ export class YouTubeIngestor {
   private async fetchTranscript(
     captionUrl: string,
   ): Promise<Array<{ start: number; text: string }>> {
-    const response = await requestUrl({ url: captionUrl, method: "GET" });
+    let response;
+    try {
+      response = await requestUrl({ url: captionUrl, method: "GET" });
+    } catch (err) {
+      throw new Error(`Failed to fetch transcript: ${(err as Error).message}.`);
+    }
     if (response.status < 200 || response.status >= 300) {
       throw new Error(
         `Failed to fetch transcript: HTTP ${response.status}.`,
