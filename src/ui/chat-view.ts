@@ -2,6 +2,7 @@ import { ItemView, WorkspaceLeaf, MarkdownRenderer } from "obsidian";
 import { RagEngine } from "../core/rag-engine";
 import { SourceReference } from "../types";
 import { UrlIngestor, IngestPhase } from "../ingestor/url-ingestor";
+import { detectVideoProvider } from "../ingestor/video-detector";
 
 export const CHAT_VIEW_TYPE = "obsidian-kb-chat";
 
@@ -108,9 +109,10 @@ export class ChatView extends ItemView {
     this.addUserMessage(url);
     const bubbleEl = this.addAssistantMessage();
 
+    const isYouTube = detectVideoProvider(url) === "youtube";
     const phaseText: Record<IngestPhase, string> = {
-      fetching: "Fetching page...",
-      extracting: "Extracting content...",
+      fetching: isYouTube ? "Fetching video info..." : "Fetching page...",
+      extracting: isYouTube ? "Extracting transcript..." : "Extracting content...",
       saving: "Saving note...",
     };
 

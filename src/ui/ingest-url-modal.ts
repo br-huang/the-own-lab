@@ -1,11 +1,6 @@
 import { App, Modal } from "obsidian";
 import { UrlIngestor, IngestPhase } from "../ingestor/url-ingestor";
-
-const PHASE_TEXT: Record<IngestPhase, string> = {
-  fetching: "Fetching page...",
-  extracting: "Extracting content...",
-  saving: "Saving note...",
-};
+import { detectVideoProvider } from "../ingestor/video-detector";
 
 export class IngestUrlModal extends Modal {
   private urlInput!: HTMLInputElement;
@@ -74,9 +69,16 @@ export class IngestUrlModal extends Modal {
     this.statusEl.setText("Starting...");
     this.statusEl.removeClass("kb-ingest-error");
 
+    const isYouTube = detectVideoProvider(trimmed) === "youtube";
+    const phaseText: Record<IngestPhase, string> = {
+      fetching: isYouTube ? "Fetching video info..." : "Fetching page...",
+      extracting: isYouTube ? "Extracting transcript..." : "Extracting content...",
+      saving: "Saving note...",
+    };
+
     try {
       const result = await this.ingestor.ingest(trimmed, (phase: IngestPhase) => {
-        this.statusEl.setText(PHASE_TEXT[phase]);
+        this.statusEl.setText(phaseText[phase]);
       });
 
       this.statusEl.setText(`Saved: "${result.title}" → ${result.filePath}`);

@@ -2,6 +2,7 @@ import { Vault, requestUrl } from "obsidian";
 import { Readability } from "@mozilla/readability";
 import TurndownService from "turndown";
 import { detectVideoProvider } from "./video-detector";
+import { YouTubeIngestor } from "./youtube-ingestor";
 
 /** Progress phases reported to the caller */
 export type IngestPhase = "fetching" | "extracting" | "saving";
@@ -24,9 +25,13 @@ export class UrlIngestor {
   async ingest(url: string, onProgress?: OnProgress): Promise<IngestResult> {
     // 1. Video provider check
     const videoProvider = detectVideoProvider(url);
-    if (videoProvider) {
+    if (videoProvider === "youtube") {
+      const ytIngestor = new YouTubeIngestor(this.vault, this.getIngestFolder);
+      return ytIngestor.ingest(url, onProgress);
+    }
+    if (videoProvider === "bilibili") {
       throw new Error(
-        "YouTube/Bilibili ingestion is not yet supported. This will be available in a future update."
+        "Bilibili ingestion is not yet supported. This will be available in a future update."
       );
     }
 
