@@ -1,20 +1,134 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const portfolioEntries = (await getCollection("portfolio", ({ data }) => {
+  if (import.meta.env.PROD && data.draft) return false;
+  return true;
+})).sort((a, b) => {
+  const orderA = a.data.order ?? Number.MAX_SAFE_INTEGER;
+  const orderB = b.data.order ?? Number.MAX_SAFE_INTEGER;
+
+  if (orderA !== orderB) return orderA - orderB;
+  return b.data.year - a.data.year;
+});
+
+const featuredEntries = portfolioEntries.filter((entry) => entry.data.featured);
+
+const statusLabel = {
+  shipping: "Shipping",
+  active: "Active",
+  archived: "Archived",
+} as const;
 ---
 
 <BaseLayout
   title="Portfolio | The Own Lab"
   description="Selected work and project writeups from The Own Lab."
 >
-  <section class="site-section-tight">
-    <div class="placeholder-shell">
-      <p class="placeholder-kicker">Portfolio</p>
-      <h1 class="placeholder-title">Selected work is being shaped.</h1>
-      <p class="placeholder-text">
-        This section will become the archive for projects, experiments, and
-        case studies. The route exists now so the shared brand shell and
-        navigation are already in place.
+  <section class="site-section">
+    <div class="section-heading">
+      <div>
+        <p class="section-kicker">Portfolio</p>
+        <h1 class="section-title">Shipped systems, not vanity thumbnails.</h1>
+      </div>
+      <p class="section-description">
+        The Own Lab focuses on work that can be built, operated, and explained.
+        This archive tracks projects through that lens, with case-study detail
+        pages following next.
       </p>
+    </div>
+
+    <div class="portfolio-summary-grid">
+      <div class="portfolio-summary-card">
+        <p class="portfolio-summary-label">Focus</p>
+        <p class="portfolio-summary-value">Systems with clear ownership</p>
+      </div>
+      <div class="portfolio-summary-card">
+        <p class="portfolio-summary-label">Shape</p>
+        <p class="portfolio-summary-value">Product, docs, and operational thinking</p>
+      </div>
+      <div class="portfolio-summary-card">
+        <p class="portfolio-summary-label">Next</p>
+        <p class="portfolio-summary-value">Detailed case studies in the next phase</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="site-section-tight">
+    <div class="section-heading">
+      <div>
+        <p class="section-kicker">Featured</p>
+        <h2 class="section-title">Current representative work</h2>
+      </div>
+      <p class="section-description">
+        These entries define the tone of the archive and set up the upcoming
+        detail pages.
+      </p>
+    </div>
+
+    <div class="card-grid">
+      {featuredEntries.map((entry) => (
+        <article class="site-card">
+          <div class="portfolio-card-topline">
+            <p class="site-card-meta">{entry.data.year}</p>
+            <span class="portfolio-status-badge">
+              {statusLabel[entry.data.status]}
+            </span>
+          </div>
+          <h3 class="site-card-title">{entry.data.title}</h3>
+          <p class="site-card-text">{entry.data.summary}</p>
+          <dl class="portfolio-meta-list">
+            <div class="portfolio-meta-item">
+              <dt class="portfolio-meta-label">Role</dt>
+              <dd class="portfolio-meta-value">{entry.data.role}</dd>
+            </div>
+          </dl>
+          <div class="portfolio-tag-row">
+            {entry.data.stack.map((item) => (
+              <span class="portfolio-tag">{item}</span>
+            ))}
+          </div>
+          <p class="portfolio-card-note">Detail page is planned in the next milestone.</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="site-section-tight">
+    <div class="section-heading">
+      <div>
+        <p class="section-kicker">Archive</p>
+        <h2 class="section-title">All portfolio entries</h2>
+      </div>
+      <p class="section-description">
+        The collection is already structured as content, so each item can grow
+        into a full case study without rebuilding the index.
+      </p>
+    </div>
+
+    <div class="portfolio-list">
+      {portfolioEntries.map((entry) => (
+        <article class="portfolio-list-item">
+          <div class="portfolio-list-main">
+            <div class="portfolio-card-topline">
+              <p class="site-card-meta">
+                {entry.data.year} · {entry.data.role}
+              </p>
+              <span class="portfolio-status-badge">
+                {statusLabel[entry.data.status]}
+              </span>
+            </div>
+            <h3 class="portfolio-list-title">{entry.data.title}</h3>
+            <p class="site-card-text">{entry.data.summary}</p>
+          </div>
+          <div class="portfolio-tag-row">
+            {entry.data.stack.map((item) => (
+              <span class="portfolio-tag">{item}</span>
+            ))}
+          </div>
+        </article>
+      ))}
     </div>
   </section>
 </BaseLayout>

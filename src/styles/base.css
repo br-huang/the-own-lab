@@ -303,6 +303,76 @@
   @apply mt-auto text-sm font-medium text-primary transition-colors duration-200 hover:text-accent;
 }
 
+/* ─── Portfolio ───────────────────────────────────────────────────── */
+
+.portfolio-summary-grid {
+  @apply mt-8 grid gap-4 md:grid-cols-3;
+}
+
+.portfolio-summary-card {
+  @apply rounded-[1.5rem] border border-line-soft bg-surface-elevated p-5 shadow-soft;
+}
+
+.portfolio-summary-label {
+  @apply text-xs font-semibold uppercase tracking-wide text-muted-foreground;
+}
+
+.portfolio-summary-value {
+  @apply mt-3 text-lg font-medium tracking-tight text-foreground;
+}
+
+.portfolio-card-topline {
+  @apply flex items-center justify-between gap-3;
+}
+
+.portfolio-status-badge {
+  @apply inline-flex rounded-full border border-line-soft bg-state-active px-2.5 py-1 text-[0.7rem] font-medium uppercase tracking-wide text-state-active-foreground;
+}
+
+.portfolio-meta-list {
+  @apply grid gap-2;
+}
+
+.portfolio-meta-item {
+  @apply flex flex-col gap-1 rounded-xl border border-line-soft bg-surface-subtle p-3;
+}
+
+.portfolio-meta-label {
+  @apply text-[0.7rem] font-semibold uppercase tracking-wide text-muted-foreground;
+}
+
+.portfolio-meta-value {
+  @apply text-sm text-foreground;
+}
+
+.portfolio-tag-row {
+  @apply flex flex-wrap gap-2;
+}
+
+.portfolio-tag {
+  @apply inline-flex rounded-full border border-line-soft bg-card px-2.5 py-1 text-xs text-muted-foreground;
+}
+
+.portfolio-card-note {
+  @apply mt-auto text-sm text-muted-foreground;
+}
+
+.portfolio-list {
+  @apply mt-8 grid gap-4;
+}
+
+.portfolio-list-item {
+  @apply flex flex-col gap-4 rounded-[1.5rem] border border-line-soft bg-card p-5 shadow-soft md:flex-row md:items-start md:justify-between;
+}
+
+.portfolio-list-main {
+  @apply max-w-3xl space-y-3;
+}
+
+.portfolio-list-title {
+  @apply text-2xl font-semibold tracking-tight text-foreground;
+}
+
 /* ─── Placeholder ─────────────────────────────────────────────────── */
 
 .placeholder-shell {
