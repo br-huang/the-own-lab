@@ -98,9 +98,10 @@ export class PdfIngestor {
   }
 
   private loadPdfjs(): any {
-    const modulePath = path.join(this.pluginDir, "node_modules", "pdfjs-dist", "legacy", "build", "pdf.mjs");
+    const modulePath = path.join(this.pluginDir, "node_modules", "pdfjs-dist", "build", "pdf.js");
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const pdfjsLib = require(modulePath);
+    // Disable web worker — Obsidian plugins can't spawn workers
     pdfjsLib.GlobalWorkerOptions.workerSrc = "";
     return pdfjsLib;
   }
