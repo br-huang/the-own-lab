@@ -1,8 +1,41 @@
 // ─── Plugin Settings ───
 
+// ─── LLM Provider Config ───
+
+export type ChatProviderType = "openai" | "claude" | "gemini" | "deepseek" | "ollama";
+
+export const CHAT_PROVIDER_LABELS: Record<ChatProviderType, string> = {
+  openai: "OpenAI",
+  claude: "Claude (Anthropic)",
+  gemini: "Gemini (Google)",
+  deepseek: "DeepSeek",
+  ollama: "Ollama (Local)",
+};
+
+export const CHAT_PROVIDER_MODELS: Record<ChatProviderType, string[]> = {
+  openai: ["gpt-4o", "gpt-4o-mini"],
+  claude: ["claude-sonnet-4-5", "claude-opus-4"],
+  gemini: ["gemini-2.0-flash", "gemini-2.5-pro"],
+  deepseek: ["deepseek-chat", "deepseek-reasoner"],
+  ollama: [],  // free-text input, no predefined list
+};
+
+export const CHAT_PROVIDER_PLACEHOLDERS: Record<ChatProviderType, string> = {
+  openai: "sk-...",
+  claude: "sk-ant-...",
+  gemini: "AIza...",
+  deepseek: "sk-...",
+  ollama: "",
+};
+
 export interface PluginSettings {
-  openaiApiKey: string;
+  chatProvider: ChatProviderType;
   chatModel: string;
+  openaiApiKey: string;
+  anthropicApiKey: string;
+  geminiApiKey: string;
+  deepseekApiKey: string;
+  ollamaUrl: string;
   topK: number;
   embeddingBatchSize: number;
   chunkSize: number;
@@ -13,8 +46,13 @@ export interface PluginSettings {
 }
 
 export const DEFAULT_SETTINGS: PluginSettings = {
-  openaiApiKey: "",
+  chatProvider: "openai",
   chatModel: "gpt-4o",
+  openaiApiKey: "",
+  anthropicApiKey: "",
+  geminiApiKey: "",
+  deepseekApiKey: "",
+  ollamaUrl: "http://localhost:11434",
   topK: 5,
   embeddingBatchSize: 20,
   chunkSize: 500,
