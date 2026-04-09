@@ -2,7 +2,8 @@ import { Plugin, WorkspaceLeaf, FileSystemAdapter } from "obsidian";
 import * as path from "path";
 import { PluginSettings, DEFAULT_SETTINGS, PluginData } from "./types";
 import { SessionStore } from "./core/session-store";
-import { OpenAIProvider } from "./llm/openai";
+import { LLMProvider } from "./llm/provider";
+import { createProvider } from "./llm/provider-factory";
 import { LocalEmbeddingProvider } from "./llm/local-embeddings";
 import { VectorStore } from "./core/vector-store";
 import { VaultIndexer } from "./core/vault-indexer";
@@ -32,7 +33,7 @@ export default class ObsidianKBPlugin extends Plugin {
   vectorStore!: VectorStore;
   vaultIndexer!: VaultIndexer;
   ragEngine!: RagEngine;
-  private llmProvider!: OpenAIProvider;
+  private llmProvider!: LLMProvider;
   private embeddingProvider!: LocalEmbeddingProvider;
   private statusBarEl!: HTMLElement;
   private urlIngestor!: UrlIngestor;
@@ -51,10 +52,7 @@ export default class ObsidianKBPlugin extends Plugin {
 
     const vaultPath = this.getVaultPath();
 
-    this.llmProvider = new OpenAIProvider(
-      this.settings.openaiApiKey,
-      this.settings.chatModel,
-    );
+    this.llmProvider = createProvider(this.settings);
 
     // Embedding always runs locally — no API key needed
     // Pass plugin directory so it can resolve @xenova/transformers via absolute path
@@ -161,10 +159,7 @@ export default class ObsidianKBPlugin extends Plugin {
 
   /** Rebuild LLM provider with current settings (called after settings change) */
   refreshProvider(): void {
-    this.llmProvider = new OpenAIProvider(
-      this.settings.openaiApiKey,
-      this.settings.chatModel,
-    );
+    this.llmProvider = createProvider(this.settings);
     this.ragEngine = new RagEngine(
       this.app.vault,
       this.vectorStore,
