@@ -3,6 +3,15 @@
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "build": "nx run-many -t build",
+    "test": "nx run-many -t test",
+    "lint": "nx run-many -t lint",
+    "build:affected": "nx affected -t build",
+    "test:affected": "nx affected -t test",
+    "graph": "nx graph",
+    "projects": "nx show projects"
+  },
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.5.0",
