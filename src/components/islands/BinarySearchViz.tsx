@@ -20,17 +20,17 @@ function StepView({ step }: { step: AlgoStep }) {
     target: number;
   };
   return (
-    <div className="font-mono text-sm">
-      <div className="flex gap-2 mb-2">
+    <div className="font-mono text-sm text-foreground">
+      <div className="viz-row">
         {data.array.map((val, i) => {
-          let cls = "w-10 h-10 flex items-center justify-center rounded border ";
-          if (i === data.mid) cls += "bg-yellow-200 border-yellow-500";
-          else if (i >= data.lo && i <= data.hi) cls += "bg-blue-50 border-blue-300";
-          else cls += "bg-gray-50 border-gray-200";
+          let cls = "viz-cell ";
+          if (i === data.mid) cls += "viz-cell-mid";
+          else if (i >= data.lo && i <= data.hi) cls += "viz-cell-range";
+          else cls += "viz-cell-rest";
           return <div key={i} className={cls}>{val}</div>;
         })}
       </div>
-      <div className="text-gray-500">
+      <div className="viz-meta">
         Target: {data.target} | lo: {data.lo} | hi: {data.hi} | mid: {data.mid}
       </div>
     </div>
@@ -65,7 +65,7 @@ export function BinarySearchParamDemo() {
       render={(values) => {
         const size = Number(values.size) || 1;
         return (
-          <div className="text-sm font-mono">
+          <div className="font-mono text-sm text-foreground">
             <p>Array size: {size}</p>
             <p>Max comparisons (log₂ n): {Math.ceil(Math.log2(size))}</p>
             <p>Linear search comparisons: {size}</p>

@@ -25,8 +25,8 @@ function ControlInput({
 
   if (def.type === "number") {
     return (
-      <label className="flex items-center gap-3 text-sm">
-        <span className="w-24 text-gray-700">{label}</span>
+      <label className="control-row">
+        <span className="control-label">{label}</span>
         <input
           type="range"
           min={def.min ?? 0}
@@ -34,22 +34,22 @@ function ControlInput({
           step={def.step ?? 1}
           value={value as number}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="flex-1"
+          className="control-range flex-1"
         />
-        <span className="w-10 text-right font-mono text-gray-500">{value}</span>
+        <span className="control-value">{value}</span>
       </label>
     );
   }
 
   if (def.type === "boolean") {
     return (
-      <label className="flex items-center gap-3 text-sm">
-        <span className="w-24 text-gray-700">{label}</span>
+      <label className="control-row">
+        <span className="control-label">{label}</span>
         <input
           type="checkbox"
           checked={value as boolean}
           onChange={(e) => onChange(e.target.checked)}
-          className="h-4 w-4"
+          className="control-checkbox"
         />
       </label>
     );
@@ -57,12 +57,12 @@ function ControlInput({
 
   if (def.type === "select" && def.options) {
     return (
-      <label className="flex items-center gap-3 text-sm">
-        <span className="w-24 text-gray-700">{label}</span>
+      <label className="control-row">
+        <span className="control-label">{label}</span>
         <select
           value={value as string}
           onChange={(e) => onChange(e.target.value)}
-          className="border border-gray-300 rounded px-2 py-1 text-sm"
+          className="control-input"
         >
           {def.options.map((opt) => (
             <option key={opt} value={opt}>{opt}</option>
@@ -90,8 +90,8 @@ export default function ParamDemo({ params, render }: Props) {
   };
 
   return (
-    <div className="my-6 rounded-lg border border-gray-200 p-4">
-      <div className="space-y-3 mb-4 pb-4 border-b border-gray-100">
+    <div className="interactive-shell p-4">
+      <div className="interactive-header space-y-3">
         {Object.entries(params).map(([name, def]) => (
           <ControlInput
             key={name}

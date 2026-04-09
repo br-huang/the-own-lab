@@ -16,11 +16,15 @@ export default function Search() {
   // Lazy-load Pagefind on first interaction
   const loadPagefind = useCallback(async () => {
     if (pagefindRef.current) return;
+
+    if (import.meta.env.DEV) {
+      return;
+    }
+
     try {
       // Pagefind generates its assets at /pagefind/pagefind.js after build
-      pagefindRef.current = await import(
-        /* @vite-ignore */ "/pagefind/pagefind.js"
-      );
+      const modulePath = "/pagefind/pagefind.js";
+      pagefindRef.current = await import(/* @vite-ignore */ modulePath);
       await pagefindRef.current.init();
     } catch {
       console.warn("Pagefind not available — run a production build to generate the search index.");
@@ -52,23 +56,23 @@ export default function Search() {
         ref={inputRef}
         type="search"
         placeholder="Search docs..."
-        className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="docs-search-input"
         value={query}
         onFocus={() => { setIsOpen(true); loadPagefind(); }}
         onChange={(e) => handleSearch(e.target.value)}
         onBlur={() => setTimeout(() => setIsOpen(false), 200)}
       />
       {isOpen && results.length > 0 && (
-        <div className="absolute top-full mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-80 overflow-y-auto">
+        <div className="docs-search-panel">
           {results.map((result, i) => (
             <a
               key={i}
               href={result.url}
-              className="block px-3 py-2 text-sm hover:bg-gray-50 border-b border-gray-100 last:border-0"
+              className="docs-search-result"
             >
-              <div className="font-medium text-gray-900">{result.meta.title}</div>
+              <div className="docs-search-result-title">{result.meta.title}</div>
               <div
-                className="text-gray-500 text-xs mt-0.5 line-clamp-2"
+                className="docs-search-result-snippet"
                 dangerouslySetInnerHTML={{ __html: result.excerpt }}
               />
             </a>

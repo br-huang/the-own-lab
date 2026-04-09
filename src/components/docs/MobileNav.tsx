@@ -15,8 +15,8 @@ function SidebarTree({ nodes }: { nodes: SidebarNode[] }) {
               href={node.href}
               className={`block px-3 py-2 rounded text-sm ${
                 node.active
-                  ? "bg-blue-50 text-blue-700 font-medium"
-                  : "text-gray-700"
+                  ? "docs-nav-link docs-nav-link-active"
+                  : "docs-nav-link"
               }`}
             >
               {node.title}
@@ -25,7 +25,7 @@ function SidebarTree({ nodes }: { nodes: SidebarNode[] }) {
         ) : (
           <li key={node.title}>
             <details open={node.expanded}>
-              <summary className="px-3 py-2 text-sm font-semibold cursor-pointer">
+              <summary className="docs-nav-section-mobile">
                 {node.title}
               </summary>
               <div className="pl-3">
@@ -46,11 +46,11 @@ export default function MobileNav({ sidebar }: Props) {
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 text-gray-700 hover:bg-gray-100 rounded"
+        className="docs-icon-button"
         aria-label={isOpen ? "Close navigation" : "Open navigation"}
         aria-expanded={isOpen}
       >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           {isOpen ? (
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           ) : (
@@ -61,7 +61,7 @@ export default function MobileNav({ sidebar }: Props) {
 
       {isOpen && (
         <div
-          className="fixed inset-0 top-14 z-40 bg-white overflow-y-auto p-4"
+          className="docs-mobile-panel"
           role="dialog"
           aria-label="Navigation menu"
         >

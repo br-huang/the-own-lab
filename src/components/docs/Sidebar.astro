@@ -17,10 +17,8 @@ const { nodes } = Astro.props;
           <a
             href={node.href}
             class:list={[
-              "block px-3 py-1.5 rounded text-sm transition-colors",
-              node.active
-                ? "bg-blue-50 text-blue-700 font-medium"
-                : "text-gray-700 hover:bg-gray-100",
+              "docs-nav-link",
+              node.active && "docs-nav-link-active",
             ]}
             aria-current={node.active ? "page" : undefined}
           >

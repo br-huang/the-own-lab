@@ -1,19 +1,681 @@
 @import "tailwindcss";
 
-/*
- * Phase 1 temporary prose styles.
- * Tailwind v4 typography plugin may be added later.
- * For now, basic content styling via custom CSS.
- */
-.prose h1 { @apply text-3xl font-bold mt-8 mb-4; }
-.prose h2 { @apply text-2xl font-semibold mt-6 mb-3; }
-.prose h3 { @apply text-xl font-semibold mt-4 mb-2; }
-.prose p { @apply my-3 leading-7; }
-.prose ul { @apply list-disc pl-6 my-3; }
-.prose ol { @apply list-decimal pl-6 my-3; }
-.prose li { @apply my-1; }
-.prose code { @apply bg-gray-100 px-1.5 py-0.5 rounded text-sm; }
-.prose pre { @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4; }
-.prose pre code { @apply bg-transparent p-0; }
-.prose a { @apply text-blue-600 underline; }
-.prose blockquote { @apply border-l-4 border-gray-300 pl-4 italic my-4; }
+@theme {
+  --font-sans: var(--font-ui);
+  --font-mono: var(--font-code);
+
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-surface-subtle: hsl(var(--surface-subtle));
+  --color-surface-strong: hsl(var(--surface-strong));
+  --color-surface-elevated: hsl(var(--surface-elevated));
+  --color-line-soft: hsl(var(--line-soft));
+  --color-line-strong: hsl(var(--line-strong));
+  --color-hero-glow: hsl(var(--hero-glow));
+  --color-selection: hsl(var(--selection));
+  --color-selection-foreground: hsl(var(--selection-foreground));
+  --color-state-focus: hsl(var(--state-focus));
+  --color-state-active: hsl(var(--state-active));
+  --color-state-active-foreground: hsl(var(--state-active-foreground));
+  --color-state-highlight: hsl(var(--state-highlight));
+  --color-state-highlight-foreground: hsl(var(--state-highlight-foreground));
+
+  --radius-sm: var(--radius-sm-token);
+  --radius-md: var(--radius-md-token);
+  --radius-lg: var(--radius-lg-token);
+  --radius-xl: var(--radius-xl-token);
+
+  --shadow-soft: var(--shadow-soft-token);
+  --shadow-card: var(--shadow-card-token);
+  --shadow-popover: var(--shadow-popover-token);
+
+  --tracking-tight: var(--tracking-tight-token);
+  --tracking-wide: var(--tracking-wide-token);
+}
+
+:root {
+  color-scheme: light;
+
+  /* Brand tokens */
+  --brand-cream: 40 34% 96%;
+  --brand-paper: 36 27% 92%;
+  --brand-sand: 32 18% 82%;
+  --brand-ink: 24 16% 14%;
+  --brand-copper: 20 56% 41%;
+  --brand-olive: 78 18% 35%;
+  --brand-stone: 24 10% 36%;
+
+  /* Semantic tokens */
+  --background: var(--brand-cream);
+  --foreground: var(--brand-ink);
+  --card: 0 0% 100%;
+  --card-foreground: var(--brand-ink);
+  --popover: 0 0% 100%;
+  --popover-foreground: var(--brand-ink);
+  --muted: var(--brand-paper);
+  --muted-foreground: var(--brand-stone);
+  --primary: var(--brand-copper);
+  --primary-foreground: 36 60% 97%;
+  --secondary: 32 25% 90%;
+  --secondary-foreground: 24 16% 18%;
+  --accent: var(--brand-olive);
+  --accent-foreground: 36 40% 96%;
+  --border: 28 17% 78%;
+  --input: 28 17% 78%;
+  --ring: 20 56% 41%;
+
+  --surface-subtle: 40 24% 98%;
+  --surface-strong: 34 24% 92%;
+  --surface-elevated: 0 0% 100%;
+  --line-soft: 30 18% 86%;
+  --line-strong: 28 16% 70%;
+  --hero-glow: 34 48% 88%;
+  --selection: 20 56% 41%;
+  --selection-foreground: 36 60% 97%;
+  --state-focus: 20 56% 41%;
+  --state-active: 28 45% 89%;
+  --state-active-foreground: 24 24% 20%;
+  --state-highlight: 44 76% 80%;
+  --state-highlight-foreground: 24 28% 18%;
+
+  /* System tokens */
+  --font-ui: "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
+  --font-code: "IBM Plex Mono", "SFMono-Regular", "Consolas", monospace;
+  --radius-sm-token: 0.5rem;
+  --radius-md-token: 0.875rem;
+  --radius-lg-token: 1.25rem;
+  --radius-xl-token: 1.75rem;
+  --shadow-soft-token: 0 1px 2px hsl(24 16% 14% / 0.05);
+  --shadow-card-token: 0 18px 50px hsl(24 16% 14% / 0.08);
+  --shadow-popover-token: 0 12px 40px hsl(24 16% 14% / 0.14);
+  --tracking-tight-token: -0.03em;
+  --tracking-wide-token: 0.08em;
+  --motion-fast: 140ms;
+  --motion-normal: 220ms;
+  --motion-slow: 360ms;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --background: 24 16% 10%;
+  --foreground: 38 30% 92%;
+  --card: 24 14% 13%;
+  --card-foreground: 38 28% 91%;
+  --popover: 24 15% 12%;
+  --popover-foreground: 38 28% 91%;
+  --muted: 24 12% 17%;
+  --muted-foreground: 32 16% 71%;
+  --primary: 22 58% 56%;
+  --primary-foreground: 24 18% 12%;
+  --secondary: 25 12% 20%;
+  --secondary-foreground: 38 24% 88%;
+  --accent: 76 22% 55%;
+  --accent-foreground: 24 16% 12%;
+  --border: 24 10% 24%;
+  --input: 24 10% 24%;
+  --ring: 22 58% 56%;
+
+  --surface-subtle: 24 15% 11%;
+  --surface-strong: 24 13% 16%;
+  --surface-elevated: 24 13% 18%;
+  --line-soft: 24 10% 22%;
+  --line-strong: 24 10% 32%;
+  --hero-glow: 22 42% 22%;
+  --selection: 22 58% 56%;
+  --selection-foreground: 24 18% 12%;
+  --state-focus: 22 58% 56%;
+  --state-active: 24 16% 22%;
+  --state-active-foreground: 38 28% 91%;
+  --state-highlight: 44 42% 32%;
+  --state-highlight-foreground: 38 30% 92%;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --background: 24 16% 10%;
+    --foreground: 38 30% 92%;
+    --card: 24 14% 13%;
+    --card-foreground: 38 28% 91%;
+    --popover: 24 15% 12%;
+    --popover-foreground: 38 28% 91%;
+    --muted: 24 12% 17%;
+    --muted-foreground: 32 16% 71%;
+    --primary: 22 58% 56%;
+    --primary-foreground: 24 18% 12%;
+    --secondary: 25 12% 20%;
+    --secondary-foreground: 38 24% 88%;
+    --accent: 76 22% 55%;
+    --accent-foreground: 24 16% 12%;
+    --border: 24 10% 24%;
+    --input: 24 10% 24%;
+    --ring: 22 58% 56%;
+    --surface-subtle: 24 15% 11%;
+    --surface-strong: 24 13% 16%;
+    --surface-elevated: 24 13% 18%;
+    --line-soft: 24 10% 22%;
+    --line-strong: 24 10% 32%;
+    --hero-glow: 22 42% 22%;
+    --selection: 22 58% 56%;
+    --selection-foreground: 24 18% 12%;
+    --state-focus: 22 58% 56%;
+    --state-active: 24 16% 22%;
+    --state-active-foreground: 38 28% 91%;
+    --state-highlight: 44 42% 32%;
+    --state-highlight-foreground: 38 30% 92%;
+  }
+}
+
+html {
+  @apply bg-background text-foreground antialiased;
+}
+
+body {
+  @apply min-h-screen bg-background text-foreground font-sans;
+  background-image:
+    radial-gradient(circle at top, hsl(var(--hero-glow) / 0.32), transparent 38%),
+    linear-gradient(180deg, hsl(var(--background)), hsl(var(--surface-subtle)));
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+::selection {
+  background: hsl(var(--selection));
+  color: hsl(var(--selection-foreground));
+}
+
+:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+.page-shell {
+  @apply min-h-screen bg-background text-foreground;
+}
+
+.site-body {
+  @apply min-h-screen flex flex-col bg-background text-foreground;
+}
+
+.site-main {
+  @apply flex-1;
+}
+
+.site-navbar {
+  @apply border-b border-line-soft bg-background/88 backdrop-blur-md;
+}
+
+.site-navbar-inner {
+  @apply mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 py-4;
+}
+
+.site-brand {
+  @apply inline-flex items-center gap-3 text-foreground no-underline;
+}
+
+.site-brand-mark {
+  @apply inline-flex h-10 w-10 items-center justify-center rounded-full border border-line-soft bg-surface-elevated text-sm font-semibold text-primary shadow-soft;
+}
+
+.site-brand-copy {
+  @apply flex flex-col;
+}
+
+.site-brand-name {
+  @apply text-sm font-semibold tracking-tight text-foreground;
+}
+
+.site-brand-tagline {
+  @apply text-[0.72rem] uppercase tracking-wide text-muted-foreground;
+}
+
+.site-nav {
+  @apply flex items-center gap-2;
+}
+
+.site-navbar-actions {
+  @apply flex items-center gap-3;
+}
+
+.site-nav-link {
+  @apply rounded-full px-3 py-1.5 text-sm text-muted-foreground transition-colors duration-200 hover:bg-surface-strong hover:text-foreground;
+}
+
+.site-nav-link-active {
+  @apply bg-state-active text-state-active-foreground;
+}
+
+.theme-toggle {
+  @apply inline-flex h-10 items-center gap-2 rounded-full border border-line-soft bg-card px-3 text-sm text-card-foreground shadow-soft transition-colors duration-200 hover:bg-surface-strong;
+}
+
+.theme-toggle-icon {
+  @apply text-base leading-none text-primary;
+}
+
+.theme-toggle-label {
+  @apply text-sm text-muted-foreground;
+}
+
+.site-footer {
+  @apply border-t border-line-soft bg-surface-subtle/80;
+}
+
+.site-footer-inner {
+  @apply mx-auto flex max-w-7xl flex-col gap-6 px-5 py-8 md:flex-row md:items-end md:justify-between;
+}
+
+.site-footer-copy {
+  @apply max-w-xl space-y-2;
+}
+
+.site-footer-title {
+  @apply text-sm font-semibold text-foreground;
+}
+
+.site-footer-text {
+  @apply text-sm leading-7 text-muted-foreground;
+}
+
+.site-footer-links {
+  @apply flex flex-wrap items-center gap-2;
+}
+
+.site-footer-link {
+  @apply rounded-full px-3 py-1.5 text-sm text-muted-foreground transition-colors duration-200 hover:bg-surface-strong hover:text-foreground;
+}
+
+.site-section {
+  @apply mx-auto max-w-7xl px-5 py-14 md:py-20;
+}
+
+.site-section-tight {
+  @apply mx-auto max-w-5xl px-5 py-12 md:py-16;
+}
+
+.hero-shell {
+  @apply grid gap-8 md:grid-cols-[1.35fr_0.85fr] md:items-end;
+}
+
+.hero-copy {
+  @apply space-y-6;
+}
+
+.hero-kicker {
+  @apply inline-flex rounded-full border border-line-soft bg-surface-elevated px-3 py-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground;
+}
+
+.hero-title {
+  @apply max-w-4xl text-5xl font-semibold tracking-tight text-foreground md:text-7xl;
+}
+
+.hero-description {
+  @apply max-w-2xl text-lg leading-8 text-muted-foreground md:text-xl;
+}
+
+.hero-actions {
+  @apply flex flex-wrap gap-3;
+}
+
+.button-primary {
+  @apply inline-flex items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-colors duration-200 hover:bg-accent hover:text-accent-foreground;
+}
+
+.button-ghost {
+  @apply inline-flex items-center justify-center rounded-full border border-line-soft bg-card px-5 py-3 text-sm font-medium text-card-foreground shadow-soft transition-colors duration-200 hover:bg-surface-strong;
+}
+
+.hero-panel {
+  @apply rounded-[1.75rem] border border-line-soft bg-surface-elevated p-6 shadow-card;
+}
+
+.hero-panel-grid {
+  @apply grid gap-3;
+}
+
+.hero-stat {
+  @apply rounded-2xl border border-line-soft bg-surface-subtle p-4;
+}
+
+.hero-stat-label {
+  @apply text-xs uppercase tracking-wide text-muted-foreground;
+}
+
+.hero-stat-value {
+  @apply mt-2 text-2xl font-semibold tracking-tight text-foreground;
+}
+
+.section-heading {
+  @apply flex flex-col gap-3 md:flex-row md:items-end md:justify-between;
+}
+
+.section-kicker {
+  @apply text-xs font-semibold uppercase tracking-wide text-primary;
+}
+
+.section-title {
+  @apply text-3xl font-semibold tracking-tight text-foreground md:text-4xl;
+}
+
+.section-description {
+  @apply max-w-2xl text-base leading-7 text-muted-foreground;
+}
+
+.card-grid {
+  @apply mt-8 grid gap-4 md:grid-cols-3;
+}
+
+.site-card {
+  @apply flex h-full flex-col gap-4 rounded-[1.5rem] border border-line-soft bg-card p-5 text-card-foreground shadow-soft transition-transform duration-200 hover:-translate-y-0.5 hover:bg-surface-elevated hover:shadow-card;
+}
+
+.site-card-meta {
+  @apply text-xs uppercase tracking-wide text-muted-foreground;
+}
+
+.site-card-title {
+  @apply text-xl font-semibold tracking-tight text-foreground;
+}
+
+.site-card-text {
+  @apply text-sm leading-7 text-muted-foreground;
+}
+
+.site-card-link {
+  @apply mt-auto text-sm font-medium text-primary transition-colors duration-200 hover:text-accent;
+}
+
+.placeholder-shell {
+  @apply space-y-5 rounded-[1.75rem] border border-line-soft bg-surface-elevated p-8 shadow-card;
+}
+
+.placeholder-kicker {
+  @apply text-xs font-semibold uppercase tracking-wide text-primary;
+}
+
+.placeholder-title {
+  @apply text-4xl font-semibold tracking-tight text-foreground;
+}
+
+.placeholder-text {
+  @apply max-w-2xl text-lg leading-8 text-muted-foreground;
+}
+
+.docs-shell {
+  @apply flex-1;
+}
+
+.docs-search-slot {
+  @apply mb-4;
+}
+
+.docs-frame {
+  @apply mx-auto flex max-w-7xl;
+}
+
+.docs-mobile-title {
+  @apply mx-2 truncate text-sm font-semibold text-foreground;
+}
+
+.docs-topbar {
+  @apply fixed top-16 left-0 right-0 z-50 flex items-center justify-between border-b border-line-soft bg-background/90 p-3 backdrop-blur-md md:hidden;
+}
+
+.docs-sidebar {
+  @apply hidden min-h-[calc(100vh-4rem)] w-64 shrink-0 overflow-y-auto border-r border-line-soft bg-surface-subtle/70 p-4 md:block;
+}
+
+.docs-sidebar-inner {
+  @apply sticky top-4;
+}
+
+.docs-content {
+  @apply mt-14 min-w-0 flex-1 px-6 py-8 md:px-10 md:py-10;
+}
+
+.docs-toc {
+  @apply hidden min-h-[calc(100vh-4rem)] w-56 shrink-0 overflow-y-auto p-4 pt-10 lg:block;
+}
+
+.surface-card {
+  @apply rounded-lg border border-border bg-card text-card-foreground shadow-soft;
+}
+
+.surface-panel {
+  @apply rounded-lg border border-line-soft bg-surface-elevated text-card-foreground shadow-card;
+}
+
+.interactive-shell {
+  @apply my-6 rounded-lg border border-line-soft bg-surface-elevated text-card-foreground shadow-soft;
+}
+
+.docs-nav-link {
+  @apply block rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors duration-200 hover:bg-surface-strong hover:text-foreground;
+}
+
+.docs-nav-link-active {
+  @apply bg-state-active text-state-active-foreground font-medium;
+}
+
+.docs-nav-section {
+  @apply cursor-pointer select-none rounded-md px-3 py-1.5 text-sm font-semibold text-foreground transition-colors duration-200 hover:bg-surface-strong;
+}
+
+.docs-pagination-link {
+  @apply flex flex-col text-sm;
+}
+
+.docs-pagination {
+  @apply mt-12 flex items-center justify-between border-t border-line-soft pt-6;
+}
+
+.docs-pagination-link-end {
+  @apply items-end;
+}
+
+.docs-pagination-eyebrow {
+  @apply text-muted-foreground transition-colors duration-200 group-hover:text-foreground;
+}
+
+.docs-pagination-title {
+  @apply font-medium text-primary transition-colors duration-200 group-hover:text-accent;
+}
+
+.docs-search-input {
+  @apply w-full rounded-md border border-input bg-card px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/30;
+}
+
+.docs-search-panel {
+  @apply absolute top-full z-50 mt-1 max-h-80 w-full overflow-y-auto rounded-lg border border-line-soft bg-popover shadow-popover;
+}
+
+.docs-search-result {
+  @apply block border-b border-line-soft px-3 py-2 text-sm transition-colors duration-200 last:border-0 hover:bg-surface-strong;
+}
+
+.docs-search-result-title {
+  @apply font-medium text-foreground;
+}
+
+.docs-search-result-snippet {
+  @apply mt-0.5 line-clamp-2 text-xs text-muted-foreground;
+}
+
+.docs-icon-button {
+  @apply rounded-md p-2 text-muted-foreground transition-colors duration-200 hover:bg-surface-strong hover:text-foreground;
+}
+
+.icon-md {
+  @apply h-5 w-5;
+}
+
+.docs-mobile-panel {
+  @apply fixed inset-0 top-14 z-40 overflow-y-auto bg-background/95 p-4 backdrop-blur-md;
+}
+
+.docs-section-children {
+  @apply mt-1 pl-3;
+}
+
+.docs-nav-section-mobile {
+  @apply cursor-pointer select-none rounded-md px-3 py-2 text-sm font-semibold text-foreground transition-colors duration-200 hover:bg-surface-strong;
+}
+
+.docs-toc-title {
+  @apply mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground;
+}
+
+.control-input {
+  @apply rounded-md border border-input bg-card px-2 py-1 text-sm text-foreground;
+}
+
+.control-row {
+  @apply flex items-center gap-3 text-sm;
+}
+
+.control-label {
+  @apply w-24 text-muted-foreground;
+}
+
+.control-range {
+  @apply accent-primary;
+}
+
+.control-value {
+  @apply w-10 text-right font-mono text-muted-foreground;
+}
+
+.control-checkbox {
+  @apply h-4 w-4 accent-primary;
+}
+
+.button-secondary {
+  @apply rounded-md border border-input bg-card px-2 py-1 text-sm text-card-foreground transition-colors duration-200 hover:bg-surface-strong disabled:opacity-40;
+}
+
+.interactive-header {
+  @apply mb-4 border-b border-line-soft pb-4;
+}
+
+.interactive-toolbar {
+  @apply mb-4 flex items-center gap-2 border-b border-line-soft pb-3;
+}
+
+.interactive-empty {
+  @apply text-sm text-muted-foreground;
+}
+
+.interactive-meta {
+  @apply ml-auto text-xs text-muted-foreground;
+}
+
+.viz-cell {
+  @apply flex h-10 w-10 items-center justify-center rounded-md border font-mono text-sm transition-colors duration-200;
+}
+
+.viz-cell-mid {
+  @apply border-state-highlight bg-state-highlight text-state-highlight-foreground;
+}
+
+.viz-cell-range {
+  @apply border-primary/35 bg-state-active text-state-active-foreground;
+}
+
+.viz-cell-rest {
+  @apply border-line-soft bg-surface-subtle text-muted-foreground;
+}
+
+.viz-row {
+  @apply mb-2 flex gap-2;
+}
+
+.viz-meta {
+  @apply text-muted-foreground;
+}
+
+.prose {
+  @apply max-w-none text-[1.02rem] leading-8 text-foreground;
+}
+
+.prose-article {
+  @apply max-w-none;
+}
+
+.prose h1 {
+  @apply mt-8 mb-4 text-4xl font-semibold tracking-tight text-foreground;
+}
+
+.prose h2 {
+  @apply mt-8 mb-3 text-2xl font-semibold tracking-tight text-foreground;
+}
+
+.prose h3 {
+  @apply mt-5 mb-2 text-xl font-semibold text-foreground;
+}
+
+.prose p,
+.prose ul,
+.prose ol,
+.prose blockquote,
+.prose pre {
+  @apply my-4;
+}
+
+.prose ul {
+  @apply list-disc pl-6;
+}
+
+.prose ol {
+  @apply list-decimal pl-6;
+}
+
+.prose li {
+  @apply my-1;
+}
+
+.prose strong {
+  @apply font-semibold text-foreground;
+}
+
+.prose code {
+  @apply rounded bg-surface-strong px-1.5 py-0.5 font-mono text-sm text-foreground;
+}
+
+.prose pre {
+  @apply overflow-x-auto rounded-lg border border-line-soft bg-surface-elevated p-4 text-card-foreground shadow-soft;
+}
+
+.prose pre code {
+  @apply bg-transparent p-0 text-card-foreground;
+}
+
+.prose a {
+  @apply text-primary underline decoration-primary/35 underline-offset-4 transition-colors duration-200 hover:text-accent;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-primary/45 pl-4 italic text-muted-foreground;
+}
+
+.prose hr {
+  @apply my-8 border-line-soft;
+}

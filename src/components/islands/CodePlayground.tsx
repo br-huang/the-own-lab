@@ -12,7 +12,7 @@ export default function CodePlayground({
   showPreview = true,
 }: CodePlaygroundProps) {
   return (
-    <div className="my-6 rounded-lg overflow-hidden border border-gray-200">
+    <div className="interactive-shell overflow-hidden">
       <SandpackProvider template={template} files={files}>
         <SandpackLayout>
           <SandpackCodeEditor

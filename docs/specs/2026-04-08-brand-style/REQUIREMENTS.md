@@ -6,16 +6,25 @@ Apply visual identity, implement dual theme, add animations, build non-docs page
 
 This is the final phase. It depends on Session 1 (Astro scaffold) and Session 2 (Docs framework) being complete and merged.
 
+This phase now has a defined brand direction:
+
+- **Brand name:** `The Own Lab`
+- **Core line:** `Build it. Own it. Teach it.`
+- **Visual reference:** Claude-like editorial warmth — clean, quiet, human, and warm-neutral rather than cold SaaS minimalism
+- **System architecture:** shadcn/ui-style semantic token layer implemented with CSS custom properties in Tailwind v4
+
 ---
 
 ## Acceptance Criteria
 
 ### Brand Identity
 
-- [ ] Brand name and tagline are defined and displayed in the Navbar and Index page
+- [ ] Brand name `The Own Lab` and core line `Build it. Own it. Teach it.` are displayed in the Navbar and Index page
 - [ ] Color palette is defined as CSS custom properties (design tokens)
 - [ ] Typography (font family, scale) is configured via Tailwind CSS theme
 - [ ] Design tokens are applied consistently across all pages including Docs
+- [ ] Visual language expresses warm editorial clarity rather than generic SaaS UI
+- [ ] Components consume semantic tokens only; page-level styles do not hardcode brand colors directly
 
 ### Dual Theme
 
@@ -65,6 +74,7 @@ This is the final phase. It depends on Session 1 (Astro scaffold) and Session 2 
 - [ ] `Footer.astro` — site-wide footer with social links and copyright
 - [ ] `BaseLayout.astro` — wraps non-docs pages with Navbar, Footer, head meta, View Transitions
 - [ ] `Card.astro` — reusable card component for Portfolio and Blog lists
+- [ ] Shared UI primitives and layout blocks consume the same token contract as Docs UI
 
 ### SEO & Meta
 
@@ -92,6 +102,7 @@ This is the final phase. It depends on Session 1 (Astro scaffold) and Session 2 
 ### In Scope
 
 - Brand identity definition (name, colors, fonts, tokens)
+- Semantic token architecture and brand-token mapping
 - Dual theme implementation
 - View Transitions and scroll animations
 - Index, Portfolio, Blog pages and layouts
@@ -118,16 +129,23 @@ This is the final phase. It depends on Session 1 (Astro scaffold) and Session 2 
 
 - **Do not break the Docs framework** — styling changes must be backwards-compatible with DocsLayout and all Docs components
 - **Tailwind v4 CSS-based config** — design tokens go in `global.css` using `@theme {}`, not in a `tailwind.config.js`
+- **Semantic tokens first** — component styles must reference semantic variables such as `--background`, `--foreground`, `--primary`, `--border`; raw brand tokens are only mapped at the theme layer
 - **Static output only** — no server-side rendering or edge functions
 - **Performance** — no layout shift, no render-blocking scripts, Lighthouse performance score > 90
 
 ---
 
-## Open Questions (to resolve at start of Session 3)
+## Resolved Decisions
 
-- **Brand name** — not yet decided
-- **Color palette** — not yet decided
-- **Font family** — not yet decided (system fonts? Google Fonts? Custom?)
+- **Brand name** — `The Own Lab`
+- **Core line** — `Build it. Own it. Teach it.`
+- **Theme architecture** — shadcn/ui-style semantic token system via CSS custom properties
+- **Stylistic direction** — warm-neutral, editorial, calm, and human; inspired by Claude's restraint rather than bright product-marketing palettes
+
+## Open Questions
+
+- **Color palette exact values** — final HSL values for light and dark themes still need to be locked
+- **Font family** — system fonts? Google Fonts? Custom?
 - **Domain name** — not yet decided
 - **Animation library** — Astro View Transitions for page transitions; scroll animations via CSS (`@scroll-timeline`, `animation-timeline: view()`) or Motion library?
 - **Portfolio content** — which projects to include?

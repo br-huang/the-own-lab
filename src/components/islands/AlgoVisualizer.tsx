@@ -49,15 +49,15 @@ export default function AlgoVisualizer({
     };
   }, [isPlaying, autoPlayInterval, totalSteps]);
 
-  if (totalSteps === 0) return <div className="text-gray-500 text-sm">No steps to visualize.</div>;
+  if (totalSteps === 0) return <div className="interactive-empty">No steps to visualize.</div>;
 
   return (
-    <div className="my-6 rounded-lg border border-gray-200 p-4">
-      <div className="flex items-center gap-2 mb-4 pb-3 border-b border-gray-100">
+    <div className="interactive-shell p-4">
+      <div className="interactive-toolbar">
         <button
           onClick={prev}
           disabled={currentIndex === 0}
-          className="px-2 py-1 text-sm rounded border border-gray-300 disabled:opacity-40 hover:bg-gray-50"
+          className="button-secondary"
           aria-label="Previous step"
         >
           Prev
@@ -66,7 +66,7 @@ export default function AlgoVisualizer({
         {autoPlayInterval && (
           <button
             onClick={() => setIsPlaying(!isPlaying)}
-            className="px-2 py-1 text-sm rounded border border-gray-300 hover:bg-gray-50"
+            className="button-secondary"
             aria-label={isPlaying ? "Pause" : "Play"}
           >
             {isPlaying ? "Pause" : "Play"}
@@ -76,15 +76,15 @@ export default function AlgoVisualizer({
         <button
           onClick={next}
           disabled={currentIndex === totalSteps - 1}
-          className="px-2 py-1 text-sm rounded border border-gray-300 disabled:opacity-40 hover:bg-gray-50"
+          className="button-secondary"
           aria-label="Next step"
         >
           Next
         </button>
 
-        <span className="ml-auto text-xs text-gray-500">
+        <span className="interactive-meta">
           Step {currentIndex + 1} / {totalSteps}
-          {currentStep.label && ` — ${currentStep.label}`}
+          {currentStep.label && ` - ${currentStep.label}`}
         </span>
       </div>
 

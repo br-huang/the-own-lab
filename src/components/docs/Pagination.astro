@@ -9,19 +9,19 @@ interface Props {
 const { prev, next } = Astro.props;
 ---
 
-<nav class="flex justify-between items-center mt-12 pt-6 border-t border-gray-200" aria-label="Pagination">
+<nav class="docs-pagination" aria-label="Pagination">
   {prev ? (
-    <a href={prev.href} class="flex flex-col text-sm group">
-      <span class="text-gray-500 group-hover:text-gray-700">Previous</span>
-      <span class="text-blue-600 group-hover:text-blue-800 font-medium">{prev.title}</span>
+    <a href={prev.href} class="docs-pagination-link group">
+      <span class="docs-pagination-eyebrow">Previous</span>
+      <span class="docs-pagination-title">{prev.title}</span>
     </a>
   ) : (
     <div />
   )}
   {next ? (
-    <a href={next.href} class="flex flex-col items-end text-sm group">
-      <span class="text-gray-500 group-hover:text-gray-700">Next</span>
-      <span class="text-blue-600 group-hover:text-blue-800 font-medium">{next.title}</span>
+    <a href={next.href} class="docs-pagination-link docs-pagination-link-end group">
+      <span class="docs-pagination-eyebrow">Next</span>
+      <span class="docs-pagination-title">{next.title}</span>
     </a>
   ) : (
     <div />

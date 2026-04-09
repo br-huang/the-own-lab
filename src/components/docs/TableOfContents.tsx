@@ -43,9 +43,7 @@ export default function TableOfContents({ headings }: Props) {
 
   return (
     <nav aria-label="Table of contents">
-      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-        On this page
-      </p>
+      <p className="docs-toc-title">On this page</p>
       <ul className="space-y-1">
         {headings.map((heading) => (
           <li key={heading.slug}>
@@ -55,8 +53,8 @@ export default function TableOfContents({ headings }: Props) {
                 heading.depth === 3 ? "pl-3" : ""
               } ${
                 activeId === heading.slug
-                  ? "text-blue-600 font-medium"
-                  : "text-gray-500 hover:text-gray-900"
+                  ? "font-medium text-primary"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {heading.text}

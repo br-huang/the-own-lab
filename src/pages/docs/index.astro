@@ -1,9 +1,27 @@
 ---
+import BaseLayout from "@/layouts/BaseLayout.astro";
 import { buildSidebarTree, flattenSidebarLinks } from "@/lib/sidebar";
 
 const sidebar = await buildSidebarTree("");
 const links = flattenSidebarLinks(sidebar);
-const firstPage = links[0]?.href ?? "/";
-
-return Astro.redirect(firstPage);
+const firstPageHref = links[0]?.href ?? "/docs/getting-started/";
 ---
+
+<BaseLayout
+  title="Docs | The Own Lab"
+  description="Documentation, experiments, and interactive notes from The Own Lab."
+>
+  <section class="site-section-tight">
+    <div class="placeholder-shell">
+      <p class="placeholder-kicker">Documentation</p>
+      <h1 class="placeholder-title">A self-built docs framework.</h1>
+      <p class="placeholder-text">
+        The docs area is where implementation notes, walkthroughs, and
+        interactive explanations live. Start with the current entry point below.
+      </p>
+      <div class="hero-actions">
+        <a href={firstPageHref} class="button-primary">Open first page</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
