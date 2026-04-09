@@ -61,20 +61,6 @@ type(scope): description
 
 Subtree remotes (`sub/*`) exist for projects with independent GitHub repos. Check `git remote -v`.
 
-## Commands
-
-```bash
-pnpm nx build <project>          # build one project
-pnpm nx test <project>           # test one project
-pnpm build                       # build all
-pnpm test                        # test all
-pnpm build:affected              # build only what changed
-pnpm graph                       # dependency graph
-pnpm projects                    # list all projects
-pnpm add <pkg> --filter <proj>   # add dep to specific project
-pnpm add -Dw <pkg>               # add dep to root
-```
-
 ## Mandatory
 
 1. Commit messages MUST be `type(scope): desc`. No exceptions.
@@ -86,3 +72,4 @@ pnpm add -Dw <pkg>               # add dep to root
 7. Do not modify `nx.json`, `pnpm-workspace.yaml`, `lefthook.yml`, `commitlint.config.js` without understanding the blast radius.
 8. All specs, ADRs, and issues MUST live in `docs/projects/<project>/`. Never create `docs/` inside `apps/`, `packages/`, or `scripts/`.
 9. Every new feature MUST have a spec directory in `docs/projects/<project>/specs/YYYY-MM-DD-<slug>/` with at minimum `REQUIREMENTS.md`.
+10. Always use `pnpm` to run the commands
