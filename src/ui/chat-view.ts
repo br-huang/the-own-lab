@@ -1,8 +1,9 @@
 import { ItemView, WorkspaceLeaf, MarkdownRenderer, App } from "obsidian";
 import { RagEngine } from "../core/rag-engine";
-import { SourceReference, ChatMessage } from "../types";
+import { SourceReference, ChatMessage, ChatSession } from "../types";
 import { UrlIngestor, IngestPhase } from "../ingestor/url-ingestor";
 import { detectVideoProvider } from "../ingestor/video-detector";
+import { SessionStore } from "../core/session-store";
 
 export const CHAT_VIEW_TYPE = "obsidian-kb-chat";
 
@@ -10,9 +11,11 @@ export class ChatView extends ItemView {
   private ragEngine: RagEngine;
   private urlIngestor: UrlIngestor;
   private appRef: App;
-  private loadChatHistory: () => Promise<ChatMessage[]>;
-  private saveChatHistory: (messages: ChatMessage[]) => Promise<void>;
-  private chatHistory: ChatMessage[] = [];
+  private sessionStore: SessionStore;
+  private currentSession: ChatSession | null = null;
+  private sessionListEl!: HTMLElement;
+  private sessionPanelEl!: HTMLElement;
+  private sessionListVisible = true;
   private mentionedFiles: { filePath: string; displayName: string }[] = [];
   private messagesEl!: HTMLElement;
   private inputEl!: HTMLTextAreaElement;
@@ -31,15 +34,13 @@ export class ChatView extends ItemView {
     ragEngine: RagEngine,
     urlIngestor: UrlIngestor,
     appRef: App,
-    loadChatHistory: () => Promise<ChatMessage[]>,
-    saveChatHistory: (messages: ChatMessage[]) => Promise<void>,
+    sessionStore: SessionStore,
   ) {
     super(leaf);
     this.ragEngine = ragEngine;
     this.urlIngestor = urlIngestor;
     this.appRef = appRef;
-    this.loadChatHistory = loadChatHistory;
-    this.saveChatHistory = saveChatHistory;
+    this.sessionStore = sessionStore;
   }
 
   getViewType(): string {
@@ -59,18 +60,39 @@ export class ChatView extends ItemView {
     container.empty();
     container.addClass("kb-chat-container");
 
-    // Header bar
-    const headerEl = container.createDiv({ cls: "kb-chat-header" });
-    headerEl.createEl("span", { cls: "kb-chat-header-title", text: "KB Chat" });
-    const clearBtn = headerEl.createEl("button", {
-      cls: "kb-chat-clear-btn",
-      text: "Clear History",
+    // ─── Session Panel (left) ───
+    this.sessionPanelEl = container.createDiv({ cls: "kb-session-panel" });
+
+    const sessionHeader = this.sessionPanelEl.createDiv({ cls: "kb-session-panel-header" });
+    const newBtn = sessionHeader.createEl("button", {
+      cls: "kb-session-new-btn",
+      text: "+ New",
     });
-    clearBtn.addEventListener("click", () => this.handleClearHistory());
+    newBtn.addEventListener("click", () => this.handleNewSession());
 
-    this.messagesEl = container.createDiv({ cls: "kb-chat-messages" });
+    this.sessionListEl = this.sessionPanelEl.createDiv({ cls: "kb-session-list" });
 
-    const inputArea = container.createDiv({ cls: "kb-chat-input-area" });
+    // ─── Chat Main Panel (right) ───
+    const chatMainEl = container.createDiv({ cls: "kb-chat-main" });
+
+    // Header bar
+    const headerEl = chatMainEl.createDiv({ cls: "kb-chat-header" });
+
+    const toggleBtn = headerEl.createEl("button", {
+      cls: "kb-session-toggle",
+      attr: { "aria-label": "Toggle session list" },
+    });
+    toggleBtn.textContent = "\u2630";
+    toggleBtn.addEventListener("click", () => {
+      this.sessionListVisible = !this.sessionListVisible;
+      this.sessionPanelEl.toggleClass("is-collapsed", !this.sessionListVisible);
+    });
+
+    headerEl.createEl("span", { cls: "kb-chat-header-title", text: "KB Chat" });
+
+    this.messagesEl = chatMainEl.createDiv({ cls: "kb-chat-messages" });
+
+    const inputArea = chatMainEl.createDiv({ cls: "kb-chat-input-area" });
 
     this.inputWrapperEl = inputArea.createDiv({ cls: "kb-chat-input-wrapper" });
 
@@ -139,13 +161,142 @@ export class ChatView extends ItemView {
       this.handleSubmit(this.inputEl.value);
     });
 
-    // Load chat history
-    await this.restoreHistory();
+    // Load active session
+    const activeId = this.sessionStore.getActiveSessionId();
+    if (activeId) {
+      await this.switchToSession(activeId);
+    }
   }
 
   async onClose(): Promise<void> {
     if (this.renderThrottleTimer) clearTimeout(this.renderThrottleTimer);
     if (this.autocompleteDebounceTimer) clearTimeout(this.autocompleteDebounceTimer);
+    // Save current session on close
+    if (this.currentSession) {
+      try {
+        await this.sessionStore.saveSession(this.currentSession);
+      } catch (err) {
+        console.error("KB: Failed to save session on close", err);
+      }
+    }
+  }
+
+  // ─── Session List ───
+
+  private renderSessionList(): void {
+    this.sessionListEl.empty();
+    const entries = this.sessionStore.getSessionIndex();
+
+    for (const entry of entries) {
+      const item = this.sessionListEl.createDiv({ cls: "kb-session-item" });
+      if (entry.id === this.currentSession?.id) {
+        item.addClass("is-active");
+      }
+
+      item.createEl("span", {
+        cls: "kb-session-item-title",
+        text: entry.title,
+      });
+      item.createEl("span", {
+        cls: "kb-session-item-date",
+        text: this.formatRelativeDate(entry.updatedAt),
+      });
+
+      const deleteBtn = item.createEl("button", {
+        cls: "kb-session-item-delete",
+        text: "x",
+      });
+
+      item.addEventListener("click", () => this.switchToSession(entry.id));
+      deleteBtn.addEventListener("click", (event) =>
+        this.handleDeleteSession(entry.id, event),
+      );
+    }
+  }
+
+  private formatRelativeDate(isoDate: string): string {
+    const date = new Date(isoDate);
+    const now = new Date();
+
+    const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const yesterdayMidnight = new Date(todayMidnight.getTime() - 86400000);
+
+    if (date >= todayMidnight) return "Today";
+    if (date >= yesterdayMidnight) return "Yesterday";
+
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  }
+
+  // ─── Session Switching ───
+
+  private async switchToSession(sessionId: string): Promise<void> {
+    if (this.isStreaming) return;
+    if (this.currentSession?.id === sessionId) return;
+
+    // Save current session before switching
+    if (this.currentSession) {
+      await this.sessionStore.saveSession(this.currentSession);
+    }
+
+    this.currentSession = await this.sessionStore.loadSession(sessionId);
+    this.sessionStore.setActiveSessionId(sessionId);
+
+    // Re-render messages
+    this.messagesEl.empty();
+    this.renderMessages();
+    this.renderSessionList();
+  }
+
+  private renderMessages(): void {
+    if (!this.currentSession) return;
+
+    for (const msg of this.currentSession.messages) {
+      if (msg.role === "user") {
+        this.addUserMessage(msg.text);
+      } else if (msg.role === "assistant") {
+        const bubbleEl = this.addAssistantMessage();
+        this.fullResponseText = msg.text;
+        this.renderMarkdown(bubbleEl);
+        if (msg.sources && msg.sources.length > 0) {
+          this.renderSources(bubbleEl, msg.sources);
+        }
+      }
+    }
+  }
+
+  // ─── New / Delete Session ───
+
+  private async handleNewSession(): Promise<void> {
+    if (this.isStreaming) return;
+
+    if (this.currentSession) {
+      await this.sessionStore.saveSession(this.currentSession);
+    }
+
+    const session = await this.sessionStore.createSession();
+    await this.switchToSession(session.id);
+  }
+
+  private async handleDeleteSession(sessionId: string, event: MouseEvent): Promise<void> {
+    event.stopPropagation();
+    if (this.isStreaming) return;
+    if (!confirm("Delete this session?")) return;
+
+    const wasActive = this.currentSession?.id === sessionId;
+    await this.sessionStore.deleteSession(sessionId);
+
+    if (wasActive) {
+      const newActiveId = this.sessionStore.getActiveSessionId();
+      if (newActiveId) {
+        this.currentSession = null; // clear so switchToSession doesn't try to save deleted session
+        await this.switchToSession(newActiveId);
+      } else {
+        this.currentSession = null;
+        await this.handleNewSession();
+      }
+    }
+
+    this.renderSessionList();
   }
 
   // ─── Autocomplete Logic ───
@@ -164,17 +315,14 @@ export class ChatView extends ItemView {
     const text = this.inputEl.value;
     const cursor = this.inputEl.selectionStart ?? text.length;
 
-    // Scan backward from cursor to find @
     let atPos = -1;
     for (let i = cursor - 1; i >= 0; i--) {
       if (text[i] === "@") {
-        // Check word boundary: @ must be at start or preceded by space/newline
         if (i === 0 || text[i - 1] === " " || text[i - 1] === "\n") {
           atPos = i;
         }
-        break; // stop at first @ regardless
+        break;
       }
-      // If we hit a space or newline before finding @, no active trigger
       if (text[i] === " " || text[i] === "\n") {
         break;
       }
@@ -205,7 +353,6 @@ export class ChatView extends ItemView {
     this.autocompleteEl.empty();
     this.autocompleteIndex = -1;
 
-    // Check for basename collisions to decide whether to show folder path
     const basenameCounts = new Map<string, number>();
     for (const f of matches) {
       const bn = f.basename;
@@ -228,7 +375,7 @@ export class ChatView extends ItemView {
       item.dataset.index = String(i);
 
       item.addEventListener("mousedown", (e) => {
-        e.preventDefault(); // prevent textarea blur
+        e.preventDefault();
         this.selectFile(file.path, file.basename);
       });
     }
@@ -240,7 +387,6 @@ export class ChatView extends ItemView {
     const items = this.autocompleteEl.querySelectorAll(".kb-chat-autocomplete-item");
     if (items.length === 0) return;
 
-    // Remove highlight from current
     if (this.autocompleteIndex >= 0 && this.autocompleteIndex < items.length) {
       items[this.autocompleteIndex].removeClass("is-selected");
     }
@@ -256,7 +402,6 @@ export class ChatView extends ItemView {
   private selectAutocompleteItem(): void {
     const items = this.autocompleteEl.querySelectorAll(".kb-chat-autocomplete-item");
     if (this.autocompleteIndex < 0 || this.autocompleteIndex >= items.length) {
-      // If nothing highlighted, select first item
       if (items.length > 0) {
         this.autocompleteIndex = 0;
       } else {
@@ -270,11 +415,9 @@ export class ChatView extends ItemView {
   }
 
   private selectFile(filePath: string, displayName: string): void {
-    // Remove @query from textarea
     const text = this.inputEl.value;
     const cursor = this.inputEl.selectionStart ?? text.length;
 
-    // Find the @ position
     let atPos = -1;
     for (let i = cursor - 1; i >= 0; i--) {
       if (text[i] === "@") {
@@ -284,13 +427,11 @@ export class ChatView extends ItemView {
     }
 
     if (atPos >= 0) {
-      // Replace @query with empty string
       this.inputEl.value = text.substring(0, atPos) + text.substring(cursor);
       this.inputEl.selectionStart = atPos;
       this.inputEl.selectionEnd = atPos;
     }
 
-    // Add chip
     this.addChip(filePath, displayName);
     this.hideAutocomplete();
     this.inputEl.focus();
@@ -305,7 +446,6 @@ export class ChatView extends ItemView {
   // ─── Chip Management ───
 
   private addChip(filePath: string, displayName: string): void {
-    // Prevent duplicate
     if (this.mentionedFiles.some((f) => f.filePath === filePath)) return;
 
     this.mentionedFiles.push({ filePath, displayName });
@@ -354,14 +494,11 @@ export class ChatView extends ItemView {
       return;
     }
 
-    // Extract forced file paths before clearing
     const forcedFiles = this.mentionedFiles.map((f) => f.filePath);
 
-    // Build display text with chip mentions for the user message bubble
     const chipMentions = this.mentionedFiles.map((f) => `@[[${f.displayName}]]`).join(" ");
     const displayText = chipMentions ? `${chipMentions} ${trimmed}` : trimmed;
 
-    // Clean question text (no chip syntax sent to LLM)
     const cleanQuestion = trimmed;
 
     this.inputEl.value = "";
@@ -369,7 +506,6 @@ export class ChatView extends ItemView {
     this.setInputEnabled(false);
     this.addUserMessage(displayText);
 
-    // Save user message to history
     this.pushHistory({ role: "user", text: displayText, sources: [], timestamp: new Date().toISOString() });
 
     const bubbleEl = this.addAssistantMessage();
@@ -395,7 +531,6 @@ export class ChatView extends ItemView {
       this.renderMarkdown(bubbleEl);
       this.setInputEnabled(true);
 
-      // Save assistant message to history
       this.pushHistory({
         role: "assistant",
         text: this.fullResponseText,
@@ -443,10 +578,10 @@ export class ChatView extends ItemView {
 
       if (contentEl) {
         contentEl.empty();
-        contentEl.setText(`Ingested: "${result.title}" → ${result.filePath}`);
+        contentEl.setText(`Ingested: "${result.title}" \u2192 ${result.filePath}`);
       }
 
-      const resultText = `Ingested: "${result.title}" → ${result.filePath}`;
+      const resultText = `Ingested: "${result.title}" \u2192 ${result.filePath}`;
       this.pushHistory({ role: "assistant", text: resultText, sources: [], timestamp: new Date().toISOString() });
     } catch (err) {
       this.renderError(bubbleEl, (err as Error).message);
@@ -456,62 +591,30 @@ export class ChatView extends ItemView {
     }
   }
 
-  // ─── Chat History ───
+  // ─── Chat History (Session-based) ───
 
   private async pushHistory(message: ChatMessage): Promise<void> {
-    this.chatHistory.push(message);
+    if (!this.currentSession) return;
+
+    this.currentSession.messages.push(message);
 
     // Cap at 100 messages
-    if (this.chatHistory.length > 100) {
-      this.chatHistory = this.chatHistory.slice(-100);
+    if (this.currentSession.messages.length > 100) {
+      this.currentSession.messages = this.currentSession.messages.slice(-100);
+    }
+
+    // Auto-title on first user message
+    if (message.role === "user" && this.currentSession.title === "New Chat") {
+      const cleanText = message.text.replace(/@\[\[[^\]]*\]\]\s*/g, "").trim();
+      this.currentSession.title = cleanText.slice(0, 30) || "New Chat";
+      this.renderSessionList();
     }
 
     try {
-      await this.saveChatHistory(this.chatHistory);
+      await this.sessionStore.saveSession(this.currentSession);
     } catch (err) {
-      console.error("KB: Failed to save chat history", err);
+      console.error("KB: Failed to save session", err);
     }
-  }
-
-  private async restoreHistory(): Promise<void> {
-    try {
-      this.chatHistory = await this.loadChatHistory();
-    } catch (err) {
-      console.error("KB: Failed to load chat history", err);
-      this.chatHistory = [];
-      return;
-    }
-
-    for (const msg of this.chatHistory) {
-      if (msg.role === "user") {
-        this.addUserMessage(msg.text);
-      } else if (msg.role === "assistant") {
-        const bubbleEl = this.addAssistantMessage();
-        // Render the saved text as markdown
-        this.fullResponseText = msg.text;
-        this.renderMarkdown(bubbleEl);
-        // Render sources if any
-        if (msg.sources && msg.sources.length > 0) {
-          this.renderSources(bubbleEl, msg.sources);
-        }
-      }
-    }
-  }
-
-  private async handleClearHistory(): Promise<void> {
-    if (this.isStreaming) return;
-    const confirmed = confirm("Clear all chat history? This cannot be undone.");
-    if (!confirmed) return;
-
-    this.chatHistory = [];
-    try {
-      await this.saveChatHistory([]);
-    } catch (err) {
-      console.error("KB: Failed to clear chat history", err);
-    }
-
-    // Clear the message area
-    this.messagesEl.empty();
   }
 
   // ─── Message Rendering ───

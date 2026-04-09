@@ -1,7 +1,7 @@
 /* ─── Chat Container ─── */
 .kb-chat-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   height: 100%;
   padding: 0;
 }
@@ -243,4 +243,129 @@
 .kb-chat-autocomplete-item:hover,
 .kb-chat-autocomplete-item.is-selected {
   background-color: var(--background-modifier-hover);
+}
+
+/* ─── Session Panel ─── */
+.kb-session-panel {
+  width: 140px;
+  min-width: 120px;
+  border-right: 1px solid var(--background-modifier-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.kb-session-panel.is-collapsed {
+  display: none;
+}
+
+.kb-session-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.kb-session-new-btn {
+  width: 100%;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--background-secondary);
+  color: var(--text-normal);
+  cursor: pointer;
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+.kb-session-new-btn:hover {
+  background: var(--background-modifier-hover);
+}
+
+.kb-session-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+.kb-session-item {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 8px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  position: relative;
+}
+
+.kb-session-item:hover {
+  background: var(--background-modifier-hover);
+}
+
+.kb-session-item.is-active {
+  background: var(--background-secondary);
+  border-left-color: var(--interactive-accent);
+}
+
+.kb-session-item-title {
+  font-size: 0.85em;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kb-session-item-date {
+  font-size: 0.75em;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.kb-session-item-delete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.8em;
+  border-radius: 3px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.kb-session-item:hover .kb-session-item-delete {
+  display: flex;
+}
+
+.kb-session-item-delete:hover {
+  color: var(--text-error);
+  background: var(--background-modifier-error);
+}
+
+/* ─── Chat Main Panel ─── */
+.kb-chat-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100%;
+}
+
+/* ─── Toggle Button ─── */
+.kb-session-toggle {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  font-size: 1.1em;
+}
+
+.kb-session-toggle:hover {
+  color: var(--text-normal);
 }

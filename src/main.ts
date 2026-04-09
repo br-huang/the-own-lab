@@ -1,6 +1,7 @@
 import { Plugin, WorkspaceLeaf, FileSystemAdapter } from "obsidian";
 import * as path from "path";
-import { PluginSettings, DEFAULT_SETTINGS, ChatMessage, PluginData } from "./types";
+import { PluginSettings, DEFAULT_SETTINGS, PluginData } from "./types";
+import { SessionStore } from "./core/session-store";
 import { OpenAIProvider } from "./llm/openai";
 import { LocalEmbeddingProvider } from "./llm/local-embeddings";
 import { VectorStore } from "./core/vector-store";
@@ -14,7 +15,13 @@ import { PdfIngestor } from "./ingestor/pdf-ingestor";
 import { IngestPdfModal } from "./ui/ingest-pdf-modal";
 
 export default class ObsidianKBPlugin extends Plugin {
-  private pluginData: PluginData = { settings: DEFAULT_SETTINGS, chatHistory: [] };
+  private pluginData: PluginData = {
+    settings: DEFAULT_SETTINGS,
+    chatHistory: [],
+    sessionIndex: [],
+    activeSessionId: null,
+  };
+  private sessionStore!: SessionStore;
 
   get settings(): PluginSettings {
     return this.pluginData.settings;
@@ -93,14 +100,20 @@ export default class ObsidianKBPlugin extends Plugin {
       pluginDir,
     );
 
+    this.sessionStore = new SessionStore(
+      vaultPath,
+      this.pluginData,
+      () => this.saveSettings(),
+    );
+    await this.sessionStore.initialize();
+
     this.registerView(CHAT_VIEW_TYPE, (leaf: WorkspaceLeaf) => {
       return new ChatView(
         leaf,
         this.ragEngine,
         this.urlIngestor,
         this.app,
-        () => this.loadChatHistory(),
-        (msgs: ChatMessage[]) => this.saveChatHistory(msgs),
+        this.sessionStore,
       );
     });
 
@@ -168,32 +181,31 @@ export default class ObsidianKBPlugin extends Plugin {
   async loadSettings(): Promise<void> {
     const raw = await this.loadData();
     if (raw && raw.settings) {
-      // New format: { settings: ..., chatHistory: ... }
       this.pluginData = {
         settings: Object.assign({}, DEFAULT_SETTINGS, raw.settings),
         chatHistory: Array.isArray(raw.chatHistory) ? raw.chatHistory : [],
+        sessionIndex: Array.isArray(raw.sessionIndex) ? raw.sessionIndex : [],
+        activeSessionId: raw.activeSessionId ?? null,
       };
     } else if (raw && typeof raw === "object") {
       // Legacy format: settings at top level
       this.pluginData = {
         settings: Object.assign({}, DEFAULT_SETTINGS, raw),
         chatHistory: [],
+        sessionIndex: [],
+        activeSessionId: null,
       };
     } else {
-      this.pluginData = { settings: { ...DEFAULT_SETTINGS }, chatHistory: [] };
+      this.pluginData = {
+        settings: { ...DEFAULT_SETTINGS },
+        chatHistory: [],
+        sessionIndex: [],
+        activeSessionId: null,
+      };
     }
   }
 
   async saveSettings(): Promise<void> {
-    await this.saveData(this.pluginData);
-  }
-
-  async loadChatHistory(): Promise<ChatMessage[]> {
-    return this.pluginData.chatHistory ?? [];
-  }
-
-  async saveChatHistory(messages: ChatMessage[]): Promise<void> {
-    this.pluginData.chatHistory = messages;
     await this.saveData(this.pluginData);
   }
 
