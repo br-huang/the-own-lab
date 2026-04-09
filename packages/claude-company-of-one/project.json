@@ -1,0 +1,5 @@
+{
+  "name": "claude-company-of-one",
+  "tags": ["scope:shared", "lang:claude-plugin"],
+  "targets": {}
+}

@@ -1,0 +1,5 @@
+{
+  "name": "claude-path-migrator",
+  "tags": ["scope:scripts", "lang:python"],
+  "targets": {}
+}

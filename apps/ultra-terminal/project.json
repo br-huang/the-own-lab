@@ -1,0 +1,19 @@
+{
+  "name": "ultra-terminal",
+  "tags": ["scope:app", "lang:swift"],
+  "targets": {
+    "build": {
+      "command": "swift build",
+      "options": { "cwd": "{projectRoot}" },
+      "cache": true,
+      "inputs": ["{projectRoot}/Sources/**/*.swift", "{projectRoot}/Package.swift"],
+      "outputs": ["{projectRoot}/.build"]
+    },
+    "test": {
+      "command": "swift test",
+      "options": { "cwd": "{projectRoot}" },
+      "cache": true,
+      "inputs": ["{projectRoot}/Sources/**/*.swift", "{projectRoot}/Tests/**/*.swift", "{projectRoot}/Package.swift"]
+    }
+  }
+}

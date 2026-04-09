@@ -1,0 +1,13 @@
+{
+  "name": "never-forget-list",
+  "tags": ["scope:app", "lang:swift"],
+  "targets": {
+    "build": {
+      "command": "xcodebuild -workspace NotForgetList.xcworkspace -scheme NotForgetList -configuration Debug build",
+      "options": { "cwd": "{projectRoot}" },
+      "cache": true,
+      "inputs": ["{projectRoot}/**/*.swift", "{projectRoot}/**/*.xib", "{projectRoot}/**/*.storyboard"],
+      "outputs": ["{projectRoot}/DerivedData"]
+    }
+  }
+}

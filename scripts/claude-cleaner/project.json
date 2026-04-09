@@ -1,0 +1,5 @@
+{
+  "name": "claude-cleaner",
+  "tags": ["scope:scripts", "lang:bash"],
+  "targets": {}
+}
