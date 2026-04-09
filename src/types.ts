@@ -91,3 +91,17 @@ export type RagResponse = RagResponseToken | RagResponseSources | RagResponseErr
 export interface FileHashManifest {
   [filePath: string]: string;  // filePath → MD5 hash of content
 }
+
+// ─── Chat History ───
+
+export interface ChatMessage {
+  role: "user" | "assistant";
+  text: string;
+  sources: SourceReference[];
+  timestamp: string; // ISO-8601
+}
+
+export interface PluginData {
+  settings: PluginSettings;
+  chatHistory: ChatMessage[];
+}

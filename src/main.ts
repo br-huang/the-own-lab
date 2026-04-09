@@ -1,6 +1,6 @@
 import { Plugin, WorkspaceLeaf, FileSystemAdapter } from "obsidian";
 import * as path from "path";
-import { PluginSettings, DEFAULT_SETTINGS } from "./types";
+import { PluginSettings, DEFAULT_SETTINGS, ChatMessage, PluginData } from "./types";
 import { OpenAIProvider } from "./llm/openai";
 import { LocalEmbeddingProvider } from "./llm/local-embeddings";
 import { VectorStore } from "./core/vector-store";
@@ -14,7 +14,14 @@ import { PdfIngestor } from "./ingestor/pdf-ingestor";
 import { IngestPdfModal } from "./ui/ingest-pdf-modal";
 
 export default class ObsidianKBPlugin extends Plugin {
-  settings: PluginSettings = DEFAULT_SETTINGS;
+  private pluginData: PluginData = { settings: DEFAULT_SETTINGS, chatHistory: [] };
+
+  get settings(): PluginSettings {
+    return this.pluginData.settings;
+  }
+  set settings(val: PluginSettings) {
+    this.pluginData.settings = val;
+  }
   vectorStore!: VectorStore;
   vaultIndexer!: VaultIndexer;
   ragEngine!: RagEngine;
@@ -64,6 +71,7 @@ export default class ObsidianKBPlugin extends Plugin {
     );
 
     this.ragEngine = new RagEngine(
+      this.app.vault,
       this.vectorStore,
       this.llmProvider,
       this.embeddingProvider,
@@ -86,7 +94,14 @@ export default class ObsidianKBPlugin extends Plugin {
     );
 
     this.registerView(CHAT_VIEW_TYPE, (leaf: WorkspaceLeaf) => {
-      return new ChatView(leaf, this.ragEngine, this.urlIngestor);
+      return new ChatView(
+        leaf,
+        this.ragEngine,
+        this.urlIngestor,
+        this.app,
+        () => this.loadChatHistory(),
+        (msgs: ChatMessage[]) => this.saveChatHistory(msgs),
+      );
     });
 
     this.addRibbonIcon("message-square", "Open KB Chat", () => {
@@ -138,6 +153,7 @@ export default class ObsidianKBPlugin extends Plugin {
       this.settings.chatModel,
     );
     this.ragEngine = new RagEngine(
+      this.app.vault,
       this.vectorStore,
       this.llmProvider,
       this.embeddingProvider,
@@ -150,11 +166,35 @@ export default class ObsidianKBPlugin extends Plugin {
   }
 
   async loadSettings(): Promise<void> {
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    const raw = await this.loadData();
+    if (raw && raw.settings) {
+      // New format: { settings: ..., chatHistory: ... }
+      this.pluginData = {
+        settings: Object.assign({}, DEFAULT_SETTINGS, raw.settings),
+        chatHistory: Array.isArray(raw.chatHistory) ? raw.chatHistory : [],
+      };
+    } else if (raw && typeof raw === "object") {
+      // Legacy format: settings at top level
+      this.pluginData = {
+        settings: Object.assign({}, DEFAULT_SETTINGS, raw),
+        chatHistory: [],
+      };
+    } else {
+      this.pluginData = { settings: { ...DEFAULT_SETTINGS }, chatHistory: [] };
+    }
   }
 
   async saveSettings(): Promise<void> {
-    await this.saveData(this.settings);
+    await this.saveData(this.pluginData);
+  }
+
+  async loadChatHistory(): Promise<ChatMessage[]> {
+    return this.pluginData.chatHistory ?? [];
+  }
+
+  async saveChatHistory(messages: ChatMessage[]): Promise<void> {
+    this.pluginData.chatHistory = messages;
+    await this.saveData(this.pluginData);
   }
 
   private async activateChatView(): Promise<void> {
