@@ -1,4 +1,22 @@
 [tools]
+# Node & JavaScript
 ni = "latest"
 node = "22"
 "npm:pnpm" = "latest"
+# Python
+python = "3.12"
+uv="latest"
+# Go
+go = "1.26"
+# Rust
+rust = "stable"
+# TUI
+gum = "latest"
+# CLI Utilties
+yq = "latest"
+superfile = "latest"
+jq = "latest"
+# Platform
+gh = "latest"
+cloudflared = "latest"
+aws-cli = { version = "latest", symlink_bins = "true" }
