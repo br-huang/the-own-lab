@@ -10,6 +10,8 @@ import { ChatView, CHAT_VIEW_TYPE } from "./ui/chat-view";
 import { KBSettingTab } from "./settings";
 import { UrlIngestor } from "./ingestor/url-ingestor";
 import { IngestUrlModal } from "./ui/ingest-url-modal";
+import { PdfIngestor } from "./ingestor/pdf-ingestor";
+import { IngestPdfModal } from "./ui/ingest-pdf-modal";
 
 export default class ObsidianKBPlugin extends Plugin {
   settings: PluginSettings = DEFAULT_SETTINGS;
@@ -20,6 +22,7 @@ export default class ObsidianKBPlugin extends Plugin {
   private embeddingProvider!: LocalEmbeddingProvider;
   private statusBarEl!: HTMLElement;
   private urlIngestor!: UrlIngestor;
+  private pdfIngestor!: PdfIngestor;
 
   private getVaultPath(): string {
     const adapter = this.app.vault.adapter;
@@ -72,6 +75,12 @@ export default class ObsidianKBPlugin extends Plugin {
       () => this.settings.ingestFolder,
     );
 
+    this.pdfIngestor = new PdfIngestor(
+      this.app.vault,
+      () => this.settings.ingestFolder,
+      pluginDir,
+    );
+
     this.registerView(CHAT_VIEW_TYPE, (leaf: WorkspaceLeaf) => {
       return new ChatView(leaf, this.ragEngine, this.urlIngestor);
     });
@@ -93,6 +102,14 @@ export default class ObsidianKBPlugin extends Plugin {
       name: "KB: Ingest URL",
       callback: () => {
         new IngestUrlModal(this.app, this.urlIngestor).open();
+      },
+    });
+
+    this.addCommand({
+      id: "kb-ingest-pdf",
+      name: "KB: Ingest PDF",
+      callback: () => {
+        new IngestPdfModal(this.app, this.pdfIngestor).open();
       },
     });
 
