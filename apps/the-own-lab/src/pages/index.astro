@@ -1,0 +1,88 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="The Own Lab"
+  description="Build it. Own it. Teach it. A warm technical practice for projects, writing, and documentation."
+>
+  <section class="site-section">
+    <div class="hero-shell">
+      <div class="hero-copy">
+        <p class="hero-kicker">The Own Lab</p>
+        <h1 class="hero-title">Build it. Own it. Teach it.</h1>
+        <p class="hero-description">
+          A personal brand and technical studio shaped around shipping real
+          systems, taking responsibility for them, and turning the hard-won
+          lessons into writing that other builders can use.
+        </p>
+        <div class="hero-actions">
+          <a href="/docs/" class="button-primary">Read the docs</a>
+          <a href="/portfolio/" class="button-ghost">Browse projects</a>
+        </div>
+      </div>
+
+      <aside class="hero-panel">
+        <div class="hero-panel-grid">
+          <div class="hero-stat">
+            <p class="hero-stat-label">Practice</p>
+            <p class="hero-stat-value">Systems with ownership</p>
+          </div>
+          <div class="hero-stat">
+            <p class="hero-stat-label">Writing</p>
+            <p class="hero-stat-value">Clear, reusable explanations</p>
+          </div>
+          <div class="hero-stat">
+            <p class="hero-stat-label">Design system</p>
+            <p class="hero-stat-value">Token-first and brand-replaceable</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="site-section-tight">
+    <div class="section-heading">
+      <div>
+        <p class="section-kicker">Sections</p>
+        <h2 class="section-title">One system, three ways in</h2>
+      </div>
+      <p class="section-description">
+        The site is organized around shipped work, thoughtful writing, and a
+        self-built documentation framework.
+      </p>
+    </div>
+
+    <div class="card-grid">
+      <article class="site-card">
+        <p class="site-card-meta">Documentation</p>
+        <h3 class="site-card-title">Docs framework</h3>
+        <p class="site-card-text">
+          Explore the current Astro-based docs system with search, navigation,
+          and interactive examples.
+        </p>
+        <a href="/docs/" class="site-card-link">Open docs</a>
+      </article>
+
+      <article class="site-card">
+        <p class="site-card-meta">Portfolio</p>
+        <h3 class="site-card-title">Shipped projects</h3>
+        <p class="site-card-text">
+          A curated archive for the work that matters, structured for context
+          rather than vanity.
+        </p>
+        <a href="/portfolio/" class="site-card-link">View portfolio</a>
+      </article>
+
+      <article class="site-card">
+        <p class="site-card-meta">Writing</p>
+        <h3 class="site-card-title">Technical notes</h3>
+        <p class="site-card-text">
+          Essays, implementation notes, and field-tested explanations that make
+          systems easier to understand.
+        </p>
+        <a href="/blog/" class="site-card-link">Read the blog</a>
+      </article>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,14 @@
+/* ─── The Own Lab — Global Stylesheet ──────────────────────────────
+ *
+ * Architecture:
+ *   Theme file  → brand tokens + semantic tokens (light/dark)
+ *   base.css    → @theme bridge + @layer base + all component classes
+ *
+ * To switch themes, change the import below:
+ *   ./themes/claude.css   — warm copper, Outfit, rounded
+ *   ./themes/default.css  — neutral, Inter, compact
+ *   ./themes/zed.css      — neutral, Inter, compact (alias)
+ * ──────────────────────────────────────────────────────────────────── */
+
+@import "./themes/claude.css";
+@import "./base.css";

@@ -1,0 +1,75 @@
+---
+import type { SidebarNode, TocHeading, SidebarLink } from "@/types/docs";
+import Sidebar from "@/components/docs/Sidebar.astro";
+import Pagination from "@/components/docs/Pagination.astro";
+import TableOfContents from "@/components/docs/TableOfContents";
+import Search from "@/components/docs/Search";
+import MobileNav from "@/components/docs/MobileNav";
+import Navbar from "@/components/site/Navbar.astro";
+import Footer from "@/components/site/Footer.astro";
+import "@/styles/global.css";
+import { themeInitScript } from "@/lib/theme";
+
+interface Props {
+  title: string;
+  description?: string;
+  sidebar: SidebarNode[];
+  headings: TocHeading[];
+  prev: SidebarLink | null;
+  next: SidebarLink | null;
+}
+
+const { title, description, sidebar, headings, prev, next } = Astro.props;
+const pathname = Astro.url.pathname;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <script is:inline set:html={themeInitScript} />
+  </head>
+  <body class="site-body">
+    <Navbar pathname={pathname} />
+    <section class="docs-shell">
+      <!-- Mobile navigation (visible below md) -->
+      <div class="docs-topbar">
+        <MobileNav sidebar={sidebar} client:visible />
+        <span class="docs-mobile-title">{title}</span>
+        <Search client:visible />
+      </div>
+
+      <div class="docs-frame">
+        <!-- Left sidebar (hidden on mobile) -->
+        <aside class="docs-sidebar">
+          <div class="docs-sidebar-inner">
+            <div class="docs-search-slot">
+              <Search client:visible />
+            </div>
+            <Sidebar nodes={sidebar} />
+          </div>
+        </aside>
+
+        <!-- Center content -->
+        <main class="docs-content">
+          <article class="prose prose-article">
+            <slot />
+          </article>
+          <Pagination prev={prev} next={next} />
+        </main>
+
+        <!-- Right TOC (hidden on mobile and small tablets) -->
+        <aside class="docs-toc">
+          <TableOfContents headings={headings} client:visible />
+        </aside>
+      </div>
+    </section>
+    <Footer />
+  </body>
+</html>

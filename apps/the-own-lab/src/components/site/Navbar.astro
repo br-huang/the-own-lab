@@ -1,0 +1,50 @@
+---
+import ThemeToggle from "@/components/site/ThemeToggle";
+
+interface Props {
+  pathname: string;
+}
+
+const { pathname } = Astro.props;
+
+const links = [
+  { href: "/", label: "Home" },
+  { href: "/portfolio/", label: "Portfolio" },
+  { href: "/blog/", label: "Blog" },
+  { href: "/docs/", label: "Docs" },
+];
+---
+
+<header class="site-navbar">
+  <div class="site-navbar-inner">
+    <a href="/" class="site-brand">
+      <span class="site-brand-mark">OL</span>
+      <span class="site-brand-copy">
+        <span class="site-brand-name">The Own Lab</span>
+        <span class="site-brand-tagline">Build it. Own it. Teach it.</span>
+      </span>
+    </a>
+
+    <div class="site-navbar-actions">
+      <nav class="site-nav" aria-label="Primary navigation">
+        {links.map((link) => {
+          const isActive =
+            link.href === "/"
+              ? pathname === "/"
+              : pathname === link.href || pathname.startsWith(link.href);
+
+          return (
+            <a
+              href={link.href}
+              class:list={["site-nav-link", isActive && "site-nav-link-active"]}
+              aria-current={isActive ? "page" : undefined}
+            >
+              {link.label}
+            </a>
+          );
+        })}
+      </nav>
+      <ThemeToggle client:load />
+    </div>
+  </div>
+</header>

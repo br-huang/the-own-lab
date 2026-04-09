@@ -1,0 +1,33 @@
+---
+import type { SidebarNode } from "@/types/docs";
+import SidebarSection from "./SidebarSection.astro";
+
+interface Props {
+  nodes: SidebarNode[];
+}
+
+const { nodes } = Astro.props;
+---
+
+<nav aria-label="Documentation sidebar">
+  <ul class="space-y-1">
+    {nodes.map((node) => (
+      <li>
+        {node.kind === "link" ? (
+          <a
+            href={node.href}
+            class:list={[
+              "docs-nav-link",
+              node.active && "docs-nav-link-active",
+            ]}
+            aria-current={node.active ? "page" : undefined}
+          >
+            {node.title}
+          </a>
+        ) : (
+          <SidebarSection section={node} />
+        )}
+      </li>
+    ))}
+  </ul>
+</nav>

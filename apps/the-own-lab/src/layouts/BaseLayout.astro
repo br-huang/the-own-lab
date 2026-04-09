@@ -1,0 +1,35 @@
+---
+import Navbar from "@/components/site/Navbar.astro";
+import Footer from "@/components/site/Footer.astro";
+import "@/styles/global.css";
+import { themeInitScript } from "@/lib/theme";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+const pathname = Astro.url.pathname;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <script is:inline set:html={themeInitScript} />
+  </head>
+  <body class="site-body">
+    <Navbar pathname={pathname} />
+    <main class="site-main">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

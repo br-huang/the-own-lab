@@ -1,0 +1,19 @@
+---
+import type { SidebarSection as SidebarSectionType } from "@/types/docs";
+import Sidebar from "./Sidebar.astro";
+
+interface Props {
+  section: SidebarSectionType;
+}
+
+const { section } = Astro.props;
+---
+
+<details open={section.expanded}>
+  <summary class="docs-nav-section">
+    {section.title}
+  </summary>
+  <div class="docs-section-children">
+    <Sidebar nodes={section.children} />
+  </div>
+</details>
