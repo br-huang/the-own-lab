@@ -13,7 +13,23 @@ target/
 .venv/
 __pycache__/
 *.pyc
+*.pyo
 .env
+*.egg-info/
+.ruff_cache/
+
+# Rust (target/ already in Build outputs)
+
+# Go
+bin/
+*.exe
+
+# Java
+*.class
+*.jar
+*.war
+.gradle/
+build/
 
 # Nx
 .nx/
