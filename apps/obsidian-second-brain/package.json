@@ -1,5 +1,5 @@
 {
-  "name": "second-brain",
+  "name": "obsidian-second-brain",
   "version": "0.1.0",
   "description": "AI-powered personal knowledge base with RAG chat for Obsidian",
   "main": "main.js",
