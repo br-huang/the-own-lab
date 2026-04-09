@@ -1,6 +1,6 @@
 {
   "name": "@johnnyboy11234/claude-code-statusline",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A local-first Claude Code statusline CLI with powerline and plain renderers.",
   "license": "MIT",
   "type": "module",
