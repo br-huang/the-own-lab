@@ -24,7 +24,8 @@ templates/               → Document templates (referenced by skills, not stand
 ## Conventions
 
 - Plugin content is all English
-- Pipeline artifacts go to `docs/specs/{date}-{type}-{slug}/`
+- Pipeline briefs/specs go to `${COMPANY_OF_ONE_PLUGIN_DATA}/projects/{key}/` — never to the project repo
+- Only ADRs go to `docs/adr/` in the project repo (git-tracked)
 - Commit messages follow conventional commits: `feat(scope):`, `fix(scope):`, `refactor(scope):`
 - CHANGELOG follows Keep a Changelog format
 - Hook scripts use `hooks/scripts/lib/common.sh` for cross-platform path resolution

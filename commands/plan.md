@@ -10,8 +10,10 @@ This pipeline produces design documents and ADRs — no code is written.
 
 ## Before Starting
 
-1. Determine the specs directory: use `userConfig.specsDir` (default: `docs/specs`)
-2. Create a directory: `{specsDir}/{YYYY-MM-DD}-plan-{topic-slug}/`
+1. Initialize pipeline state: `bash hooks/scripts/lib/pipeline-state.sh init plan {topic} large 3`
+2. Initialize brief: `bash hooks/scripts/lib/brief-manager.sh init plan {topic} large`
+3. Agents read and write `briefs/current.json` as single source of truth
+4. ADRs go to `docs/adr/` in the project repo (git-tracked). All other artifacts go to plugin data.
 
 ## Pipeline Stages
 

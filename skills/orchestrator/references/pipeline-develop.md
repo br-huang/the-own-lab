@@ -12,7 +12,7 @@ TaskCreate: "Wave 5: Verify + Review"
 TaskCreate: "Wave 6: Merge + Ship"
 ```
 
-Create specs directory: `docs/specs/{YYYY-MM-DD}-{feature-slug}/`
+Initialize brief: `bash hooks/scripts/lib/brief-manager.sh init develop {feature} large`
 
 ---
 
@@ -25,7 +25,7 @@ Launch both agents in the SAME message:
 Agent(product-owner):
   "Clarify requirements for: {user's request}
    Ask questions ONE AT A TIME.
-   Write REQUIREMENTS.md to docs/specs/{path}/
+   Update brief: bash hooks/scripts/lib/brief-manager.sh update requirements '{1-3 sentence summary}'
    Include acceptance criteria, scope, constraints."
 
 Agent(devops):
@@ -45,26 +45,25 @@ Launch in the SAME message:
 
 ```
 Agent(architect):
-  "Read REQUIREMENTS.md from docs/specs/{path}/
+  "Read brief: bash hooks/scripts/lib/brief-manager.sh read
    Scan codebase for existing patterns.
-   Write DESIGN.md with Mermaid diagrams.
-   Include architecture, data flow, component relationships."
+   Update brief: bash hooks/scripts/lib/brief-manager.sh update design '{approach summary}'
+   Add decisions: bash hooks/scripts/lib/brief-manager.sh add-decision '{decision}'"
 
 Agent(qa):
-  "Read REQUIREMENTS.md from docs/specs/{path}/
+  "Read brief: bash hooks/scripts/lib/brief-manager.sh read
    Write a test plan from the acceptance criteria.
    List test cases, edge cases, and verification strategy.
    Output inline (no standalone file)."
 
 Agent(ui-designer):  ← ONLY if UI detected
-  "Read REQUIREMENTS.md from docs/specs/{path}/
-   Create UI wireframes for the frontend components.
-   Write UI-WIREFRAME.md to docs/specs/{path}/"
+  "Read brief: bash hooks/scripts/lib/brief-manager.sh read
+   Create UI wireframes for the frontend components."
 ```
 
 **Sync 2**: Wait for all agents.
 
-**HARD GATE 1**: Present DESIGN.md summary to user.
+**HARD GATE 1**: Present design summary to user.
 ```
 Design ready. Key decisions:
 - {decision 1}
@@ -82,13 +81,13 @@ TaskUpdate → completed.
 
 ```
 Agent(architect):
-  "Read DESIGN.md from docs/specs/{path}/
-   Write PLAN.md with file-level implementation steps.
-   Each step: exact files, signatures, verification criteria.
-   Incorporate QA's test plan and UI specs if available."
+  "Read brief: bash hooks/scripts/lib/brief-manager.sh read
+   Write implementation plan with file-level steps.
+   Update brief: bash hooks/scripts/lib/brief-manager.sh update plan '{step summary}'
+   Each step: exact files, signatures, verification criteria."
 
 Agent(developer):
-  "Read DESIGN.md from docs/specs/{path}/
+  "Read brief: bash hooks/scripts/lib/brief-manager.sh read
    On branch feature/{slug}:
    Create initial project scaffolding based on the architecture.
    Set up file structure, interfaces, types — no implementation yet.
@@ -105,11 +104,11 @@ TaskUpdate → completed.
 
 ```
 Agent(developer):
-  "Read PLAN.md from docs/specs/{path}/
+  "Read brief: bash hooks/scripts/lib/brief-manager.sh read
    On branch feature/{slug}:
    Implement each step with TDD (RED → GREEN → REFACTOR).
    Incremental commits per logical change.
-   If unclear about a design decision, check DESIGN.md first.
+   If unclear about a design decision, read the brief first.
    If still unclear, flag it — do not guess."
 ```
 
@@ -128,15 +127,15 @@ Launch both in the SAME message:
 Agent(qa):
   "On branch feature/{slug}:
    Run full test suite.
-   Verify each acceptance criterion from REQUIREMENTS.md.
+   Verify each acceptance criterion from the brief.
    Test edge cases from the test plan.
-   Report results inline."
+   Update brief: bash hooks/scripts/lib/brief-manager.sh update test_results '{pass/fail summary}'"
 
 Agent(reviewer):
   "On branch feature/{slug}:
    Review all changes (git diff against target branch).
    Check: logic, security, maintainability, tests.
-   Write REVIEW.md to docs/specs/{path}/
+   Update brief: bash hooks/scripts/lib/brief-manager.sh update review_verdict '{verdict + issue count}'
    Verdict: APPROVED / CHANGES REQUESTED / REJECTED."
 ```
 
@@ -144,7 +143,7 @@ Agent(reviewer):
 
 ### Review-Fix Loop (if needed)
 ```
-If REVIEW.md has warnings only:
+If review has warnings only:
   → Agent(developer): "Fix these warnings: {list}. On branch feature/{slug}."
   → Agent(reviewer): "Re-review the fixes on feature/{slug}."
   → Max 2 rounds.
@@ -174,7 +173,7 @@ Agent(devops):
    2. Update CHANGELOG.md (Keep a Changelog format, under ### Added)
    3. Squash merge to {target branch}
    4. Delete feature branch
-   5. Write pipeline retrospective to docs/specs/.retro/"
+   5. Run: bash hooks/scripts/pipeline-complete.sh"
 ```
 
 TaskUpdate → completed.

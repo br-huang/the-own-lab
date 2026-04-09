@@ -10,9 +10,10 @@ This is the most rigorous pipeline. Execute each stage in order. Do not skip sta
 
 ## Before Starting
 
-1. Determine the specs directory: use `userConfig.specsDir` (default: `docs/specs`)
-2. Create a directory: `{specsDir}/{YYYY-MM-DD}-{feature-slug}/`
-3. All pipeline artifacts go in this directory
+1. Initialize pipeline state: `bash hooks/scripts/lib/pipeline-state.sh init develop {feature} large 7`
+2. Initialize brief: `bash hooks/scripts/lib/brief-manager.sh init develop {feature} large`
+3. Agents read and write `briefs/current.json` — not full spec files
+4. Full specs (Large only) go to `${COMPANY_OF_ONE_PLUGIN_DATA}/projects/{key}/specs/` — never to the project repo
 
 ## Pipeline Stages
 
@@ -23,7 +24,7 @@ This is the most rigorous pipeline. Execute each stage in order. Do not skip sta
 Invoke the **product-owner** agent to elicit and structure requirements.
 
 **Input**: User's feature request
-**Output**: `REQUIREMENTS.md` in the specs directory
+**Output**: Update `briefs/current.json` field `requirements` (1-3 sentences). Full REQUIREMENTS.md to specs/ if Large.
 
 The product-owner agent will:
 - Ask clarifying questions one at a time
@@ -53,7 +54,7 @@ DO NOT proceed to Stage 2 until the user explicitly approves.
 Invoke the **architect** agent to design the technical solution.
 
 **Input**: Approved REQUIREMENTS.md + existing codebase
-**Output**: `DESIGN.md` in the specs directory
+**Output**: Update `briefs/current.json` fields `design` + `decisions`. Full DESIGN.md to specs/ if Large.
 
 The architect agent will:
 - Scan the codebase to understand existing patterns
@@ -82,8 +83,8 @@ DO NOT proceed to Stage 3 until the user explicitly approves.
 
 Invoke the **architect** agent to write a detailed implementation plan.
 
-**Input**: Approved DESIGN.md
-**Output**: `PLAN.md` in the specs directory
+**Input**: `briefs/current.json` (design + decisions)
+**Output**: Update `briefs/current.json` field `plan`. Full PLAN.md to specs/ if Large.
 
 The architect agent will:
 - Break the design into implementation steps (2-5 minutes each)
@@ -102,7 +103,7 @@ Auto-proceed to Stage 4.
 
 **Step 4b**: Invoke the **developer** agent to execute the plan.
 
-**Input**: PLAN.md
+**Input**: `briefs/current.json` (plan)
 **Output**: Production code with tests
 
 The developer agent will:
@@ -119,8 +120,8 @@ Auto-proceed to Stage 5.
 
 Invoke the **qa** agent to verify the implementation.
 
-**Input**: REQUIREMENTS.md (acceptance criteria) + implemented code
-**Output**: `TEST.md` in the specs directory
+**Input**: `briefs/current.json` (requirements) + implemented code
+**Output**: Update `briefs/current.json` field `test_results`
 
 The qa agent will:
 - Run the full test suite
@@ -151,8 +152,8 @@ This becomes a HARD GATE. DO NOT proceed until the user responds.
 
 Invoke the **reviewer** agent to review all code changes.
 
-**Input**: All changed files (git diff), PLAN.md, TEST.md
-**Output**: `REVIEW.md` in the specs directory
+**Input**: All changed files (git diff) + `briefs/current.json`
+**Output**: Update `briefs/current.json` field `review_verdict`. Full REVIEW.md to specs/ if Large.
 
 The reviewer agent will:
 - Review code quality, logic, and maintainability
@@ -189,7 +190,7 @@ The devops agent will:
 4. Clean up worktree if used
 5. Run a pipeline retrospective (learn skill)
 
-**Output**: Merged code on the target branch + retrospective in `.retro/`
+**Output**: Merged code on the target branch. Run `bash hooks/scripts/pipeline-complete.sh` to finalize.
 
 ---
 
@@ -199,15 +200,8 @@ The devops agent will:
 
 Feature: {feature name}
 Branch: merged to {target branch}
-Specs: `{specsDir}/{date}-{feature}/`
 
-Artifacts produced:
-- REQUIREMENTS.md
-- DESIGN.md
-- PLAN.md
-- TEST.md
-- REVIEW.md
-- .retro/{date}-develop-{feature}.md"
+Brief archived. Pipeline state finalized."
 
 ---
 

@@ -30,7 +30,7 @@ Call these via Bash tool at each transition:
 
 ```bash
 # Initialize pipeline state
-bash hooks/scripts/lib/pipeline-state.sh init <pipeline> <feature> <size> <specs_dir> <wave_count>
+bash hooks/scripts/lib/pipeline-state.sh init <pipeline> <feature> <size> <wave_count>
 
 # Wave transitions
 bash hooks/scripts/lib/pipeline-state.sh wave-start <wave_num> <agent1> [agent2...]
@@ -39,7 +39,12 @@ bash hooks/scripts/lib/pipeline-state.sh wave-complete <wave_num>
 # Gate decisions
 bash hooks/scripts/lib/pipeline-state.sh gate <gate_name> <approved|rejected>
 
-# Pipeline completion (runs all finalization: state + context + pattern index)
+# Brief management (agent handoff — single source of truth)
+bash hooks/scripts/lib/brief-manager.sh init <pipeline> <feature> <size>
+bash hooks/scripts/lib/brief-manager.sh update <field> <value>
+bash hooks/scripts/lib/brief-manager.sh read
+
+# Pipeline completion (runs all finalization: state + brief archive + context + pattern index)
 bash hooks/scripts/pipeline-complete.sh
 ```
 
@@ -51,7 +56,8 @@ bash hooks/scripts/pipeline-complete.sh
 
 **1. Initialize + TaskCreate:**
 ```bash
-bash hooks/scripts/lib/pipeline-state.sh init develop {feature} medium "" 4
+bash hooks/scripts/lib/pipeline-state.sh init develop {feature} medium 4
+bash hooks/scripts/lib/brief-manager.sh init develop {feature} medium
 ```
 ```
 TaskCreate: "Brief Plan" / "Implement" / "Test & Review" / "Merge"

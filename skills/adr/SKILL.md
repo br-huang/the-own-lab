@@ -71,7 +71,7 @@ ADRs are numbered sequentially: `ADR-001`, `ADR-002`, etc. Numbers are never reu
 
 ## Storage
 
-ADRs are stored in the `specs` directory alongside other pipeline artifacts. This keeps architectural decisions co-located with the specifications and plans they inform.
+ADRs are the ONLY pipeline artifact that goes into the project repo. Store them in `docs/adr/` — this is git-tracked because architectural decisions have lasting impact on future development.
 
 ## Lifecycle
 

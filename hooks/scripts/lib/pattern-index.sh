@@ -9,19 +9,19 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=hooks/scripts/lib/common.sh
 . "$SCRIPT_DIR/common.sh"
 
-MEMORY_DIR="$(company_of_one_memory_dir)"
-INDEX_FILE="$MEMORY_DIR/pattern-index.json"
+PROJECT_DIR="$(company_of_one_project_dir)"
+PATTERNS_DIR="$PROJECT_DIR/patterns"
+INDEX_FILE="$PATTERNS_DIR/index.json"
 
 pattern_index_rebuild() {
   # Scan patterns/ directory and rebuild index from frontmatter.
   # This is the single source of truth for session-start injection.
-  local patterns_dir="$MEMORY_DIR/patterns"
-  mkdir -p "$patterns_dir"
+  mkdir -p "$PATTERNS_DIR"
 
   local entries="["
   local first=true
 
-  for pattern_file in "$patterns_dir"/*.md; do
+  for pattern_file in "$PATTERNS_DIR"/*.md; do
     [ -f "$pattern_file" ] || continue
 
     local pid confidence title last_seen
@@ -63,12 +63,11 @@ pattern_index_add() {
   # Usage: pattern_index_add <id> <title> <source_retro>
   # Creates a new pattern file with confidence 0.3 and rebuilds index.
   local pid="$1" title="$2" source="$3"
-  local patterns_dir="$MEMORY_DIR/patterns"
   local now
   now="$(date +%Y-%m-%d)"
 
-  mkdir -p "$patterns_dir"
-  cat > "$patterns_dir/${pid}.md" <<EOF
+  mkdir -p "$PATTERNS_DIR"
+  cat > "$PATTERNS_DIR/${pid}.md" <<EOF
 ---
 id: ${pid}
 confidence: 0.3
@@ -98,8 +97,7 @@ pattern_index_bump() {
   # Usage: pattern_index_bump <id>
   # Increase confidence by 0.2 (max 0.9), update last_seen.
   local pid="$1"
-  local patterns_dir="$MEMORY_DIR/patterns"
-  local pattern_file="$patterns_dir/${pid}.md"
+  local pattern_file="$PATTERNS_DIR/${pid}.md"
   local now
   now="$(date +%Y-%m-%d)"
 

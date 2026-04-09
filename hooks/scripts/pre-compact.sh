@@ -8,14 +8,10 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=hooks/scripts/lib/common.sh
 . "$SCRIPT_DIR/lib/common.sh"
 
-PLUGIN_DATA="$(company_of_one_plugin_data)"
+PROJECT_DIR="$(company_of_one_project_dir)"
 
-# Ensure data directory exists
-mkdir -p "$PLUGIN_DATA"
+# Ensure project directory exists
+mkdir -p "$PROJECT_DIR"
 
-# The pipeline state is managed by the pipeline-gate skill via JSON file.
-# This hook ensures the file is persisted (it should already be written by the skill).
-# We output a reminder for the agent to save any in-memory state.
-
-echo "Pre-compact: Ensure all pipeline state is saved to $PLUGIN_DATA/pipeline-state.json"
+echo "Pre-compact: Pipeline state at $PROJECT_DIR/pipeline.json"
 echo "If you have unsaved pipeline progress, write it now before compaction."

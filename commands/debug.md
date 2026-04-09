@@ -10,9 +10,10 @@ No guessing. No shotgun debugging. Systematic root cause analysis only.
 
 ## Before Starting
 
-1. Determine the specs directory: use `userConfig.specsDir` (default: `docs/specs`)
-2. Create a directory: `{specsDir}/{YYYY-MM-DD}-fix-{bug-slug}/`
-3. All pipeline artifacts go in this directory
+1. Initialize pipeline state: `bash hooks/scripts/lib/pipeline-state.sh init debug {bug} large 5`
+2. Initialize brief: `bash hooks/scripts/lib/brief-manager.sh init debug {bug} large`
+3. Agents read and write `briefs/current.json` as single source of truth
+4. Full specs go to `${COMPANY_OF_ONE_PLUGIN_DATA}/projects/{key}/specs/` — never to the project repo
 
 ## Pipeline Stages
 

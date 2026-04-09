@@ -72,13 +72,12 @@ Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`
 {brief description of what was done}
 
 Pipeline: /develop
-Specs: docs/specs/{date}-{feature}/
 Reviewed-By: reviewer agent
 ```
 
 ## Retrospective Format
 
-Write to `{specsDir}/.retro/{date}-{pipeline}-{feature}.md`:
+The retrospective is captured during `bash hooks/scripts/pipeline-complete.sh`. Format:
 
 ```markdown
 # Retrospective: {pipeline} — {feature}

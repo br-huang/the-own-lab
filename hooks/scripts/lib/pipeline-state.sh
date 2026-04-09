@@ -9,14 +9,16 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=hooks/scripts/lib/common.sh
 . "$SCRIPT_DIR/common.sh"
 
-PLUGIN_DATA="$(company_of_one_plugin_data)"
-STATE_FILE="$PLUGIN_DATA/pipeline-state.json"
+PROJECT_DIR="$(company_of_one_project_dir)"
+STATE_FILE="$PROJECT_DIR/pipeline.json"
 
 pipeline_state_init() {
-  # Usage: pipeline_state_init <pipeline> <feature> <size> <specs_dir> <wave_count>
-  local pipeline="$1" feature="$2" size="$3" specs_dir="$4" wave_count="$5"
+  # Usage: pipeline_state_init <pipeline> <feature> <size> <wave_count>
+  local pipeline="$1" feature="$2" size="$3" wave_count="$4"
   local now
   now="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+  mkdir -p "$(dirname "$STATE_FILE")"
 
   local waves="["
   for i in $(seq 1 "$wave_count"); do
@@ -32,7 +34,6 @@ pipeline_state_init() {
   "size": "${size}",
   "started": "${now}",
   "currentWave": 0,
-  "specs": "${specs_dir}",
   "waves": ${waves},
   "gates": [],
   "status": "active"

@@ -1,35 +1,40 @@
 #!/usr/bin/env bash
 # Post-Compact Hook — Claude 一人公司
-# Restores pipeline state and critical context after context compaction.
+# Restores pipeline state, active brief, and critical context after compaction.
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=hooks/scripts/lib/common.sh
 . "$SCRIPT_DIR/lib/common.sh"
+# shellcheck source=hooks/scripts/lib/pattern-index.sh
+. "$SCRIPT_DIR/lib/pattern-index.sh"
 
-PLUGIN_DATA="$(company_of_one_plugin_data)"
-MEMORY_DIR="$(company_of_one_memory_dir)"
+PROJECT_DIR="$(company_of_one_project_dir)"
 
 # Restore pipeline state if active
-if [ -f "$PLUGIN_DATA/pipeline-state.json" ]; then
-  echo "## Pipeline State Restored"
-  echo "You were in the middle of a pipeline. Here is the saved state:"
-  echo ""
-  cat "$PLUGIN_DATA/pipeline-state.json"
+if [ -f "$PROJECT_DIR/pipeline.json" ]; then
+  local_status=$(python3 -c "import json; print(json.load(open('$PROJECT_DIR/pipeline.json')).get('status',''))" 2>/dev/null || echo "")
+  if [ "$local_status" = "active" ]; then
+    echo "## Pipeline State Restored"
+    cat "$PROJECT_DIR/pipeline.json"
+    echo ""
+  fi
+fi
+
+# Restore active brief
+if [ -f "$PROJECT_DIR/briefs/current.json" ]; then
+  echo "## Active Brief Restored"
+  cat "$PROJECT_DIR/briefs/current.json"
   echo ""
   echo "Resume from the current stage. Do not repeat completed stages."
 fi
 
-# Reload high-confidence patterns (same logic as session-start)
-for pattern_file in "$MEMORY_DIR/patterns"/*.md; do
-  [ -f "$pattern_file" ] || continue
+# Reload high-confidence patterns
+pattern_index_read_high_confidence
 
-  confidence=$(grep -m1 "^confidence:" "$pattern_file" 2>/dev/null | awk '{print $2}' || echo "0")
-  confidence_int=$(echo "$confidence" | awk '{printf "%d", $1 * 10}')
-
-  if [ "$confidence_int" -ge 7 ]; then
-    sed -n '/^---$/,/^---$/!p' "$pattern_file" | tail -n +1
-    echo ""
-  fi
-done
+# Reload project context
+if [ -f "$PROJECT_DIR/context.md" ]; then
+  echo ""
+  head -30 "$PROJECT_DIR/context.md"
+fi
