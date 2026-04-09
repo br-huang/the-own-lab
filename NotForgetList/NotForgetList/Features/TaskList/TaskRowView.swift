@@ -5,7 +5,12 @@ struct TaskRowView: View {
     let task: NFLTask
     let listName: String
     let tagNames: [String]
+    let showsReorderControls: Bool
+    let canMoveUp: Bool
+    let canMoveDown: Bool
     let toggleCompletion: () -> Void
+    let moveUp: () -> Void
+    let moveDown: () -> Void
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -37,6 +42,23 @@ struct TaskRowView: View {
                         .font(.caption)
                         .foregroundStyle(.tertiary)
                 }
+            }
+
+            if showsReorderControls {
+                VStack(spacing: 6) {
+                    Button(action: moveUp) {
+                        Image(systemName: "chevron.up")
+                    }
+                    .buttonStyle(.borderless)
+                    .disabled(canMoveUp == false)
+
+                    Button(action: moveDown) {
+                        Image(systemName: "chevron.down")
+                    }
+                    .buttonStyle(.borderless)
+                    .disabled(canMoveDown == false)
+                }
+                .foregroundStyle(.secondary)
             }
         }
         .padding(.vertical, 4)

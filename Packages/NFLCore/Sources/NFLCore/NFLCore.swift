@@ -57,6 +57,7 @@ public struct NFLTask: Identifiable, Codable, Hashable, Sendable {
     public var title: String
     public var notes: String
     public var dueDate: Date?
+    public var sortOrder: Int
     public var priority: TaskPriority
     public var isCompleted: Bool
     public var completedAt: Date?
@@ -69,6 +70,7 @@ public struct NFLTask: Identifiable, Codable, Hashable, Sendable {
         title: String,
         notes: String = "",
         dueDate: Date? = nil,
+        sortOrder: Int = 0,
         priority: TaskPriority = .none,
         isCompleted: Bool = false,
         completedAt: Date? = nil,
@@ -80,6 +82,7 @@ public struct NFLTask: Identifiable, Codable, Hashable, Sendable {
         self.title = title
         self.notes = notes
         self.dueDate = dueDate
+        self.sortOrder = sortOrder
         self.priority = priority
         self.isCompleted = isCompleted
         self.completedAt = completedAt
@@ -163,6 +166,7 @@ public enum PreviewDataFactory {
                 - Keep state in memory first
                 """,
                 dueDate: today,
+                sortOrder: 0,
                 priority: .high,
                 listID: work.id,
                 tagIDs: [swiftTag.id, releaseTag.id]
@@ -171,6 +175,7 @@ public enum PreviewDataFactory {
                 title: "Review docs and map smart lists",
                 notes: "Use `Today`, `Upcoming`, and `Completed` as the first navigation set.",
                 dueDate: tomorrow,
+                sortOrder: 0,
                 priority: .medium,
                 listID: inbox.id,
                 tagIDs: [swiftTag.id]
@@ -179,6 +184,7 @@ public enum PreviewDataFactory {
                 title: "Buy coffee beans",
                 notes: "- Light roast\n- 1 bag for home",
                 dueDate: threeDaysLater,
+                sortOrder: 0,
                 priority: .low,
                 listID: personal.id,
                 tagIDs: [homeTag.id]
@@ -187,6 +193,7 @@ public enum PreviewDataFactory {
                 title: "Close completed example task",
                 notes: "This row exists to validate the completed section.",
                 dueDate: yesterday,
+                sortOrder: 1,
                 priority: .none,
                 isCompleted: true,
                 completedAt: now,

@@ -1,4 +1,5 @@
 import NFLCore
+import NFLNetwork
 import SwiftUI
 
 struct TaskListView: View {
@@ -24,7 +25,12 @@ struct TaskListView: View {
                                 task: task,
                                 listName: viewModel.listName(for: task),
                                 tagNames: viewModel.tagNames(for: task),
-                                toggleCompletion: { viewModel.toggleTaskCompletion(task) }
+                                showsReorderControls: supportsReorder,
+                                canMoveUp: viewModel.canReorder(task: task, direction: .up),
+                                canMoveDown: viewModel.canReorder(task: task, direction: .down),
+                                toggleCompletion: { viewModel.toggleTaskCompletion(task) },
+                                moveUp: { viewModel.moveTask(task, direction: .up) },
+                                moveDown: { viewModel.moveTask(task, direction: .down) }
                             )
                             .tag(task.id)
                             .swipeActions {
@@ -45,7 +51,12 @@ struct TaskListView: View {
                                 task: task,
                                 listName: viewModel.listName(for: task),
                                 tagNames: viewModel.tagNames(for: task),
-                                toggleCompletion: { viewModel.toggleTaskCompletion(task) }
+                                showsReorderControls: false,
+                                canMoveUp: false,
+                                canMoveDown: false,
+                                toggleCompletion: { viewModel.toggleTaskCompletion(task) },
+                                moveUp: {},
+                                moveDown: {}
                             )
                             .tag(task.id)
                             .swipeActions {
@@ -70,5 +81,13 @@ struct TaskListView: View {
             }
         }
         .navigationTitle(viewModel.navigationTitle)
+    }
+
+    private var supportsReorder: Bool {
+        if case .list = viewModel.destination {
+            return viewModel.openVisibleTasks.count > 1
+        }
+
+        return false
     }
 }

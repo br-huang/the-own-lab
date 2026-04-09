@@ -7,12 +7,18 @@ public protocol TaskRepository: AnyObject {
     func createTask(title: String, listID: UUID) -> NFLTask
     func updateTask(_ task: NFLTask)
     func softDeleteTask(id: UUID)
+    func moveTask(id: UUID, in listID: UUID, direction: TaskMoveDirection)
     func createList(name: String, colorName: String?) -> TaskList
     func updateList(_ list: TaskList)
     func deleteList(id: UUID)
     func createTag(name: String, colorName: String?) -> TaskTag
     func updateTag(_ tag: TaskTag)
     func deleteTag(id: UUID)
+}
+
+public enum TaskMoveDirection: Sendable {
+    case up
+    case down
 }
 
 @MainActor
@@ -28,7 +34,13 @@ public final class InMemoryTaskRepository: TaskRepository {
     }
 
     public func createTask(title: String, listID: UUID) -> NFLTask {
-        let task = NFLTask(title: title, listID: listID)
+        let nextSortOrder = snapshot.tasks
+            .filter { $0.listID == listID && $0.deletedAt == nil && $0.isCompleted == false }
+            .map(\.sortOrder)
+            .max()
+            .map { $0 + 1 } ?? 0
+
+        let task = NFLTask(title: title, sortOrder: nextSortOrder, listID: listID)
         snapshot.tasks.insert(task, at: 0)
         return task
     }
@@ -47,6 +59,48 @@ public final class InMemoryTaskRepository: TaskRepository {
         }
 
         snapshot.tasks[index].deletedAt = .now
+    }
+
+    public func moveTask(id: UUID, in listID: UUID, direction: TaskMoveDirection) {
+        let orderedTasks = snapshot.tasks
+            .filter { $0.listID == listID && $0.deletedAt == nil && $0.isCompleted == false }
+            .sorted { lhs, rhs in
+                if lhs.sortOrder != rhs.sortOrder {
+                    return lhs.sortOrder < rhs.sortOrder
+                }
+
+                return lhs.title.localizedStandardCompare(rhs.title) == .orderedAscending
+            }
+
+        guard let currentIndex = orderedTasks.firstIndex(where: { $0.id == id }) else {
+            return
+        }
+
+        let targetIndex: Int
+        switch direction {
+        case .up:
+            targetIndex = currentIndex - 1
+        case .down:
+            targetIndex = currentIndex + 1
+        }
+
+        guard orderedTasks.indices.contains(targetIndex) else {
+            return
+        }
+
+        let currentID = orderedTasks[currentIndex].id
+        let targetID = orderedTasks[targetIndex].id
+
+        guard
+            let currentSnapshotIndex = snapshot.tasks.firstIndex(where: { $0.id == currentID }),
+            let targetSnapshotIndex = snapshot.tasks.firstIndex(where: { $0.id == targetID })
+        else {
+            return
+        }
+
+        let currentSortOrder = snapshot.tasks[currentSnapshotIndex].sortOrder
+        snapshot.tasks[currentSnapshotIndex].sortOrder = snapshot.tasks[targetSnapshotIndex].sortOrder
+        snapshot.tasks[targetSnapshotIndex].sortOrder = currentSortOrder
     }
 
     public func createList(name: String, colorName: String? = nil) -> TaskList {

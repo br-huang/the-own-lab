@@ -170,6 +170,36 @@ final class AppViewModel {
         reload(keepSelection: nextSelection)
     }
 
+    func canReorder(task: NFLTask, direction: TaskMoveDirection) -> Bool {
+        guard case .list(let listID) = destination, task.listID == listID, task.isCompleted == false else {
+            return false
+        }
+
+        let orderedTasks = tasks
+            .filter { $0.deletedAt == nil && $0.isCompleted == false && $0.listID == listID }
+            .sorted(by: compareTasks)
+
+        guard let index = orderedTasks.firstIndex(where: { $0.id == task.id }) else {
+            return false
+        }
+
+        switch direction {
+        case .up:
+            return index > 0
+        case .down:
+            return index < orderedTasks.count - 1
+        }
+    }
+
+    func moveTask(_ task: NFLTask, direction: TaskMoveDirection) {
+        guard case .list(let listID) = destination, task.listID == listID else {
+            return
+        }
+
+        repository.moveTask(id: task.id, in: listID, direction: direction)
+        reload(keepSelection: task.id)
+    }
+
     func smartListCount(for destination: SidebarDestination) -> Int {
         tasks
             .filter { $0.deletedAt == nil }
@@ -243,6 +273,12 @@ final class AppViewModel {
     private func compareTasks(lhs: NFLTask, rhs: NFLTask) -> Bool {
         if lhs.isCompleted != rhs.isCompleted {
             return !lhs.isCompleted && rhs.isCompleted
+        }
+
+        if case .list = destination, lhs.listID == rhs.listID, lhs.isCompleted == rhs.isCompleted {
+            if lhs.sortOrder != rhs.sortOrder {
+                return lhs.sortOrder < rhs.sortOrder
+            }
         }
 
         switch (lhs.dueDate, rhs.dueDate) {
