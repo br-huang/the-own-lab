@@ -27,7 +27,7 @@ export class PdfIngestor {
 
     let pdfDocument: any;
     try {
-      const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+      const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer, disableWorker: true });
       pdfDocument = await loadingTask.promise;
     } catch (err: any) {
       if (err?.name === "PasswordException") {
@@ -101,8 +101,11 @@ export class PdfIngestor {
     const modulePath = path.join(this.pluginDir, "node_modules", "pdfjs-dist", "build", "pdf.js");
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const pdfjsLib = require(modulePath);
-    // Disable web worker — Obsidian plugins can't spawn workers
-    pdfjsLib.GlobalWorkerOptions.workerSrc = "";
+    // Point workerSrc to the actual worker file to avoid "No workerSrc specified" error.
+    // The worker won't actually be used because we pass disableWorker: true in getDocument(),
+    // but pdfjs-dist requires workerSrc to be a non-empty string.
+    const workerPath = path.join(this.pluginDir, "node_modules", "pdfjs-dist", "build", "pdf.worker.js");
+    pdfjsLib.GlobalWorkerOptions.workerSrc = workerPath;
     return pdfjsLib;
   }
 
