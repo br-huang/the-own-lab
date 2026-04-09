@@ -23,6 +23,7 @@ const context = await esbuild.context({
     "@xenova/transformers",
     "onnxruntime-node",
     "sharp",
+    "pdfjs-dist",
   ],
   platform: "node",
   format: "cjs",
