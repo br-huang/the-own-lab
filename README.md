@@ -42,7 +42,7 @@ That is all another machine needs:
 
 - Local-first CLI with no server requirement
 - TypeScript architecture with clear separation between input, providers, widgets, and renderers
-- MVP widgets: `model`, `cwd`, `git`, `context`, `session`
+- MVP widgets: `model`, `cwd`, `git`, `context`, `pet`, `session`
 - `plain` and `powerline` renderers
 - ANSI color output with Nerd Font and ASCII fallback support
 - Short-lived cache for git and transcript-derived metadata
@@ -69,7 +69,7 @@ Example:
 ```json
 {
   "renderer": "powerline",
-  "widgets": ["model", "cwd", "git", "context", "session"],
+  "widgets": ["model", "cwd", "git", "context", "pet"],
   "nerdFont": true,
   "theme": {
     "info": { "fg": "255", "bg": "25" },
@@ -133,6 +133,7 @@ src/
     cwd.ts
     git.ts
     context.ts
+    pet.ts
     session.ts
     index.ts
   renderers/

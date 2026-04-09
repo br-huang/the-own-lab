@@ -3,6 +3,7 @@ import { contextWidget } from "./context.js";
 import { cwdWidget } from "./cwd.js";
 import { gitWidget } from "./git.js";
 import { modelWidget } from "./model.js";
+import { petWidget } from "./pet.js";
 import { sessionWidget } from "./session.js";
 
 type WidgetFactory = (input: StatuslineContext, providers: ProviderState) => Segment | undefined;
@@ -12,6 +13,8 @@ const registry: Record<WidgetId, WidgetFactory> = {
   cwd: (input) => cwdWidget(input),
   git: (_, providers) => gitWidget(providers.git),
   context: (input, providers) => contextWidget(input, providers.transcript),
+  pet: (input, providers) =>
+    petWidget(input, providers.session, providers.transcript, providers.git),
   session: (_, providers) => sessionWidget(providers.session, providers.transcript)
 };
 

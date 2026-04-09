@@ -7,8 +7,8 @@ import { Config } from "./types.js";
 const configSchema = z.object({
   renderer: z.enum(["plain", "powerline"]).default("powerline"),
   widgets: z
-    .array(z.enum(["model", "cwd", "git", "context", "session"]))
-    .default(["model", "cwd", "git", "context", "session"]),
+    .array(z.enum(["model", "cwd", "git", "context", "session", "pet"]))
+    .default(["model", "cwd", "git", "context", "pet"]),
   nerdFont: z.boolean().default(true),
   theme: z
     .object({
@@ -26,7 +26,7 @@ const configSchema = z.object({
 
 export const defaultConfig: Config = {
   renderer: "powerline",
-  widgets: ["model", "cwd", "git", "context", "session"],
+  widgets: ["model", "cwd", "git", "context", "pet"],
   nerdFont: true,
   theme: {}
 };

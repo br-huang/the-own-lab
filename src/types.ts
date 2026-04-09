@@ -1,4 +1,4 @@
-export type WidgetId = "model" | "cwd" | "git" | "context" | "session";
+export type WidgetId = "model" | "cwd" | "git" | "context" | "session" | "pet";
 export type RendererId = "plain" | "powerline";
 export type Tone = "neutral" | "info" | "success" | "warning" | "danger" | "muted";
 
@@ -40,6 +40,7 @@ export interface ProviderState {
 export interface Segment {
   id: WidgetId;
   text: string;
+  compactText?: string;
   tone: Tone;
   icon?: string;
   priority?: number;

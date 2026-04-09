@@ -1,6 +1,6 @@
 {
   "renderer": "powerline",
-  "widgets": ["model", "cwd", "git", "context", "session"],
+  "widgets": ["model", "cwd", "git", "context", "pet"],
   "nerdFont": true,
   "theme": {
     "info": { "fg": "255", "bg": "25" },

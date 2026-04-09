@@ -1,5 +1,6 @@
 import { loadConfig } from "./config.js";
 import { normalizeInput } from "./input.js";
+import { fitSegmentsToWidth, getStatuslineBudget } from "./layout.js";
 import { getGitState } from "./providers/git.js";
 import { getSessionState } from "./providers/session.js";
 import { getTranscriptState } from "./providers/transcript.js";
@@ -45,12 +46,17 @@ function mergeTheme(config: Config): Theme {
 function render(config: Config, theme: Theme, providers: ProviderState, raw: unknown): string {
   const input = normalizeInput(raw);
   const segments = buildSegments(input, providers, config);
+  const fittedSegments = fitSegmentsToWidth(
+    segments,
+    getStatuslineBudget(process.stdout.columns),
+    config.renderer === "plain" ? 3 : 1
+  );
 
   if (config.renderer === "plain") {
-    return renderPlain(segments, theme);
+    return renderPlain(fittedSegments, theme);
   }
 
-  return renderPowerline(segments, theme, config.nerdFont);
+  return renderPowerline(fittedSegments, theme, config.nerdFont);
 }
 
 export async function run(): Promise<void> {
