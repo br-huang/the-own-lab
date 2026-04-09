@@ -1,6 +1,9 @@
 import { ItemView, WorkspaceLeaf, MarkdownRenderer, App } from "obsidian";
 import { RagEngine } from "../core/rag-engine";
-import { SourceReference, ChatMessage, ChatSession } from "../types";
+import {
+  SourceReference, ChatMessage, ChatSession,
+  ChatProviderType, CHAT_PROVIDER_LABELS, CHAT_PROVIDER_MODELS, PluginSettings,
+} from "../types";
 import { UrlIngestor, IngestPhase } from "../ingestor/url-ingestor";
 import { detectVideoProvider } from "../ingestor/video-detector";
 import { SessionStore } from "../core/session-store";
@@ -28,6 +31,10 @@ export class ChatView extends ItemView {
   private isStreaming = false;
   private fullResponseText = "";
   private renderThrottleTimer: ReturnType<typeof setTimeout> | null = null;
+  private getSettings: () => PluginSettings;
+  private onProviderChange: (provider: ChatProviderType, model: string) => void;
+  private modelSelectEl!: HTMLSelectElement;
+  private isMac: boolean;
 
   constructor(
     leaf: WorkspaceLeaf,
@@ -35,12 +42,17 @@ export class ChatView extends ItemView {
     urlIngestor: UrlIngestor,
     appRef: App,
     sessionStore: SessionStore,
+    getSettings: () => PluginSettings,
+    onProviderChange: (provider: ChatProviderType, model: string) => void,
   ) {
     super(leaf);
     this.ragEngine = ragEngine;
     this.urlIngestor = urlIngestor;
     this.appRef = appRef;
     this.sessionStore = sessionStore;
+    this.getSettings = getSettings;
+    this.onProviderChange = onProviderChange;
+    this.isMac = navigator.platform.toUpperCase().includes("MAC");
   }
 
   getViewType(): string {
@@ -90,6 +102,32 @@ export class ChatView extends ItemView {
 
     headerEl.createEl("span", { cls: "kb-chat-header-title", text: "Second Brain" });
 
+    // Provider & Model dropdowns in header
+    const providerArea = headerEl.createDiv({ cls: "kb-chat-provider-area" });
+
+    const providerSelect = providerArea.createEl("select", { cls: "kb-chat-provider-select" });
+    for (const [key, label] of Object.entries(CHAT_PROVIDER_LABELS)) {
+      providerSelect.createEl("option", { value: key, text: label });
+    }
+    providerSelect.value = this.getSettings().chatProvider;
+
+    this.modelSelectEl = providerArea.createEl("select", { cls: "kb-chat-model-select" });
+    this.populateModelDropdown(this.getSettings().chatProvider);
+    this.modelSelectEl.value = this.getSettings().chatModel;
+
+    providerSelect.addEventListener("change", () => {
+      const provider = providerSelect.value as ChatProviderType;
+      this.populateModelDropdown(provider);
+      const defaultModel = CHAT_PROVIDER_MODELS[provider][0] || "";
+      this.modelSelectEl.value = defaultModel;
+      this.onProviderChange(provider, defaultModel);
+    });
+
+    this.modelSelectEl.addEventListener("change", () => {
+      const provider = providerSelect.value as ChatProviderType;
+      this.onProviderChange(provider, this.modelSelectEl.value);
+    });
+
     this.messagesEl = chatMainEl.createDiv({ cls: "kb-chat-messages" });
 
     const inputArea = chatMainEl.createDiv({ cls: "kb-chat-input-area" });
@@ -110,11 +148,13 @@ export class ChatView extends ItemView {
     this.autocompleteEl = this.inputWrapperEl.createDiv({ cls: "kb-chat-autocomplete" });
     this.autocompleteEl.style.display = "none";
 
-    // Send button (outside wrapper, same level as wrapper)
+    // Send button with platform-specific shortcut hint
+    const sendShortcut = this.isMac ? "⌘↵" : "Ctrl↵";
     this.sendBtn = inputArea.createEl("button", {
       cls: "kb-chat-send",
-      text: "Send",
     });
+    this.sendBtn.createSpan({ text: "Send" });
+    this.sendBtn.createSpan({ cls: "kb-chat-send-hint", text: sendShortcut });
 
     // Event listeners
     this.inputEl.addEventListener("input", () => this.onInputChange());
@@ -182,6 +222,22 @@ export class ChatView extends ItemView {
   }
 
   // ─── Session List ───
+
+  private populateModelDropdown(provider: ChatProviderType): void {
+    this.modelSelectEl.empty();
+    const models = CHAT_PROVIDER_MODELS[provider];
+    if (models.length === 0) {
+      // Ollama: free-text input — add a single editable option
+      this.modelSelectEl.createEl("option", { value: "", text: "(type model name)" });
+      this.modelSelectEl.style.display = "none";
+      // Replace with text input for Ollama
+      return;
+    }
+    this.modelSelectEl.style.display = "";
+    for (const model of models) {
+      this.modelSelectEl.createEl("option", { value: model, text: model });
+    }
+  }
 
   private renderSessionList(): void {
     this.sessionListEl.empty();

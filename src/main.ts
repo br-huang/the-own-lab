@@ -1,6 +1,6 @@
 import { Plugin, WorkspaceLeaf, FileSystemAdapter } from "obsidian";
 import * as path from "path";
-import { PluginSettings, DEFAULT_SETTINGS, PluginData } from "./types";
+import { PluginSettings, DEFAULT_SETTINGS, PluginData, ChatProviderType } from "./types";
 import { SessionStore } from "./core/session-store";
 import { LLMProvider } from "./llm/provider";
 import { createProvider } from "./llm/provider-factory";
@@ -112,6 +112,13 @@ export default class ObsidianKBPlugin extends Plugin {
         this.urlIngestor,
         this.app,
         this.sessionStore,
+        () => this.settings,
+        (provider, model) => {
+          this.settings.chatProvider = provider;
+          this.settings.chatModel = model;
+          this.saveSettings();
+          this.refreshProvider();
+        },
       );
     });
 
