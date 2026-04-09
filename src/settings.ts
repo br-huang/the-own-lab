@@ -19,7 +19,7 @@ export class KBSettingTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
-    containerEl.createEl("h2", { text: "Obsidian KB Settings" });
+    containerEl.createEl("h2", { text: "Second Brain Settings" });
 
     // ─── Chat Section ───
 

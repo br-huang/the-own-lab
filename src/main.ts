@@ -115,29 +115,29 @@ export default class ObsidianKBPlugin extends Plugin {
       );
     });
 
-    this.addRibbonIcon("message-square", "Open KB Chat", () => {
+    this.addRibbonIcon("message-square", "Second Brain: Chat", () => {
       this.activateChatView();
     });
 
     this.addCommand({
-      id: "open-kb-chat",
-      name: "Open KB Chat",
+      id: "open-second-brain-chat",
+      name: "Second Brain: Chat",
       callback: () => {
         this.activateChatView();
       },
     });
 
     this.addCommand({
-      id: "kb-ingest-url",
-      name: "KB: Ingest URL",
+      id: "second-brain-ingest-url",
+      name: "Second Brain: Ingest URL",
       callback: () => {
         new IngestUrlModal(this.app, this.urlIngestor).open();
       },
     });
 
     this.addCommand({
-      id: "kb-ingest-pdf",
-      name: "KB: Ingest PDF",
+      id: "second-brain-ingest-pdf",
+      name: "Second Brain: Ingest PDF",
       callback: () => {
         new IngestPdfModal(this.app, this.pdfIngestor).open();
       },

@@ -13,9 +13,38 @@ export const CHAT_PROVIDER_LABELS: Record<ChatProviderType, string> = {
 };
 
 export const CHAT_PROVIDER_MODELS: Record<ChatProviderType, string[]> = {
-  openai: ["gpt-4o", "gpt-4o-mini"],
-  claude: ["claude-sonnet-4-5", "claude-opus-4"],
-  gemini: ["gemini-2.0-flash", "gemini-2.5-pro"],
+  openai: [
+    "gpt-5.4",
+    "gpt-5.4-mini",
+    "gpt-5.4-nano",
+    "gpt-4.1",
+    "gpt-4.1-mini",
+    "gpt-4.1-nano",
+    "gpt-4o",
+    "gpt-4o-mini",
+    "o4-mini",
+    "o3",
+    "o3-pro",
+    "o3-mini",
+  ],
+  claude: [
+    "claude-opus-4-6",
+    "claude-sonnet-4-6",
+    "claude-haiku-4-5",
+    "claude-opus-4-5",
+    "claude-sonnet-4-5",
+    "claude-opus-4-1",
+    "claude-sonnet-4-0",
+    "claude-opus-4-0",
+  ],
+  gemini: [
+    "gemini-3.1-pro-preview",
+    "gemini-3-flash-preview",
+    "gemini-2.5-pro",
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+    "gemini-2.0-flash",
+  ],
   deepseek: ["deepseek-chat", "deepseek-reasoner"],
   ollama: [],  // free-text input, no predefined list
 };

@@ -5,7 +5,7 @@ import { UrlIngestor, IngestPhase } from "../ingestor/url-ingestor";
 import { detectVideoProvider } from "../ingestor/video-detector";
 import { SessionStore } from "../core/session-store";
 
-export const CHAT_VIEW_TYPE = "obsidian-kb-chat";
+export const CHAT_VIEW_TYPE = "second-brain-chat";
 
 export class ChatView extends ItemView {
   private ragEngine: RagEngine;
@@ -48,7 +48,7 @@ export class ChatView extends ItemView {
   }
 
   getDisplayText(): string {
-    return "KB Chat";
+    return "Second Brain";
   }
 
   getIcon(): string {
@@ -88,7 +88,7 @@ export class ChatView extends ItemView {
       this.sessionPanelEl.toggleClass("is-collapsed", !this.sessionListVisible);
     });
 
-    headerEl.createEl("span", { cls: "kb-chat-header-title", text: "KB Chat" });
+    headerEl.createEl("span", { cls: "kb-chat-header-title", text: "Second Brain" });
 
     this.messagesEl = chatMainEl.createDiv({ cls: "kb-chat-messages" });
 
