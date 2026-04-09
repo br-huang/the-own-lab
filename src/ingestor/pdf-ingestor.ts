@@ -3,6 +3,8 @@ import * as path from "path";
 import { IngestPhase, IngestResult, OnProgress } from "./url-ingestor";
 
 export class PdfIngestor {
+  private pdfjsLib: any | null = null;
+
   constructor(
     private vault: Vault,
     private getIngestFolder: () => string,
@@ -27,7 +29,7 @@ export class PdfIngestor {
 
     let pdfDocument: any;
     try {
-      const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer, disableWorker: true });
+      const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
       pdfDocument = await loadingTask.promise;
     } catch (err: any) {
       if (err?.name === "PasswordException") {
@@ -98,14 +100,25 @@ export class PdfIngestor {
   }
 
   private loadPdfjs(): any {
+    if (this.pdfjsLib) {
+      return this.pdfjsLib;
+    }
+
     const modulePath = path.join(this.pluginDir, "node_modules", "pdfjs-dist", "build", "pdf.js");
+    const workerPath = path.join(this.pluginDir, "node_modules", "pdfjs-dist", "build", "pdf.worker.js");
+
+    // In Obsidian's renderer, pdf.js may fall back to loadScript(workerSrc), which
+    // breaks on app:// URLs. Preloading the worker module exposes WorkerMessageHandler
+    // on the main thread so pdf.js can parse without spawning or loading a worker script.
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const workerModule = require(workerPath);
+    (globalThis as any).pdfjsWorker = workerModule;
+
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const pdfjsLib = require(modulePath);
-    // Point workerSrc to the actual worker file to avoid "No workerSrc specified" error.
-    // The worker won't actually be used because we pass disableWorker: true in getDocument(),
-    // but pdfjs-dist requires workerSrc to be a non-empty string.
-    const workerPath = path.join(this.pluginDir, "node_modules", "pdfjs-dist", "build", "pdf.worker.js");
-    pdfjsLib.GlobalWorkerOptions.workerSrc = workerPath;
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "";
+
+    this.pdfjsLib = pdfjsLib;
     return pdfjsLib;
   }
 
