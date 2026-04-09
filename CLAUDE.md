@@ -1,92 +1,55 @@
-# Brian's Monorepo
+# Monorepo
 
-## Directory Structure
-
-```
-~/Workspaces/
-├── apps/           ← Deployable applications (Astro, Electron, Tauri, Swift, Obsidian plugin)
-├── packages/       ← Reusable modules, publishable to npm or consumed by apps
-├── scripts/        ← Automation scripts, CLI tools, templates (not importable)
-├── learn/          ← Learning projects, exercises, experiments
-├── docs/           ← Documentation, knowledge base, reference materials
-```
-
-### Where to put new projects
-
-- Can it run/deploy independently? → `apps/`
-- Can other projects import it? → `packages/`
-- Neither? → `scripts/`
-- Learning/practice? → `learn/`
-
-### Dependency direction (strict)
+## Architecture
 
 ```
-apps/     → packages/
-packages/ → packages/
-apps/ ✗ apps/         (no cross-app dependency)
-scripts/, learn/      (independent, no dependency graph)
+apps/       → deployable (Astro, Electron, Tauri, Swift, Obsidian plugin)
+packages/   → importable by apps/ or other packages/
+scripts/    → standalone automation, not importable
+learn/      → practice, experiments
+docs/       → documentation (not a project)
 ```
 
-## Toolchain
+Dependency: `apps/ → packages/`, `packages/ → packages/`. No `apps/ → apps/`.
 
-| Tool | Purpose | Config |
-|------|---------|--------|
-| Nx 22.6 | Task orchestration, caching, affected detection | `nx.json` |
-| pnpm 10 | Package management, workspace linking | `pnpm-workspace.yaml` |
-| mise | Multi-language runtime management (Node, Python, Go, Rust) | `mise.toml` |
-| lefthook | Git hooks | `lefthook.yml` |
-| commitlint | Conventional Commits enforcement | `commitlint.config.js` |
+New project placement: runs independently → `apps/`, importable → `packages/`, neither → `scripts/`, learning → `learn/`.
 
-## Commit Convention (enforced by lefthook + commitlint)
+## Git
+
+Trunk-based. `main` only long-lived branch. Feature branch: `type/project/desc`.
+
+Commit format (enforced by lefthook + commitlint, will reject otherwise):
 
 ```
 type(scope): description
 ```
 
-- **type**: `feat`, `fix`, `chore`, `refactor`, `docs`, `style`, `test`, `ci`, `perf`, `build`
-- **scope**: project directory name (e.g., `browser`, `claude-statusline`, `monorepo`)
-- **examples**:
-  - `feat(browser): add tab grouping`
-  - `fix(obsidian-second-brain): handle empty vault`
-  - `chore(deps): bump nx to 23.0`
+- type: feat, fix, chore, refactor, docs, style, test, ci, perf, build
+- scope: project name from `commitlint.config.js` (e.g., browser, claude-statusline, monorepo, deps)
+- Commit after every meaningful change. Do not batch unrelated changes.
 
-Scope is required. Full whitelist is in `commitlint.config.js`.
+Subtree remotes (`sub/*`) exist for projects with independent GitHub repos. Check `git remote -v`.
 
-## Git Strategy
-
-- **Trunk-based**: `main` is the only long-lived branch
-- **Feature branches**: `type/project/description` (e.g., `feat/browser/dark-mode`)
-- **Tags**: path-scoped `apps/project/v1.0.0`
-- **Subtree remotes**: projects with independent GitHub repos use `sub/*` remotes
-
-### Subtree remotes
-
-| Remote | GitHub | Prefix |
-|--------|--------|--------|
-| `sub/obsidian-second-brain` | `br-huang/obsidian-second-brain` | `apps/obsidian-second-brain` |
-| `sub/claude-company-of-one` | `br-huang/Claude-company-of-one` | `packages/claude-company-of-one` |
-| `sub/claude-statusline` | `br-huang/claude-best-statusline` | `packages/claude-statusline` |
-
-Push to original repo: `git subtree push --prefix=<path> sub/<name> main`
-
-## Project Registration
-
-- JS/TS projects: `package.json` in `pnpm-workspace.yaml` glob paths → auto-detected by Nx
-- Non-JS projects (Swift, Python, Rust, Bash): add `project.json` with name, tags, and targets
-- Every project must have either `package.json` or `project.json` (or both)
-
-## Multi-Language Projects
-
-Each sub-project can have its own `.mise.toml` for language-specific versions. Root `mise.toml` sets global defaults. Nx manages tasks for all languages via `project.json` targets using shell commands (`swift build`, `cargo build`, `uv run pytest`, etc.).
-
-## Common Commands
+## Commands
 
 ```bash
-pnpm build                    # Build all projects
-pnpm test                     # Test all projects
-pnpm build:affected           # Build only changed projects
-pnpm graph                    # Open Nx dependency graph
-pnpm projects                 # List all registered projects
-pnpm nx build <project>       # Build single project
-pnpm nx test <project>        # Test single project
+pnpm nx build <project>          # build one project
+pnpm nx test <project>           # test one project
+pnpm build                       # build all
+pnpm test                        # test all
+pnpm build:affected              # build only what changed
+pnpm graph                       # dependency graph
+pnpm projects                    # list all projects
+pnpm add <pkg> --filter <proj>   # add dep to specific project
+pnpm add -Dw <pkg>               # add dep to root
 ```
+
+## Mandatory
+
+1. Commit messages MUST be `type(scope): desc`. No exceptions.
+2. Dependencies MUST be installed from root via `pnpm add --filter`. Never `cd` into a sub-project and run `npm install`.
+3. Only ONE lockfile: root `pnpm-lock.yaml`. Delete any sub-project lockfiles on sight.
+4. Every project MUST have `package.json` (JS/TS in pnpm workspace) or `project.json` (non-JS) to register with Nx.
+5. New projects MUST be added to `commitlint.config.js` scope whitelist.
+6. Language runtimes via `mise` only. No global installs.
+7. Do not modify `nx.json`, `pnpm-workspace.yaml`, `lefthook.yml`, `commitlint.config.js` without understanding the blast radius.
