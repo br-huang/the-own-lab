@@ -66,6 +66,32 @@ export class KBSettingTab extends PluginSettingTab {
           })
       );
 
+    new Setting(containerEl)
+      .setName("yt-dlp Command")
+      .setDesc("Command or absolute path used for Bilibili subtitle extraction. Default: yt-dlp")
+      .addText((text) =>
+        text
+          .setPlaceholder("yt-dlp")
+          .setValue(this.plugin.settings.ytDlpCommand)
+          .onChange(async (value) => {
+            this.plugin.settings.ytDlpCommand = value.trim() || "yt-dlp";
+            await this.plugin.saveSettings();
+          })
+      );
+
+    new Setting(containerEl)
+      .setName("Bilibili cookies.txt Path")
+      .setDesc("Optional Netscape-format cookies.txt path. Used only if Bilibili requires login.")
+      .addText((text) =>
+        text
+          .setPlaceholder("/absolute/path/to/cookies.txt")
+          .setValue(this.plugin.settings.bilibiliCookiesPath)
+          .onChange(async (value) => {
+            this.plugin.settings.bilibiliCookiesPath = value.trim();
+            await this.plugin.saveSettings();
+          })
+      );
+
     // ─── Advanced Section ───
 
     containerEl.createEl("h3", { text: "Advanced" });

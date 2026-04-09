@@ -109,10 +109,18 @@ export class ChatView extends ItemView {
     this.addUserMessage(url);
     const bubbleEl = this.addAssistantMessage();
 
-    const isYouTube = detectVideoProvider(url) === "youtube";
+    const provider = detectVideoProvider(url);
     const phaseText: Record<IngestPhase, string> = {
-      fetching: isYouTube ? "Fetching video info..." : "Fetching page...",
-      extracting: isYouTube ? "Extracting transcript..." : "Extracting content...",
+      fetching: provider === "youtube"
+        ? "Fetching video info..."
+        : provider === "bilibili"
+          ? "Fetching Bilibili video info..."
+          : "Fetching page...",
+      extracting: provider === "youtube"
+        ? "Extracting transcript..."
+        : provider === "bilibili"
+          ? "Extracting subtitles..."
+          : "Extracting content...",
       saving: "Saving note...",
     };
 

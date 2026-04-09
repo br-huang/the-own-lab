@@ -69,10 +69,18 @@ export class IngestUrlModal extends Modal {
     this.statusEl.setText("Starting...");
     this.statusEl.removeClass("kb-ingest-error");
 
-    const isYouTube = detectVideoProvider(trimmed) === "youtube";
+    const provider = detectVideoProvider(trimmed);
     const phaseText: Record<IngestPhase, string> = {
-      fetching: isYouTube ? "Fetching video info..." : "Fetching page...",
-      extracting: isYouTube ? "Extracting transcript..." : "Extracting content...",
+      fetching: provider === "youtube"
+        ? "Fetching video info..."
+        : provider === "bilibili"
+          ? "Fetching Bilibili video info..."
+          : "Fetching page...",
+      extracting: provider === "youtube"
+        ? "Extracting transcript..."
+        : provider === "bilibili"
+          ? "Extracting subtitles..."
+          : "Extracting content...",
       saving: "Saving note...",
     };
 

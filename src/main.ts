@@ -73,6 +73,10 @@ export default class ObsidianKBPlugin extends Plugin {
     this.urlIngestor = new UrlIngestor(
       this.app.vault,
       () => this.settings.ingestFolder,
+      () => ({
+        ytDlpCommand: this.settings.ytDlpCommand,
+        cookiesPath: this.settings.bilibiliCookiesPath,
+      }),
     );
 
     this.pdfIngestor = new PdfIngestor(

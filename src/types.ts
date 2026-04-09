@@ -8,6 +8,8 @@ export interface PluginSettings {
   chunkSize: number;
   chunkOverlap: number;
   ingestFolder: string;
+  ytDlpCommand: string;
+  bilibiliCookiesPath: string;
 }
 
 export const DEFAULT_SETTINGS: PluginSettings = {
@@ -18,6 +20,8 @@ export const DEFAULT_SETTINGS: PluginSettings = {
   chunkSize: 500,
   chunkOverlap: 50,
   ingestFolder: "Ingested",
+  ytDlpCommand: "yt-dlp",
+  bilibiliCookiesPath: "",
 };
 
 // ─── Chunking ───

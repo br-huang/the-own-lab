@@ -3,6 +3,7 @@ import { Readability } from "@mozilla/readability";
 import TurndownService from "turndown";
 import { detectVideoProvider } from "./video-detector";
 import { YouTubeIngestor } from "./youtube-ingestor";
+import { BilibiliIngestor } from "./bilibili-ingestor";
 
 /** Progress phases reported to the caller */
 export type IngestPhase = "fetching" | "extracting" | "saving";
@@ -20,6 +21,7 @@ export class UrlIngestor {
   constructor(
     private vault: Vault,
     private getIngestFolder: () => string,
+    private getBilibiliConfig: () => { ytDlpCommand: string; cookiesPath: string },
   ) {}
 
   async ingest(url: string, onProgress?: OnProgress): Promise<IngestResult> {
@@ -30,9 +32,12 @@ export class UrlIngestor {
       return ytIngestor.ingest(url, onProgress);
     }
     if (videoProvider === "bilibili") {
-      throw new Error(
-        "Bilibili ingestion is not yet supported. This will be available in a future update."
+      const bilibiliIngestor = new BilibiliIngestor(
+        this.vault,
+        this.getIngestFolder,
+        this.getBilibiliConfig,
       );
+      return bilibiliIngestor.ingest(url, onProgress);
     }
 
     // 2. Fetch
