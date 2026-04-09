@@ -1,19 +1,126 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const blogEntries = (await getCollection("blog", ({ data }) => {
+  if (import.meta.env.PROD && data.draft) return false;
+  return true;
+})).sort((a, b) => {
+  const orderA = a.data.order ?? Number.MAX_SAFE_INTEGER;
+  const orderB = b.data.order ?? Number.MAX_SAFE_INTEGER;
+
+  if (orderA !== orderB) return orderA - orderB;
+  return b.data.publishedAt.getTime() - a.data.publishedAt.getTime();
+});
+
+const featuredEntries = blogEntries.filter((entry) => entry.data.featured);
+
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat("en", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(date);
 ---
 
 <BaseLayout
   title="Blog | The Own Lab"
   description="Technical writing and notes from The Own Lab."
 >
-  <section class="site-section-tight">
-    <div class="placeholder-shell">
-      <p class="placeholder-kicker">Blog</p>
-      <h1 class="placeholder-title">Writing comes next.</h1>
-      <p class="placeholder-text">
-        This section will hold essays, implementation notes, and the material
-        that turns hands-on work into something teachable.
+  <section class="site-section">
+    <div class="section-heading">
+      <div>
+        <p class="section-kicker">Blog</p>
+        <h1 class="section-title">Writing that turns implementation into reuse.</h1>
+      </div>
+      <p class="section-description">
+        The writing side of The Own Lab is where technical decisions are turned
+        into patterns, notes, and explanations another builder can actually use.
       </p>
+    </div>
+
+    <div class="blog-summary-grid">
+      <div class="blog-summary-card">
+        <p class="blog-summary-label">Orientation</p>
+        <p class="blog-summary-value">Field notes from real systems</p>
+      </div>
+      <div class="blog-summary-card">
+        <p class="blog-summary-label">Topics</p>
+        <p class="blog-summary-value">Docs, architecture, ownership, and process</p>
+      </div>
+      <div class="blog-summary-card">
+        <p class="blog-summary-label">Format</p>
+        <p class="blog-summary-value">Essays now, full post pages next</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="site-section-tight">
+    <div class="section-heading">
+      <div>
+        <p class="section-kicker">Featured</p>
+        <h2 class="section-title">Current essays and notes</h2>
+      </div>
+      <p class="section-description">
+        These entries set the editorial tone for the site and establish the
+        content model for upcoming article pages.
+      </p>
+    </div>
+
+    <div class="card-grid">
+      {featuredEntries.map((entry) => (
+        <article class="site-card">
+          <div class="blog-card-topline">
+            <p class="site-card-meta">{entry.data.category}</p>
+            <time class="blog-date" datetime={entry.data.publishedAt.toISOString()}>
+              {formatDate(entry.data.publishedAt)}
+            </time>
+          </div>
+          <h3 class="site-card-title">{entry.data.title}</h3>
+          <p class="site-card-text">{entry.data.summary}</p>
+          <div class="blog-tag-row">
+            {entry.data.tags.map((tag) => (
+              <span class="blog-tag">{tag}</span>
+            ))}
+          </div>
+          <p class="blog-card-note">Article page is planned in the next milestone.</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="site-section-tight">
+    <div class="section-heading">
+      <div>
+        <p class="section-kicker">Archive</p>
+        <h2 class="section-title">All writing entries</h2>
+      </div>
+      <p class="section-description">
+        The archive is already structured in content collections, so the next
+        step is adding detail routes rather than rebuilding the list layer.
+      </p>
+    </div>
+
+    <div class="blog-list">
+      {blogEntries.map((entry) => (
+        <article class="blog-list-item">
+          <div class="blog-list-main">
+            <div class="blog-card-topline">
+              <p class="site-card-meta">{entry.data.category}</p>
+              <time class="blog-date" datetime={entry.data.publishedAt.toISOString()}>
+                {formatDate(entry.data.publishedAt)}
+              </time>
+            </div>
+            <h3 class="blog-list-title">{entry.data.title}</h3>
+            <p class="site-card-text">{entry.data.summary}</p>
+          </div>
+          <div class="blog-tag-row">
+            {entry.data.tags.map((tag) => (
+              <span class="blog-tag">{tag}</span>
+            ))}
+          </div>
+        </article>
+      ))}
     </div>
   </section>
 </BaseLayout>

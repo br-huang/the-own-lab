@@ -373,6 +373,60 @@
   @apply text-2xl font-semibold tracking-tight text-foreground;
 }
 
+/* ─── Blog ────────────────────────────────────────────────────────── */
+
+.blog-summary-grid {
+  @apply mt-8 grid gap-4 md:grid-cols-3;
+}
+
+.blog-summary-card {
+  @apply rounded-[1.5rem] border border-line-soft bg-surface-elevated p-5 shadow-soft;
+}
+
+.blog-summary-label {
+  @apply text-xs font-semibold uppercase tracking-wide text-muted-foreground;
+}
+
+.blog-summary-value {
+  @apply mt-3 text-lg font-medium tracking-tight text-foreground;
+}
+
+.blog-card-topline {
+  @apply flex items-center justify-between gap-3;
+}
+
+.blog-date {
+  @apply text-xs uppercase tracking-wide text-muted-foreground;
+}
+
+.blog-tag-row {
+  @apply flex flex-wrap gap-2;
+}
+
+.blog-tag {
+  @apply inline-flex rounded-full border border-line-soft bg-card px-2.5 py-1 text-xs text-muted-foreground;
+}
+
+.blog-card-note {
+  @apply mt-auto text-sm text-muted-foreground;
+}
+
+.blog-list {
+  @apply mt-8 grid gap-4;
+}
+
+.blog-list-item {
+  @apply flex flex-col gap-4 rounded-[1.5rem] border border-line-soft bg-card p-5 shadow-soft md:flex-row md:items-start md:justify-between;
+}
+
+.blog-list-main {
+  @apply max-w-3xl space-y-3;
+}
+
+.blog-list-title {
+  @apply text-2xl font-semibold tracking-tight text-foreground;
+}
+
 /* ─── Placeholder ─────────────────────────────────────────────────── */
 
 .placeholder-shell {
