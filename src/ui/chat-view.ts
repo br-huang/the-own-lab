@@ -384,10 +384,12 @@ export class ChatView extends ItemView {
           responseSources = response.sources;
           this.renderSources(bubbleEl, response.sources);
         } else if (response.type === "error") {
+          this.fullResponseText = response.message;
           this.renderError(bubbleEl, response.message);
         }
       }
     } catch (err) {
+      this.fullResponseText = (err as Error).message;
       this.renderError(bubbleEl, (err as Error).message);
     } finally {
       this.renderMarkdown(bubbleEl);
@@ -497,6 +499,7 @@ export class ChatView extends ItemView {
   }
 
   private async handleClearHistory(): Promise<void> {
+    if (this.isStreaming) return;
     const confirmed = confirm("Clear all chat history? This cannot be undone.");
     if (!confirmed) return;
 
