@@ -95,6 +95,7 @@ public enum SidebarDestination: Hashable, Sendable {
     case allTasks
     case completed
     case list(UUID)
+    case tag(UUID)
 }
 
 public struct AppSnapshot: Sendable {

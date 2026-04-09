@@ -8,6 +8,13 @@ struct TaskDetailContainerView: View {
         if let task = viewModel.selectedTask {
             TaskDetailView(
                 task: task,
+                allTags: viewModel.tags,
+                isTagAssigned: { tag, task in
+                    viewModel.isTagAssigned(tag, to: task)
+                },
+                onSetTag: { tag, isAssigned, task in
+                    viewModel.setTag(tag, isAssigned: isAssigned, for: task)
+                },
                 onSave: viewModel.saveTask
             )
         } else {
@@ -22,10 +29,22 @@ struct TaskDetailContainerView: View {
 
 struct TaskDetailView: View {
     @State private var draftTask: NFLTask
+    let allTags: [TaskTag]
+    let isTagAssigned: (TaskTag, NFLTask) -> Bool
+    let onSetTag: (TaskTag, Bool, NFLTask) -> Void
     let onSave: (NFLTask) -> Void
 
-    init(task: NFLTask, onSave: @escaping (NFLTask) -> Void) {
+    init(
+        task: NFLTask,
+        allTags: [TaskTag],
+        isTagAssigned: @escaping (TaskTag, NFLTask) -> Bool,
+        onSetTag: @escaping (TaskTag, Bool, NFLTask) -> Void,
+        onSave: @escaping (NFLTask) -> Void
+    ) {
         _draftTask = State(initialValue: task)
+        self.allTags = allTags
+        self.isTagAssigned = isTagAssigned
+        self.onSetTag = onSetTag
         self.onSave = onSave
     }
 
@@ -67,6 +86,29 @@ struct TaskDetailView: View {
                 Button(draftTask.dueDate == nil ? "Set Due Date to Today" : "Clear Due Date") {
                     draftTask.dueDate = draftTask.dueDate == nil ? .now : nil
                     commit()
+                }
+            }
+
+            if !allTags.isEmpty {
+                Section("Tags") {
+                    ForEach(allTags) { tag in
+                        Toggle(
+                            tag.name,
+                            isOn: Binding(
+                                get: { isTagAssigned(tag, draftTask) },
+                                set: { isAssigned in
+                                    onSetTag(tag, isAssigned, draftTask)
+                                    if isAssigned {
+                                        if draftTask.tagIDs.contains(tag.id) == false {
+                                            draftTask.tagIDs.append(tag.id)
+                                        }
+                                    } else {
+                                        draftTask.tagIDs.removeAll { $0 == tag.id }
+                                    }
+                                }
+                            )
+                        )
+                    }
                 }
             }
 

@@ -69,6 +69,7 @@ final class AppViewModel {
         case .allTasks: "All Tasks"
         case .completed: "Completed"
         case .list(let id): lists.first(where: { $0.id == id })?.name ?? "List"
+        case .tag(let id): tags.first(where: { $0.id == id })?.name ?? "Tag"
         }
     }
 
@@ -93,6 +94,67 @@ final class AppViewModel {
         var updated = task
         updated.isCompleted.toggle()
         updated.completedAt = updated.isCompleted ? .now : nil
+        repository.updateTask(updated)
+        reload(keepSelection: updated.id)
+    }
+
+    func createList(named name: String) {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        let list = repository.createList(name: trimmed, colorName: nil)
+        destination = .list(list.id)
+        reload()
+    }
+
+    func renameList(_ list: TaskList, to newName: String) {
+        let trimmed = newName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        var updated = list
+        updated.name = trimmed
+        repository.updateList(updated)
+        reload()
+    }
+
+    func deleteList(_ list: TaskList) {
+        guard list.isInbox == false else { return }
+
+        repository.deleteList(id: list.id)
+        if destination == .list(list.id) {
+            destination = .today
+        }
+        reload()
+    }
+
+    func createTag(named name: String) {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        let tag = repository.createTag(name: trimmed, colorName: nil)
+        destination = .tag(tag.id)
+        reload()
+    }
+
+    func deleteTag(_ tag: TaskTag) {
+        repository.deleteTag(id: tag.id)
+        if destination == .tag(tag.id) {
+            destination = .allTasks
+        }
+        reload(keepSelection: selectedTaskID)
+    }
+
+    func setTag(_ tag: TaskTag, isAssigned: Bool, for task: NFLTask) {
+        var updated = task
+
+        if isAssigned {
+            if updated.tagIDs.contains(tag.id) == false {
+                updated.tagIDs.append(tag.id)
+            }
+        } else {
+            updated.tagIDs.removeAll { $0 == tag.id }
+        }
+
         repository.updateTask(updated)
         reload(keepSelection: updated.id)
     }
@@ -124,6 +186,17 @@ final class AppViewModel {
         lists.first(where: { $0.id == task.listID })?.name ?? "Inbox"
     }
 
+    func tagTaskCount(for tag: TaskTag) -> Int {
+        tasks
+            .filter { $0.deletedAt == nil }
+            .filter { $0.tagIDs.contains(tag.id) }
+            .count
+    }
+
+    func isTagAssigned(_ tag: TaskTag, to task: NFLTask) -> Bool {
+        task.tagIDs.contains(tag.id)
+    }
+
     private func matchesDestination(_ task: NFLTask) -> Bool {
         taskMatches(destination: destination)(task)
     }
@@ -148,6 +221,8 @@ final class AppViewModel {
                 return task.isCompleted
             case .list(let id):
                 return task.listID == id
+            case .tag(let id):
+                return task.tagIDs.contains(id)
             }
         }
     }
