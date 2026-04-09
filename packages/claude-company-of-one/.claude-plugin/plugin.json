@@ -1,0 +1,9 @@
+{
+  "name": "claude-company-of-one",
+  "version": "0.7.3",
+  "description": "Claude 一人公司 — Enterprise-grade agent pipelines for solo developers",
+  "author": {
+    "name": "Brian Huang",
+    "email": "ronggg27825@gmail.com"
+  }
+}
