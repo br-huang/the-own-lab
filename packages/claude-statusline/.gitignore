@@ -1,0 +1,8 @@
+node_modules/
+dist/
+
+test/**/*.js
+test/**/*.js.map
+test/**/*.d.ts
+
+.DS_Store

@@ -1,0 +1,51 @@
+{
+  "name": "@johnnyboy11234/claude-code-statusline",
+  "version": "0.1.1",
+  "description": "A local-first Claude Code statusline CLI with powerline and plain renderers.",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/br-huang/claude-best-statusline.git"
+  },
+  "homepage": "https://github.com/br-huang/claude-best-statusline#readme",
+  "bugs": {
+    "url": "https://github.com/br-huang/claude-best-statusline/issues"
+  },
+  "bin": {
+    "claude-code-statusline": "./bin/claude-statusline"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": "./dist/main.js"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "pnpm clean && tsc -p tsconfig.json",
+    "start": "tsx src/main.ts",
+    "demo": "node dist/main.js < ./sample-input.json",
+    "test": "node --import tsx --test test/**/*.test.ts",
+    "prepublishOnly": "pnpm build && pnpm test"
+  },
+  "dependencies": {
+    "picocolors": "^1.1.1",
+    "string-width": "^8.2.0",
+    "strip-ansi": "^7.2.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.2",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

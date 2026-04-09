@@ -1,0 +1,19 @@
+{
+  "session_id": "abc123456789",
+  "transcript_path": "/tmp/claude-demo-transcript.jsonl",
+  "workspace": {
+    "current_dir": "/Users/rong/Workspaces/1-Projects/11-Brian-Projects/114-claude-code-statusline"
+  },
+  "model": {
+    "display_name": "Claude Sonnet 4"
+  },
+  "context": {
+    "used_ratio": 0.42
+  },
+  "cost": {
+    "total_cost_usd": 0.0134
+  },
+  "session": {
+    "duration_ms": 3180000
+  }
+}
