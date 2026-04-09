@@ -1,5 +1,11 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 import type ObsidianKBPlugin from "./main";
+import {
+  ChatProviderType,
+  CHAT_PROVIDER_LABELS,
+  CHAT_PROVIDER_MODELS,
+  CHAT_PROVIDER_PLACEHOLDERS,
+} from "./types";
 
 export class KBSettingTab extends PluginSettingTab {
   plugin: ObsidianKBPlugin;
@@ -19,35 +25,105 @@ export class KBSettingTab extends PluginSettingTab {
 
     containerEl.createEl("h3", { text: "Chat (LLM)" });
 
+    // ── Provider dropdown ──
     new Setting(containerEl)
-      .setName("OpenAI API Key")
-      .setDesc("Required for chat responses. Embedding runs locally — no API key needed for indexing.")
-      .addText((text) =>
-        text
-          .setPlaceholder("sk-...")
-          .setValue(this.plugin.settings.openaiApiKey)
-          .onChange(async (value) => {
-            this.plugin.settings.openaiApiKey = value;
-            await this.plugin.saveSettings();
-            this.plugin.refreshProvider();
-          })
-          .then((text) => { text.inputEl.type = "password"; })
-      );
-
-    new Setting(containerEl)
-      .setName("Chat Model")
-      .setDesc("OpenAI model for chat completions.")
-      .addDropdown((dropdown) =>
+      .setName("Provider")
+      .setDesc("LLM provider for chat completions.")
+      .addDropdown((dropdown) => {
+        for (const [key, label] of Object.entries(CHAT_PROVIDER_LABELS)) {
+          dropdown.addOption(key, label);
+        }
         dropdown
-          .addOption("gpt-4o", "gpt-4o")
-          .addOption("gpt-4o-mini", "gpt-4o-mini")
-          .setValue(this.plugin.settings.chatModel)
+          .setValue(this.plugin.settings.chatProvider)
           .onChange(async (value) => {
-            this.plugin.settings.chatModel = value;
+            const provider = value as ChatProviderType;
+            this.plugin.settings.chatProvider = provider;
+            // Reset model to first available for this provider
+            const models = CHAT_PROVIDER_MODELS[provider];
+            this.plugin.settings.chatModel = models.length > 0 ? models[0] : "";
             await this.plugin.saveSettings();
             this.plugin.refreshProvider();
-          })
-      );
+            // Re-render to show/hide conditional fields
+            this.display();
+          });
+      });
+
+    // ── API Key (hidden for Ollama) ──
+    const provider = this.plugin.settings.chatProvider;
+    if (provider !== "ollama") {
+      const apiKeyField = provider === "openai" ? "openaiApiKey"
+        : provider === "claude" ? "anthropicApiKey"
+        : provider === "gemini" ? "geminiApiKey"
+        : "deepseekApiKey";
+
+      new Setting(containerEl)
+        .setName("API Key")
+        .setDesc(`API key for ${CHAT_PROVIDER_LABELS[provider]}.`)
+        .addText((text) =>
+          text
+            .setPlaceholder(CHAT_PROVIDER_PLACEHOLDERS[provider])
+            .setValue(this.plugin.settings[apiKeyField])
+            .onChange(async (value) => {
+              (this.plugin.settings as any)[apiKeyField] = value;
+              await this.plugin.saveSettings();
+              this.plugin.refreshProvider();
+            })
+            .then((text) => { text.inputEl.type = "password"; })
+        );
+    }
+
+    // ── Model selection ──
+    const models = CHAT_PROVIDER_MODELS[provider];
+    if (models.length > 0) {
+      // Dropdown for providers with known model lists
+      new Setting(containerEl)
+        .setName("Model")
+        .setDesc(`Chat model for ${CHAT_PROVIDER_LABELS[provider]}.`)
+        .addDropdown((dropdown) => {
+          for (const model of models) {
+            dropdown.addOption(model, model);
+          }
+          dropdown
+            .setValue(this.plugin.settings.chatModel)
+            .onChange(async (value) => {
+              this.plugin.settings.chatModel = value;
+              await this.plugin.saveSettings();
+              this.plugin.refreshProvider();
+            });
+        });
+    } else {
+      // Free-text for Ollama
+      new Setting(containerEl)
+        .setName("Model")
+        .setDesc("Ollama model name (e.g., llama3, mistral, gemma).")
+        .addText((text) =>
+          text
+            .setPlaceholder("llama3")
+            .setValue(this.plugin.settings.chatModel)
+            .onChange(async (value) => {
+              this.plugin.settings.chatModel = value.trim();
+              await this.plugin.saveSettings();
+              this.plugin.refreshProvider();
+            })
+        );
+    }
+
+    // ── Ollama URL (shown only for Ollama) ──
+    if (provider === "ollama") {
+      new Setting(containerEl)
+        .setName("Ollama URL")
+        .setDesc("Base URL for the Ollama server.")
+        .addText((text) =>
+          text
+            .setPlaceholder("http://localhost:11434")
+            .setValue(this.plugin.settings.ollamaUrl)
+            .onChange(async (value) => {
+              this.plugin.settings.ollamaUrl = value.trim() || "http://localhost:11434";
+              await this.plugin.saveSettings();
+              this.plugin.refreshProvider();
+            })
+        );
+    }
 
     // ─── URL Ingestor Section ───
 
