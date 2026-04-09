@@ -101,7 +101,24 @@ export interface ChatMessage {
   timestamp: string; // ISO-8601
 }
 
+export interface ChatSession {
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+  messages: ChatMessage[];
+}
+
+export interface SessionIndexEntry {
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface PluginData {
   settings: PluginSettings;
-  chatHistory: ChatMessage[];
+  chatHistory: ChatMessage[];          // kept for migration; empty post-migration
+  sessionIndex: SessionIndexEntry[];
+  activeSessionId: string | null;
 }
