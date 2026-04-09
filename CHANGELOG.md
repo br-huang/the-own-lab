@@ -7,6 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.3] - 2026-04-09
+
+### Added
+- Per-project data layout under `${COMPANY_OF_ONE_PLUGIN_DATA}/projects/{project-key}/`
+- Pipeline state manager in `hooks/scripts/lib/pipeline-state.sh`
+- Pipeline brief manager in `hooks/scripts/lib/brief-manager.sh`
+- Pattern index manager in `hooks/scripts/lib/pattern-index.sh`
+- Pipeline completion routine in `hooks/scripts/pipeline-complete.sh`
+
+### Changed
+- Runtime state now uses per-project storage instead of a plugin-global data directory
+- Session start and post-compact restore active pipeline state, active brief, pattern index, and project context from the per-project data directory
+- Medium pipelines now use `briefs/current.json` as the single source of truth for agent handoff instead of full spec files
+- Full specs are now intended to live under plugin data `specs/` instead of `docs/specs/` in the project repo
+
+### Removed
+- Default reliance on repo-local `docs/specs/` as the primary storage location for transient pipeline documents
+
+## [0.7.2] - 2026-04-09
+
+### Changed
+- Wired templates into the active skills flow so pipeline artifacts are driven from shared templates
+
+### Removed
+- Unused directories and stale scaffolding no longer shipped in the plugin payload
+
+## [0.7.1] - 2026-04-09
+
+### Added
+- Hard runtime state management for pipeline state, pattern index, and project context
+
+## [0.7.0] - 2026-04-09
+
+### Added
+- Parallel wave execution model for `/develop` so agent teams can coordinate by stage instead of one long linear pass
+
+## [0.6.0] - 2026-04-08
+
+### Changed
+- Session-start was slimmed down and orchestrator activation became lazier to reduce startup token cost
+
+## [0.5.0] - 2026-04-08
+
 ### Added
 - Codex plugin scaffold under `plugins/claude-company-of-one/`
 - Codex marketplace manifest under `.agents/plugins/marketplace.json`
@@ -14,7 +57,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Hook scripts now resolve storage via platform-neutral `COMPANY_OF_ONE_PLUGIN_*` variables with Claude and Codex fallbacks
-- Learning docs now refer to the shared plugin data location instead of Claude-only environment variables
 
 ## [0.4.0] - 2026-04-07
 

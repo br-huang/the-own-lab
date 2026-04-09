@@ -8,7 +8,7 @@
     {
       "name": "claude-company-of-one",
       "description": "Claude for solopreneur — Enterprise-grade agent pipelines for solo developers",
-      "version": "0.4.0",
+      "version": "0.7.3",
       "source": "./",
       "author": {
         "name": "Brian Huang",
