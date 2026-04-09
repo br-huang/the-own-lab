@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		E706EF822F8756E000A9AC13 /* NFLCore in Frameworks */ = {isa = PBXBuildFile; productRef = E706EF812F8756E000A9AC13 /* NFLCore */; };
+		E706EF842F8756E000A9AC13 /* NFLEditor in Frameworks */ = {isa = PBXBuildFile; productRef = E706EF832F8756E000A9AC13 /* NFLEditor */; };
+		E706EF862F8756E000A9AC13 /* NFLNetwork in Frameworks */ = {isa = PBXBuildFile; productRef = E706EF852F8756E000A9AC13 /* NFLNetwork */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		E7B7D1ED2F8754580038F1AE /* NotForgetList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NotForgetList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,16 +29,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E706EF862F8756E000A9AC13 /* NFLNetwork in Frameworks */,
+				E706EF842F8756E000A9AC13 /* NFLEditor in Frameworks */,
+				E706EF822F8756E000A9AC13 /* NFLCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E706EF802F8756E000A9AC13 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		E7B7D1E42F8754580038F1AE = {
 			isa = PBXGroup;
 			children = (
 				E7B7D1EF2F8754580038F1AE /* NotForgetList */,
+				E706EF802F8756E000A9AC13 /* Frameworks */,
 				E7B7D1EE2F8754580038F1AE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -65,6 +82,9 @@
 			);
 			name = NotForgetList;
 			packageProductDependencies = (
+				E706EF812F8756E000A9AC13 /* NFLCore */,
+				E706EF832F8756E000A9AC13 /* NFLEditor */,
+				E706EF852F8756E000A9AC13 /* NFLNetwork */,
 			);
 			productName = NotForgetList;
 			productReference = E7B7D1ED2F8754580038F1AE /* NotForgetList.app */;
@@ -94,6 +114,11 @@
 			);
 			mainGroup = E7B7D1E42F8754580038F1AE;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				E706EF872F8756E000A9AC13 /* XCLocalSwiftPackageReference "../Packages/NFLCore" */,
+				E706EF882F8756E000A9AC13 /* XCLocalSwiftPackageReference "../Packages/NFLEditor" */,
+				E706EF892F8756E000A9AC13 /* XCLocalSwiftPackageReference "../Packages/NFLNetwork" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E7B7D1EE2F8754580038F1AE /* Products */;
 			projectDirPath = "";
@@ -351,6 +376,39 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		E706EF872F8756E000A9AC13 /* XCLocalSwiftPackageReference "../Packages/NFLCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/NFLCore;
+		};
+		E706EF882F8756E000A9AC13 /* XCLocalSwiftPackageReference "../Packages/NFLEditor" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/NFLEditor;
+		};
+		E706EF892F8756E000A9AC13 /* XCLocalSwiftPackageReference "../Packages/NFLNetwork" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Packages/NFLNetwork;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E706EF812F8756E000A9AC13 /* NFLCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E706EF872F8756E000A9AC13 /* XCLocalSwiftPackageReference "../Packages/NFLCore" */;
+			productName = NFLCore;
+		};
+		E706EF832F8756E000A9AC13 /* NFLEditor */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E706EF882F8756E000A9AC13 /* XCLocalSwiftPackageReference "../Packages/NFLEditor" */;
+			productName = NFLEditor;
+		};
+		E706EF852F8756E000A9AC13 /* NFLNetwork */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E706EF892F8756E000A9AC13 /* XCLocalSwiftPackageReference "../Packages/NFLNetwork" */;
+			productName = NFLNetwork;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E7B7D1E52F8754580038F1AE /* Project object */;
 }

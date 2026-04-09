@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:NotForgetList/NotForgetList.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Packages/NFLCore">
+   </FileRef>
+   <FileRef
+      location = "group:Packages/NFLNetwork">
+   </FileRef>
+   <FileRef
+      location = "group:Packages/NFLEditor">
+   </FileRef>
+</Workspace>
