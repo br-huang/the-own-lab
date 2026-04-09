@@ -1,0 +1,41 @@
+:root {
+  /* Colors — dark theme (primary) */
+  --bb-bg-primary: #1a1a2e;
+  --bb-bg-secondary: #16213e;
+  --bb-bg-tertiary: #0f3460;
+  --bb-bg-hover: rgba(255, 255, 255, 0.06);
+  --bb-bg-active: rgba(255, 255, 255, 0.10);
+  --bb-text-primary: #e0e0e0;
+  --bb-text-secondary: #a0a0b0;
+  --bb-text-muted: #606070;
+  --bb-accent: #5B7FFF;
+  --bb-accent-hover: #7B9FFF;
+  --bb-danger: #ff5555;
+  --bb-border: rgba(255, 255, 255, 0.08);
+
+  /* Spacing */
+  --bb-space-xs: 4px;
+  --bb-space-sm: 8px;
+  --bb-space-md: 12px;
+  --bb-space-lg: 16px;
+  --bb-space-xl: 24px;
+
+  /* Typography */
+  --bb-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --bb-font-size-xs: 11px;
+  --bb-font-size-sm: 12px;
+  --bb-font-size-md: 13px;
+  --bb-font-size-lg: 15px;
+
+  /* Radii */
+  --bb-radius-sm: 4px;
+  --bb-radius-md: 8px;
+  --bb-radius-lg: 12px;
+
+  /* Sidebar */
+  --bb-sidebar-width: 260px;
+
+  /* Transitions */
+  --bb-transition-fast: 120ms ease;
+  --bb-transition-normal: 200ms ease;
+}

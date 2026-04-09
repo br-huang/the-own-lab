@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "outDir": "dist/renderer"
+  },
+  "include": ["src/ui/**/*", "src/shared/**/*", "src/kernel/interfaces/**/*"]
+}

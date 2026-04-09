@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+@theme {
+  /* Color tokens */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f8f9fa;
+  --color-bg-sidebar: #f0f1f3;
+  --color-bg-titlebar: #e8e9eb;
+  --color-bg-statusbar: #e8e9eb;
+  --color-bg-editor: #ffffff;
+  --color-bg-hover: rgba(0, 0, 0, 0.04);
+  --color-bg-active: rgba(0, 0, 0, 0.08);
+
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #6b7280;
+  --color-text-muted: #9ca3af;
+  --color-text-inverse: #ffffff;
+
+  --color-border-primary: #e5e7eb;
+  --color-border-secondary: #d1d5db;
+
+  --color-accent: #4a90d9;
+  --color-accent-hover: #3a7bc8;
+
+  /* Spacing */
+  --titlebar-height: 38px;
+  --statusbar-height: 24px;
+  --sidebar-width: 260px;
+  --sidebar-min-width: 180px;
+  --sidebar-max-width: 400px;
+}
+
+/* Base reset */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
+    Arial, sans-serif;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: 14px;
+}
+
+/* Prevent text selection on UI chrome */
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-text-muted);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}

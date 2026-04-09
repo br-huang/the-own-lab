@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "useDefineForClassFields": false,
+    "experimentalDecorators": true,
+    "declaration": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@kernel/*": ["src/kernel/*"],
+      "@ui/*": ["src/ui/*"],
+      "@shared/*": ["src/shared/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}

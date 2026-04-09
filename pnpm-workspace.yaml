@@ -1,0 +1,12 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+allowBuilds:
+  canvas: false
+  electron: false
+  electron-winstaller: false
+  es5-ext: false
+  esbuild: true
+  nx: true
+  protobufjs: true
+  sharp: false

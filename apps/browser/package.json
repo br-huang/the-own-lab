@@ -1,0 +1,33 @@
+{
+  "name": "better-browser",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/main/main/index.js",
+  "scripts": {
+    "dev": "concurrently \"vite build -w\" \"tsc -p tsconfig.main.json -w\" \"electron .\"",
+    "dev:renderer": "vite build -w",
+    "dev:main": "tsc -p tsconfig.main.json -w",
+    "dev:electron": "electron .",
+    "build": "vite build && tsc -p tsconfig.main.json",
+    "package": "npm run build && electron-builder --mac",
+    "test": "vitest run",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^34.5.8",
+    "lit": "^3.3.2"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^4.0.3",
+    "@open-wc/testing": "^4.0.0",
+    "concurrently": "^9.2.1",
+    "electron-builder": "^26.8.1",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.2",
+    "vitest": "^4.1.3"
+  }
+}

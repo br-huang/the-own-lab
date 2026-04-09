@@ -1,0 +1,40 @@
+/* TipTap / ProseMirror editor styles — to be expanded in Phase 1 */
+.tiptap {
+  outline: none;
+  padding: 2rem 3rem;
+  min-height: 100%;
+  max-width: 48rem;
+  margin: 0 auto;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--color-text-primary);
+}
+
+.tiptap:focus {
+  outline: none;
+}
+
+.tiptap p {
+  margin-bottom: 0.75em;
+}
+
+.tiptap h1,
+.tiptap h2,
+.tiptap h3,
+.tiptap h4,
+.tiptap h5,
+.tiptap h6 {
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.tiptap h1 {
+  font-size: 2em;
+}
+.tiptap h2 {
+  font-size: 1.5em;
+}
+.tiptap h3 {
+  font-size: 1.25em;
+}

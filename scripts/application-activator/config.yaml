@@ -1,0 +1,35 @@
+# Application Activator - Configuration
+# Define your application profiles here
+
+profiles:
+  work:
+    description: "Work essentials"
+    apps:
+      - "Spark Mail"
+      - "Obsidian"
+      - "Visual Studio Code"
+      - "OrbStack"
+      - "Google Chrome"
+      - "Bartender"
+  creative:
+    description: "Creative workflow"
+    apps:
+      - "CleanShot X"
+      - "TextSniper"
+  daily:
+    description: "Daily drivers"
+    apps:
+      - "Raycast"
+      - "1Password"
+      - "Bartender"
+      - "AlDente Pro"
+      - "Yoink"
+  setapp:
+    description: Open the apps on Setapp
+    apps:
+      - AlDente Pro
+      - Bartender
+      - CleanShot X
+      - Spark Mail
+      - TextSniper
+      - Yoink

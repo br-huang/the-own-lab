@@ -1,0 +1,4 @@
+[tools]
+ni = "latest"
+node = "22"
+"npm:pnpm" = "latest"
