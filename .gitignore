@@ -36,9 +36,9 @@ build/
 
 # IDE
 .idea/
-.vscode/
 *.swp
 *.swo
+# .vscode/ is tracked (workspace settings + extensions)
 
 # OS
 .DS_Store

@@ -1,0 +1,27 @@
+{
+  "terminal.integrated.env.osx": {
+    "PATH": "${env:HOME}/.local/share/mise/shims:${env:PATH}"
+  },
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.nx": true,
+    "**/dist": true,
+    "**/target": true,
+    "**/.build": true,
+    "**/DerivedData": true,
+    "**/.DS_Store": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/pnpm-lock.yaml": true,
+    "**/.nx": true,
+    "**/dist": true
+  },
+  "typescript.preferences.importModuleSpecifier": "relative"
+}

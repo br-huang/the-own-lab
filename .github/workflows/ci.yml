@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: jdx/mise-action@v2
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: 'mise.toml'
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - uses: nrwl/nx-set-shas@v4
+
+      - name: Lint affected
+        run: pnpm nx affected -t lint
+
+      - name: Build affected
+        run: pnpm nx affected -t build
+
+      - name: Test affected
+        run: pnpm nx affected -t test

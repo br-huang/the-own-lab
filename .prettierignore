@@ -1,0 +1,8 @@
+node_modules
+dist
+.nx
+target
+.build
+DerivedData
+pnpm-lock.yaml
+apps/open-codex
