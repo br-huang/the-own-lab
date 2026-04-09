@@ -1,0 +1,29 @@
+{
+  "settings": {
+    "chatProvider": "deepseek",
+    "chatModel": "deepseek-chat",
+    "openaiApiKey": "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",
+    "anthropicApiKey": "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",
+    "geminiApiKey": "AIzaSyBklVOb5EFH-YAkkSJqOWDXzAlf-S7qu4U",
+    "deepseekApiKey": "sk-6da9e7f6283a44fabc00827f46b547e1",
+    "ollamaUrl": "http://localhost:11434",
+    "topK": 5,
+    "embeddingBatchSize": 20,
+    "chunkSize": 500,
+    "chunkOverlap": 50,
+    "ingestFolder": "50-Ingested",
+    "ytDlpCommand": "/Users/rong/.local/share/mise/installs/yt-dlp/2026.03.17/yt-dlp",
+    "bilibiliCookiesPath": "",
+    "embeddingModel": "text-embedding-3-small"
+  },
+  "chatHistory": [],
+  "sessionIndex": [
+    {
+      "id": "b80b56a9-32e0-431b-9590-f941ec1d0d60",
+      "title": "請你說明 提到了哪些問題 (Q&A)",
+      "createdAt": "2026-04-09T07:56:35.083Z",
+      "updatedAt": "2026-04-09T09:56:31.103Z"
+    }
+  ],
+  "activeSessionId": "b80b56a9-32e0-431b-9590-f941ec1d0d60"
+}
