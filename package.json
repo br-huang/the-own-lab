@@ -1,8 +1,12 @@
 {
   "name": "brian-workspaces",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@10.33.0",
   "devDependencies": {
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
+    "lefthook": "^2.1.5",
     "nx": "22.6.4"
   }
 }
