@@ -4,7 +4,7 @@ import SwiftUI
 struct SidebarView: View {
     @Bindable var viewModel: AppViewModel
     @State private var editorMode: ListEditorMode?
-    @State private var isTagEditorPresented = false
+    @State private var tagEditorMode: TagEditorMode?
     @State private var pendingDeleteList: TaskList?
     @State private var pendingDeleteTag: TaskTag?
 
@@ -46,6 +46,10 @@ struct SidebarView: View {
                         }
                         .tag(SidebarDestination.tag(tag.id))
                         .contextMenu {
+                            Button("Rename") {
+                                tagEditorMode = .rename(tag)
+                            }
+
                             Button("Delete", role: .destructive) {
                                 pendingDeleteTag = tag
                             }
@@ -62,7 +66,7 @@ struct SidebarView: View {
                 }
 
                 Button("New Tag") {
-                    isTagEditorPresented = true
+                    tagEditorMode = .create
                 }
             } label: {
                 Label("Create", systemImage: "plus")
@@ -78,9 +82,14 @@ struct SidebarView: View {
                 }
             }
         }
-        .sheet(isPresented: $isTagEditorPresented) {
-            TagEditorSheet { name in
-                viewModel.createTag(named: name)
+        .sheet(item: $tagEditorMode) { mode in
+            TagEditorSheet(mode: mode) { name in
+                switch mode {
+                case .create:
+                    viewModel.createTag(named: name)
+                case .rename(let tag):
+                    viewModel.renameTag(tag, to: name)
+                }
             }
         }
         .alert(
@@ -146,10 +155,17 @@ struct SidebarView: View {
 }
 
 private struct TagEditorSheet: View {
+    let mode: TagEditorMode
     let onSubmit: (String) -> Void
 
     @Environment(\.dismiss) private var dismiss
-    @State private var name = ""
+    @State private var name: String
+
+    init(mode: TagEditorMode, onSubmit: @escaping (String) -> Void) {
+        self.mode = mode
+        self.onSubmit = onSubmit
+        _name = State(initialValue: mode.initialName)
+    }
 
     var body: some View {
         NavigationStack {
@@ -157,7 +173,7 @@ private struct TagEditorSheet: View {
                 TextField("Tag Name", text: $name)
                     .onSubmit(save)
             }
-            .navigationTitle("New Tag")
+            .navigationTitle(mode.title)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
@@ -166,7 +182,7 @@ private struct TagEditorSheet: View {
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Create") {
+                    Button(mode.actionTitle) {
                         save()
                     }
                     .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
@@ -179,6 +195,47 @@ private struct TagEditorSheet: View {
     private func save() {
         onSubmit(name)
         dismiss()
+    }
+}
+
+private enum TagEditorMode: Identifiable {
+    case create
+    case rename(TaskTag)
+
+    var id: String {
+        switch self {
+        case .create:
+            return "create"
+        case .rename(let tag):
+            return "rename-\(tag.id.uuidString)"
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .create:
+            return "New Tag"
+        case .rename:
+            return "Rename Tag"
+        }
+    }
+
+    var initialName: String {
+        switch self {
+        case .create:
+            return ""
+        case .rename(let tag):
+            return tag.name
+        }
+    }
+
+    var actionTitle: String {
+        switch self {
+        case .create:
+            return "Create"
+        case .rename:
+            return "Save"
+        }
     }
 }
 

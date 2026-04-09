@@ -47,3 +47,17 @@ import NFLCore
     #expect(updatedSnapshot.tags.contains(where: { $0.id == tag.id }) == false)
     #expect(updatedSnapshot.tasks.contains(where: { $0.tagIDs.contains(tag.id) }) == false)
 }
+
+@MainActor
+@Test func updateTagPersistsRenamedValue() async throws {
+    let snapshot = PreviewDataFactory.makeAppSnapshot()
+    let repository = InMemoryTaskRepository(snapshot: snapshot)
+
+    var tag = try #require(snapshot.tags.first(where: { $0.name == "Home" }))
+    tag.name = "Errands"
+
+    repository.updateTag(tag)
+
+    let updatedTag = try #require(repository.fetchSnapshot().tags.first(where: { $0.id == tag.id }))
+    #expect(updatedTag.name == "Errands")
+}

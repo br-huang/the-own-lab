@@ -136,6 +136,16 @@ final class AppViewModel {
         reload()
     }
 
+    func renameTag(_ tag: TaskTag, to newName: String) {
+        let trimmed = newName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        var updated = tag
+        updated.name = trimmed
+        repository.updateTag(updated)
+        reload(keepSelection: selectedTaskID)
+    }
+
     func deleteTag(_ tag: TaskTag) {
         repository.deleteTag(id: tag.id)
         if destination == .tag(tag.id) {

@@ -22,7 +22,7 @@
 | 8. Task Detail | Mostly complete | Title, priority, due date, notes, completion state, and tag assignment are editable. |
 | 9. Rich Text Editor | Simplified | `TextEditor` plus Markdown preview is used instead of a custom rich-text bridge. |
 | 10. List/Group Management | Mostly complete | Create, rename, and delete list flows exist. Groups are not implemented. |
-| 11. Tag Management | Mostly complete | Tags can be created, deleted, selected in the sidebar, and assigned from task detail. Rename/edit is not implemented yet. |
+| 11. Tag Management | Mostly complete | Tags can be created, renamed, deleted, selected in the sidebar, and assigned from task detail. Color/edit metadata is not implemented yet. |
 | 12. Smart Lists | Complete | `Today`, `Upcoming`, `All Tasks`, and `Completed` filters are implemented. |
 | 13. Search | Complete | Local search over title, notes, and tags is implemented with `.searchable`. |
 | 14. Settings | Not started | No settings screen yet. |
