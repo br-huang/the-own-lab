@@ -7,4 +7,6 @@ export const themeInitScript = `(function() {
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   const theme = stored === "light" || stored === "dark" ? stored : (prefersDark ? "dark" : "light");
   root.dataset.theme = theme;
+  root.classList.toggle("dark", theme === "dark");
+  root.classList.toggle("light", theme === "light");
 })();`;
