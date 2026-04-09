@@ -1,0 +1,9 @@
+{
+  "id": "second-brain",
+  "name": "Second Brain",
+  "version": "0.1.0",
+  "minAppVersion": "1.4.0",
+  "description": "AI-powered personal knowledge base with RAG chat for your Obsidian vault",
+  "author": "Brian",
+  "isDesktopOnly": true
+}

@@ -1,0 +1,113 @@
+# Test Report: PDF Ingestor
+
+## Summary
+- Total tests: 0 automated (no test framework configured in this project)
+- Passed (manual/static verification): 41
+- Failed: 0
+- Warnings (non-blocking): 2
+- Coverage: N/A — TypeScript compilation clean, production build succeeds
+
+## Acceptance Criteria Verification
+
+| Criterion | Status | Evidence |
+|-----------|--------|----------|
+| Command "KB: Ingest PDF" registered with id `kb-ingest-pdf` | PASS | `main.ts:108-114` — `addCommand({ id: "kb-ingest-pdf", name: "KB: Ingest PDF", ... })` |
+| Executing the command opens `IngestPdfModal` | PASS | `main.ts:111-113` — callback calls `new IngestPdfModal(this.app, this.pdfIngestor).open()` |
+| `IngestPdfModal` instantiated in `main.ts` alongside `IngestUrlModal`, same registration pattern | PASS | `main.ts:13-14` (imports), `main.ts:25` (field), `main.ts:78-82` (instantiation), `main.ts:108-114` (command) |
+| Modal shows scrollable list of every `.pdf` file via `vault.getFiles()` filtered to `.pdf` | PASS | `ingest-pdf-modal.ts:22-24` — `getFiles().filter((f) => f.extension === "pdf")` |
+| List shows Vault-relative path of each file | PASS | `ingest-pdf-modal.ts:75` — `text: file.path` |
+| Search input filters list by filename, case-insensitive substring match | PASS | `ingest-pdf-modal.ts:60-63` — `f.path.toLowerCase().includes(query)` |
+| No PDF files found → displays "No PDF files found in your Vault." | PASS | `ingest-pdf-modal.ts:26-29` |
+| Clicking a file disables list and search input during ingestion | PASS | `ingest-pdf-modal.ts:91-93` — `searchInput.disabled = true`, `listEl.style.pointerEvents = "none"` |
+| Modal displays a status line that updates during ingestion | PASS | `ingest-pdf-modal.ts:47-49, 94-112` — `statusEl` shown and updated |
+| On success: `Saved: "{title}" → {filePath}`, auto-close after 2 seconds | PASS | `ingest-pdf-modal.ts:115-116` |
+| On error: displays error message, re-enables file list for retry | PASS | `ingest-pdf-modal.ts:117-123` |
+| Reads selected file as binary via `vault.readBinary(file)` | PASS | `pdf-ingestor.ts:20` |
+| Binary data passed to `pdfjsLib.getDocument({ data: arrayBuffer })` | PASS | `pdf-ingestor.ts:30` |
+| Text extracted page by page in order (1 to numPages) using `page.getTextContent()` | PASS | `pdf-ingestor.ts:52-63` — loop from `1` to `totalPages` |
+| Page text items (`item.str`) joined with single space | PASS | `pdf-ingestor.ts:56-58` — `.map((item) => item.str).join(" ").trim()` |
+| Empty pages silently skipped | PASS | `pdf-ingestor.ts:60-62` — `if (text.length > 0)` gate |
+| Note begins with YAML frontmatter block followed by blank line then body | PASS | `pdf-ingestor.ts:83` — `frontmatter + "\n" + body`; frontmatter ends with `---\n` |
+| Frontmatter field order: `url`, `title`, `source_type`, `pages`, `ingested_at` | PASS | `pdf-ingestor.ts:116-121` — verified by manual simulation |
+| `url` field: vault-relative path, double-quoted, internal quotes escaped | PASS | `pdf-ingestor.ts:116` — `url.replace(/"/g, '\\"')` |
+| `title` field: double-quoted, internal quotes escaped | PASS | `pdf-ingestor.ts:117` |
+| `source_type`: literal `"pdf"` | PASS | `pdf-ingestor.ts:118` — `source_type: "${meta.sourceType}"` where `sourceType: "pdf"` |
+| `pages`: unquoted integer | PASS | `pdf-ingestor.ts:119` — `pages: ${meta.pages}` (no quotes) |
+| `ingested_at`: ISO 8601 timestamp string | PASS | `pdf-ingestor.ts:120` + `ingest()` line 76: `new Date().toISOString()` |
+| Body: `## Page N` heading per non-empty page, N is 1-based original page number | PASS | `pdf-ingestor.ts:79-81` — `## Page ${p.pageNum}` where `pageNum` is loop variable `i` |
+| Skipped (empty) pages produce no heading or paragraph | PASS | `pdf-ingestor.ts:60-62` — only non-empty pages pushed to array |
+| Title from `info.Title` if non-empty; otherwise `file.basename` | PASS | `pdf-ingestor.ts:41-47` — `metadata?.info?.Title` with `file.basename` fallback |
+| Slug algorithm matches `UrlIngestor` and `YouTubeIngestor` | PASS | `pdf-ingestor.ts:125-134` — byte-for-byte identical to `youtube-ingestor.ts:346-355` |
+| Note saved to `settings.ingestFolder` (defaulting to `"Ingested"`) | PASS | `pdf-ingestor.ts:86` — `this.getIngestFolder() \|\| "Ingested"` |
+| Same-name slug collision: numeric suffix up to 100 attempts | PASS | `pdf-ingestor.ts:139-143` — loop `i = 2` to `100` |
+| Nested folders created via `ensureFolder` | PASS | `pdf-ingestor.ts:146-169` — identical logic to existing ingestors |
+| `PdfIngestor` accepts `onProgress` callback typed as `OnProgress` from `url-ingestor.ts` | PASS | `pdf-ingestor.ts:3,14` |
+| `onProgress("fetching")` called before `vault.readBinary()` | PASS | `pdf-ingestor.ts:17` |
+| `onProgress("extracting")` called before text extraction | PASS | `pdf-ingestor.ts:25` |
+| Modal displays `"Reading PDF..."` for `"fetching"` phase | PASS | `ingest-pdf-modal.ts:99` |
+| Modal displays `"Extracting page X / Y..."` per page via `onPageProgress` | PASS | `ingest-pdf-modal.ts:110-112` |
+| `onProgress("saving")` called before `vault.create()` | PASS | `pdf-ingestor.ts:85` |
+| Modal displays `"Saving note..."` for `"saving"` phase | PASS | `ingest-pdf-modal.ts:101` |
+| `vault.readBinary()` failure → `"Failed to read PDF: {original message}"` | PASS | `pdf-ingestor.ts:21-23` |
+| Corrupted/unrecognised PDF → `"Failed to parse PDF: {original message}"` | PASS | `pdf-ingestor.ts:36` |
+| Password-protected PDF (`PasswordException`) → `"This PDF is password-protected and cannot be ingested."` | PASS | `pdf-ingestor.ts:33-35` — `err?.name === "PasswordException"` |
+| All empty pages (scanned PDF) → `"No text content found. This PDF may be a scanned image and cannot be ingested without OCR."` | PASS | `pdf-ingestor.ts:65-69` |
+| `vault.create()` failure → `"Failed to save note: {original message}"` | PASS | `pdf-ingestor.ts:93-95` |
+| All errors surface as user-visible text in modal status | PASS | `ingest-pdf-modal.ts:117-119` — catch block sets `statusEl.setText((err as Error).message)` |
+| No changes to `VaultIndexer` required | PASS | `git diff 409de64..HEAD -- src/core/vault-indexer.ts` produces no output |
+| `pdfjs-dist` listed as a dependency in `package.json` | PASS | `package.json:15` — `"pdfjs-dist": "^5.6.205"` in `dependencies` (not devDependencies) |
+| `pdfjs-dist` marked as `external` in esbuild config | PASS | `esbuild.config.mjs:26` — `"pdfjs-dist"` in `external` array |
+| `GlobalWorkerOptions.workerSrc = ""` disables Web Worker | PASS | `pdf-ingestor.ts:104` |
+| `PdfIngestor` class in `src/ingestor/pdf-ingestor.ts` | PASS | File exists and exports `PdfIngestor` |
+| `IngestPdfModal extends Modal` in `src/ui/ingest-pdf-modal.ts` | PASS | `ingest-pdf-modal.ts:5` |
+| `PdfIngestor` instantiated once in `main.ts` `onload()`, stored as private field | PASS | `main.ts:25` (field), `main.ts:78-82` (instantiation) |
+| Constructor signature pattern: `(vault, getIngestFolder)` | PARTIAL | Implementation adds a necessary third param `pluginDir: string`. DESIGN.md §57 explicitly justifies this as a requirement for absolute-path `require()`. The base two params match the pattern. See Issues section. |
+
+## Build & Type-Check Results
+
+```
+$ npx tsc --noEmit
+(no output — zero errors)
+
+$ npm run build
+> obsidian-kb@0.1.0 build
+> node esbuild.config.mjs production
+(exits 0, produces main.js at 810031 bytes)
+```
+
+TypeScript strict mode passes with zero errors. Production build succeeds.
+
+## Edge Cases Tested
+
+- **Empty title slug**: `slugify("")` → `"ingested-page"` (fallback applied correctly)
+- **All-non-alphanumeric title**: `slugify("\!@#")` → `"ingested-page"` (fallback applied correctly)
+- **Title exceeding 60 chars**: `slugify("a".repeat(65))` → 60 `a`s (truncation working)
+- **Trailing hyphen after truncation**: `slugify("a".repeat(59) + "-b")` → trailing hyphen stripped (`.replace(/-$/, "")` on substring)
+- **Double-quotes in title/url**: `buildFrontmatter({ title: 'My "Quoted" Paper', ... })` → internal quotes escaped as `\"`
+- **Frontmatter field order**: confirmed `url`, `title`, `source_type`, `pages`, `ingested_at` by running the function inline
+- **`pages` field is unquoted integer**: confirmed — `pages: 42` not `pages: "42"`
+- **Empty pages skipped from body**: page 2 absent from output when whitespace-only (verified by simulation)
+- **`source_type` value**: literal string `"pdf"` (confirmed hardcoded)
+- **PasswordException detection**: `err?.name === "PasswordException"` — correctly uses name property (pdfjs-dist throws a named `PasswordException` object)
+- **`onProgress` before `onPageProgress`**: `"extracting"` fires at loop start then `onPageProgress(1, N)` fires immediately on first iteration; brief `"Extracting text..."` may show but is correct given the sequential async nature
+- **No modification to existing ingestors**: `git diff` on `url-ingestor.ts`, `youtube-ingestor.ts`, `types.ts` shows zero changes
+- **No network requests in PdfIngestor**: code only calls `vault.readBinary()` and `vault.create()` — no `requestUrl` usage
+- **Regression check for Phase 1/2/3**: `main.ts` diff shows only additive changes (2 imports, 1 field, 1 instantiation block, 1 `addCommand` block) — no existing lines modified or removed
+
+## Issues Found
+
+### Issue 1: Constructor signature deviates from REQUIREMENTS.md wording
+- **Severity**: warning
+- **Description**: REQUIREMENTS.md specifies the constructor as `constructor(private vault: Vault, private getIngestFolder: () => string)`, matching `UrlIngestor` and `YouTubeIngestor` exactly. The implementation adds a third parameter `private pluginDir: string`. The deviation is intentional and well-motivated: `pdfjs-dist` must be loaded via `require()` with an absolute filesystem path (the same pattern used by `LocalEmbeddingProvider` for `@xenova/transformers`), which requires knowing the plugin directory at construction time. DESIGN.md §57 explicitly documents this design decision.
+- **Reproduction**: Compare `UrlIngestor` constructor (2 params) with `PdfIngestor` constructor (3 params) in `src/ingestor/pdf-ingestor.ts`.
+- **Suggestion**: Update REQUIREMENTS.md to reflect the actual accepted signature: `constructor(private vault: Vault, private getIngestFolder: () => string, private pluginDir: string)`. The implementation is correct; the requirement text is slightly behind the final design.
+
+### Issue 2: Brief "Extracting text..." flicker before per-page progress
+- **Severity**: info
+- **Description**: When the `"extracting"` phase fires, the modal briefly shows `"Extracting text..."` (from `phaseText.extracting`) before the first `onPageProgress` callback fires and updates the text to `"Extracting page 1 / N..."`. For typical PDFs this is imperceptible, but for a single-page PDF the user might see the intermediate text for one event loop tick.
+- **Reproduction**: Ingest a one-page PDF; the status line transitions: `"Reading PDF..."` → `"Extracting text..."` → `"Extracting page 1 / 1..."` → `"Saving note..."`.
+- **Suggestion**: This is a cosmetic issue consistent with how the URL modal works (it also shows an intermediate `"Extracting content..."` text). No change required unless the product spec requires the per-page text to appear from the very start of extraction.
+
+## Verdict
+
+PASS — all acceptance criteria are met. The single PARTIAL criterion (constructor signature) is a documentation gap, not an implementation defect; the additional `pluginDir` parameter is architecturally necessary and explicitly documented in DESIGN.md. TypeScript compilation is clean under strict mode. Production build succeeds. No breaking changes to Phase 1/2/3 are introduced.
