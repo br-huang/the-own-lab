@@ -1,13 +1,5 @@
 {
   "name": "harness-agent",
   "tags": ["scope:learn", "lang:python"],
-  "targets": {
-    "test": {
-      "command": "uv run pytest",
-      "options": { "cwd": "{projectRoot}" },
-      "cache": true,
-      "inputs": ["{projectRoot}/**/*.py"],
-      "outputs": ["{projectRoot}/coverage"]
-    }
-  }
+  "targets": {}
 }

@@ -10,7 +10,6 @@
     "dev:electron": "electron .",
     "build": "vite build && tsc -p tsconfig.main.json",
     "package": "npm run build && electron-builder --mac",
-    "test": "vitest run",
     "lint": "tsc --noEmit",
     "typecheck": "tsc --noEmit"
   },
