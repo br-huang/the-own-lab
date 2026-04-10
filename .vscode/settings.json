@@ -15,13 +15,24 @@
     "**/target": true,
     "**/.build": true,
     "**/DerivedData": true,
-    "**/.DS_Store": true
+    "**/.DS_Store": true,
+    "**/storybook-static": true,
+    "**/.venv": true,
+    "**/__pycache__": true,
+    "**/.gradle": true,
+    "**/.pnpm-store": true
   },
   "search.exclude": {
     "**/node_modules": true,
     "**/pnpm-lock.yaml": true,
     "**/.nx": true,
-    "**/dist": true
+    "**/dist": true,
+    "**/target": true,
+    "**/.build": true,
+    "**/DerivedData": true,
+    "**/storybook-static": true,
+    "**/.pnpm-store": true,
+    "apps/open-codex/**": true
   },
   "typescript.preferences.importModuleSpecifier": "relative"
 }

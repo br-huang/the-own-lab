@@ -1,8 +1,26 @@
+# Build outputs
 node_modules
 dist
 .nx
 target
 .build
 DerivedData
+storybook-static
+.gradle
+
+# Python
+.venv
+__pycache__
+
+# Generated / binary
 pnpm-lock.yaml
+Cargo.lock
+*.pdf
+*.mp4
+*.zip
+
+# Not our code
 apps/open-codex
+
+# Store
+.pnpm-store
