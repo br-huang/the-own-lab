@@ -4,7 +4,14 @@
   "nxCloudId": "69748ae2e63a2e7d78ef9ded",
   "namedInputs": {
     "default": ["{projectRoot}/**/*"],
-    "production": ["default", "!{projectRoot}/**/*.spec.*", "!{projectRoot}/**/*.test.*"]
+    "production": [
+      "default",
+      "!{projectRoot}/**/*.spec.*",
+      "!{projectRoot}/**/*.test.*",
+      "!{projectRoot}/**/*.stories.@(js|jsx|ts|tsx|mdx)",
+      "!{projectRoot}/.storybook/**/*",
+      "!{projectRoot}/tsconfig.storybook.json"
+    ]
   },
   "targetDefaults": {
     "build": {
@@ -19,5 +26,18 @@
       "cache": true
     }
   },
-  "analytics": false
+  "analytics": false,
+  "plugins": [
+    {
+      "plugin": "@nx/storybook/plugin",
+      "options": {
+        "serveStorybookTargetName": "storybook",
+        "buildStorybookTargetName": "build-storybook",
+        "testStorybookTargetName": "test-storybook",
+        "staticStorybookTargetName": "static-storybook",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps"
+      }
+    }
+  ]
 }

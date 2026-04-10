@@ -60,3 +60,5 @@ package-lock.json
 .obsidian-kb/
 .claude/worktrees
 .claude/settings.local.json
+
+storybook-static
