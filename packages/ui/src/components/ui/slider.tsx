@@ -1,7 +1,7 @@
-import * as React from "react";
-import { Slider as SliderPrimitive } from "radix-ui";
+import * as React from 'react';
+import { Slider as SliderPrimitive } from 'radix-ui';
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 function Slider({
   className,
@@ -12,13 +12,8 @@ function Slider({
   ...props
 }: React.ComponentProps<typeof SliderPrimitive.Root>) {
   const values = React.useMemo(
-    () =>
-      Array.isArray(value)
-        ? value
-        : Array.isArray(defaultValue)
-          ? defaultValue
-          : [min, max],
-    [defaultValue, max, min, value]
+    () => (Array.isArray(value) ? value : Array.isArray(defaultValue) ? defaultValue : [min, max]),
+    [defaultValue, max, min, value],
   );
 
   return (
@@ -29,8 +24,8 @@ function Slider({
       min={min}
       max={max}
       className={cn(
-        "relative flex w-full touch-none items-center py-1 select-none data-[orientation=vertical]:h-full data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col",
-        className
+        'relative flex w-full touch-none items-center py-1 select-none data-[orientation=vertical]:h-full data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col',
+        className,
       )}
       {...props}
     >

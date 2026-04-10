@@ -33,9 +33,9 @@ const preview: Preview = {
           React.createElement(
             'div',
             { className: 'bg-background text-foreground min-h-screen p-6' },
-            React.createElement(Story)
-          )
-        )
+            React.createElement(Story),
+          ),
+        ),
       );
     },
   ],

@@ -47,9 +47,7 @@ export const ResizableWorkspace: Story = {
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={70}>
-          <div className="flex h-full items-center justify-center p-6">
-            Main content area
-          </div>
+          <div className="flex h-full items-center justify-center p-6">Main content area</div>
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>

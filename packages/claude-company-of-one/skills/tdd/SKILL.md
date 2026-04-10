@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: "Test-driven development cycle: RED -> GREEN -> REFACTOR. Use for every code change — no exceptions."
+description: 'Test-driven development cycle: RED -> GREEN -> REFACTOR. Use for every code change — no exceptions.'
 ---
 
 # Test-Driven Development

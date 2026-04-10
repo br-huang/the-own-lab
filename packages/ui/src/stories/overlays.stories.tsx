@@ -102,9 +102,7 @@ export const SheetDrawerAndAlertDialog: Story = {
         <SheetContent>
           <SheetHeader>
             <SheetTitle>Project settings</SheetTitle>
-            <SheetDescription>
-              Configure a side panel without leaving the page.
-            </SheetDescription>
+            <SheetDescription>Configure a side panel without leaving the page.</SheetDescription>
           </SheetHeader>
         </SheetContent>
       </Sheet>
@@ -134,8 +132,7 @@ export const SheetDrawerAndAlertDialog: Story = {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete story?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone and will remove the example from the
-              shared showcase.
+              This action cannot be undone and will remove the example from the shared showcase.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

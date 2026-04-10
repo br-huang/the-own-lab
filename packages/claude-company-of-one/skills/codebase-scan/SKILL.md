@@ -1,6 +1,6 @@
 ---
 name: codebase-scan
-description: "Explore and understand codebase structure, patterns, and conventions. Use before making design decisions or diagnosing bugs."
+description: 'Explore and understand codebase structure, patterns, and conventions. Use before making design decisions or diagnosing bugs.'
 ---
 
 # Codebase Scan

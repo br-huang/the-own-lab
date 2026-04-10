@@ -1,10 +1,10 @@
-import { Segment, StatuslineContext } from "../types.js";
+import { Segment, StatuslineContext } from '../types.js';
 
 export function modelWidget(input: StatuslineContext): Segment {
   return {
-    id: "model",
+    id: 'model',
     text: input.model,
-    tone: "info",
-    priority: 100
+    tone: 'info',
+    priority: 100,
   };
 }

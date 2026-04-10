@@ -1,17 +1,17 @@
-import picocolors from "picocolors";
-import { Segment, Theme } from "../types.js";
+import picocolors from 'picocolors';
+import { Segment, Theme } from '../types.js';
 
-function paint(text: string, tone: Segment["tone"]): string {
+function paint(text: string, tone: Segment['tone']): string {
   switch (tone) {
-    case "info":
+    case 'info':
       return picocolors.cyan(text);
-    case "success":
+    case 'success':
       return picocolors.green(text);
-    case "warning":
+    case 'warning':
       return picocolors.yellow(text);
-    case "danger":
+    case 'danger':
       return picocolors.red(text);
-    case "muted":
+    case 'muted':
       return picocolors.dim(text);
     default:
       return text;
@@ -19,5 +19,5 @@ function paint(text: string, tone: Segment["tone"]): string {
 }
 
 export function renderPlain(segments: Segment[], _theme: Theme): string {
-  return segments.map((segment) => paint(segment.text, segment.tone)).join(" | ");
+  return segments.map((segment) => paint(segment.text, segment.tone)).join(' | ');
 }

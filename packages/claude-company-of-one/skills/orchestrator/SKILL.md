@@ -1,6 +1,6 @@
 ---
 name: orchestrator
-description: "Company of One orchestrator. Read this skill ONLY when a user message implies work (bug, feature, refactor, plan, review) AND the task is Medium or Large. Do NOT read for questions, explanations, or Small tasks."
+description: 'Company of One orchestrator. Read this skill ONLY when a user message implies work (bug, feature, refactor, plan, review) AND the task is Medium or Large. Do NOT read for questions, explanations, or Small tasks.'
 disable-model-invocation: false
 user-invocable: false
 ---
@@ -15,11 +15,11 @@ You coordinate a team of agents. Not a linear pipeline — a team working in par
 
 ## Sizing → Execution Model
 
-| Size | Execution | Agents |
-|------|-----------|--------|
-| **Small** | Just do it. No team. | You alone. |
-| **Medium** | Partial parallel. 2-3 agents. | Brief plan → implement → test+review → merge |
-| **Large** | Full team. Wave-based parallel. | Read pipeline reference for wave details. |
+| Size       | Execution                       | Agents                                       |
+| ---------- | ------------------------------- | -------------------------------------------- |
+| **Small**  | Just do it. No team.            | You alone.                                   |
+| **Medium** | Partial parallel. 2-3 agents.   | Brief plan → implement → test+review → merge |
+| **Large**  | Full team. Wave-based parallel. | Read pipeline reference for wave details.    |
 
 ---
 
@@ -55,10 +55,12 @@ bash hooks/scripts/pipeline-complete.sh
 ## Medium Flow (partial parallel)
 
 **1. Initialize + TaskCreate:**
+
 ```bash
 bash hooks/scripts/lib/pipeline-state.sh init develop {feature} medium 4
 bash hooks/scripts/lib/brief-manager.sh init develop {feature} medium
 ```
+
 ```
 TaskCreate: "Brief Plan" / "Implement" / "Test & Review" / "Merge"
 ```
@@ -73,6 +75,7 @@ TaskCreate: "Brief Plan" / "Implement" / "Test & Review" / "Merge"
 ## Large Flow (full team, wave-based)
 
 Read the appropriate pipeline reference:
+
 - Develop → `${CLAUDE_SKILL_DIR}/references/pipeline-develop.md`
 - Debug → `${CLAUDE_SKILL_DIR}/references/pipeline-debug.md`
 - Refactor → `${CLAUDE_SKILL_DIR}/references/pipeline-refactor.md`
@@ -91,6 +94,7 @@ Launch parallel agents using multiple Agent tool calls in the SAME message.
 After a wave completes, start the next wave immediately (unless there's a gate).
 
 ### Max 2 hard gates for Large:
+
 1. **Design approval** — before implementation starts
 2. **Review approval** — before merge
 

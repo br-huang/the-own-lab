@@ -1,6 +1,6 @@
 ---
 name: git-ops
-description: "Git branch, commit, and merge operations following project conventions. Use for all git workflow actions."
+description: 'Git branch, commit, and merge operations following project conventions. Use for all git workflow actions.'
 ---
 
 # Git Operations
@@ -11,13 +11,13 @@ Standardized git workflow for branch management, commits, and merges.
 
 Use the following prefixes based on the type of work:
 
-| Prefix | Purpose |
-|--------|---------|
-| `feature/` | New functionality |
-| `fix/` | Bug fixes |
+| Prefix      | Purpose                                    |
+| ----------- | ------------------------------------------ |
+| `feature/`  | New functionality                          |
+| `fix/`      | Bug fixes                                  |
 | `refactor/` | Code restructuring without behavior change |
-| `docs/` | Documentation updates |
-| `chore/` | Maintenance, tooling, dependency updates |
+| `docs/`     | Documentation updates                      |
+| `chore/`    | Maintenance, tooling, dependency updates   |
 
 Branch names should be lowercase, hyphen-separated, and descriptive:
 `feature/add-user-authentication`, `fix/null-pointer-in-parser`
@@ -37,6 +37,7 @@ Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>
 Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `perf`, `ci`
 
 Rules:
+
 - Description is lowercase, imperative mood, no trailing period
 - Scope is optional but encouraged for clarity
 - Body explains "why" not "what" when the change is non-obvious

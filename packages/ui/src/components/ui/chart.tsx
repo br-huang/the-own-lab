@@ -1,15 +1,12 @@
-import * as React from "react";
-import {
-  CartesianGrid,
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
-  type TooltipProps,
-} from "recharts";
-import type { Payload } from "recharts/types/component/DefaultTooltipContent";
-import type { LegendPayload, Props as DefaultLegendContentProps } from "recharts/types/component/DefaultLegendContent";
+import * as React from 'react';
+import { CartesianGrid, Legend, ResponsiveContainer, Tooltip, type TooltipProps } from 'recharts';
+import type { Payload } from 'recharts/types/component/DefaultTooltipContent';
+import type {
+  LegendPayload,
+  Props as DefaultLegendContentProps,
+} from 'recharts/types/component/DefaultLegendContent';
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 type ChartConfig = Record<
   string,
@@ -25,7 +22,7 @@ const ChartContext = React.createContext<{ config: ChartConfig } | null>(null);
 function useChart() {
   const context = React.useContext(ChartContext);
   if (!context) {
-    throw new Error("useChart must be used within a <ChartContainer />");
+    throw new Error('useChart must be used within a <ChartContainer />');
   }
   return context;
 }
@@ -36,10 +33,10 @@ function ChartContainer({
   children,
   config,
   ...props
-}: React.ComponentProps<"div"> & {
+}: React.ComponentProps<'div'> & {
   config: ChartConfig;
 }) {
-  const chartId = React.useId().replace(/:/g, "");
+  const chartId = React.useId().replace(/:/g, '');
   const resolvedId = `chart-${id ?? chartId}`;
 
   return (
@@ -49,7 +46,7 @@ function ChartContainer({
         data-chart={resolvedId}
         className={cn(
           "[&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-border [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-dot[stroke='#fff']]:stroke-transparent [&_.recharts-layer]:outline-none [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border flex aspect-video justify-center text-xs",
-          className
+          className,
         )}
         {...props}
       >
@@ -60,13 +57,7 @@ function ChartContainer({
   );
 }
 
-function ChartStyle({
-  id,
-  config,
-}: {
-  id: string;
-  config: ChartConfig;
-}) {
+function ChartStyle({ id, config }: { id: string; config: ChartConfig }) {
   const colorConfig = Object.entries(config).filter(([, item]) => item.color);
 
   if (!colorConfig.length) return null;
@@ -79,9 +70,9 @@ function ChartStyle({
             ([key, item]) => `
 [data-chart=${id}] {
   --color-${key}: ${item.color};
-}`
+}`,
           )
-          .join("\n"),
+          .join('\n'),
       }}
     />
   );
@@ -93,15 +84,15 @@ function ChartTooltipContent({
   className,
   hideLabel = false,
   hideIndicator = false,
-  indicator = "dot",
+  indicator = 'dot',
   formatter,
   labelFormatter,
-}: React.ComponentProps<"div"> &
-  Pick<TooltipProps<number, string>, "active" | "formatter" | "labelFormatter"> & {
+}: React.ComponentProps<'div'> &
+  Pick<TooltipProps<number, string>, 'active' | 'formatter' | 'labelFormatter'> & {
     payload?: ReadonlyArray<Payload<number, string>>;
     hideLabel?: boolean;
     hideIndicator?: boolean;
-    indicator?: "line" | "dot" | "dashed";
+    indicator?: 'line' | 'dot' | 'dashed';
   }) {
   const { config } = useChart();
 
@@ -111,32 +102,33 @@ function ChartTooltipContent({
 
   return (
     <div
-      className={cn("bg-background grid min-w-[8rem] gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl", className)}
+      className={cn(
+        'bg-background grid min-w-[8rem] gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl',
+        className,
+      )}
     >
       {!hideLabel ? (
-        <div className="font-medium">
-          {labelFormatter ? labelFormatter(label, payload) : label}
-        </div>
+        <div className="font-medium">{labelFormatter ? labelFormatter(label, payload) : label}</div>
       ) : null}
       <div className="grid gap-1.5">
         {payload.map((item) => {
-          const key = String(item.dataKey ?? item.name ?? "value");
+          const key = String(item.dataKey ?? item.name ?? 'value');
           const itemConfig = config[key];
-          const color = item.color ?? itemConfig?.color ?? "var(--foreground)";
+          const color = item.color ?? itemConfig?.color ?? 'var(--foreground)';
 
           return (
             <div key={key} className="flex items-center gap-2">
               {!hideIndicator ? (
                 <div
                   className={cn(
-                    "shrink-0 rounded-[2px]",
-                    indicator === "dot" && "size-2.5",
-                    indicator === "line" && "h-2.5 w-1",
-                    indicator === "dashed" && "h-0 w-4 border-t border-dashed"
+                    'shrink-0 rounded-[2px]',
+                    indicator === 'dot' && 'size-2.5',
+                    indicator === 'line' && 'h-2.5 w-1',
+                    indicator === 'dashed' && 'h-0 w-4 border-t border-dashed',
                   )}
                   style={{
-                    backgroundColor: indicator !== "dashed" ? color : undefined,
-                    borderColor: indicator === "dashed" ? color : undefined,
+                    backgroundColor: indicator !== 'dashed' ? color : undefined,
+                    borderColor: indicator === 'dashed' ? color : undefined,
                   }}
                 />
               ) : null}
@@ -147,7 +139,7 @@ function ChartTooltipContent({
                     : (itemConfig?.label ?? item.name)}
                 </span>
                 <span className="font-mono font-medium tabular-nums">
-                  {typeof item.value === "number" ? item.value.toLocaleString() : item.value}
+                  {typeof item.value === 'number' ? item.value.toLocaleString() : item.value}
                 </span>
               </div>
             </div>
@@ -161,11 +153,11 @@ function ChartTooltipContent({
 function ChartLegendContent({
   className,
   payload,
-  verticalAlign = "bottom",
+  verticalAlign = 'bottom',
   hideIcon = false,
-}: React.ComponentProps<"div"> &
-  Pick<DefaultLegendContentProps, "payload"> & {
-    verticalAlign?: "top" | "bottom" | "middle";
+}: React.ComponentProps<'div'> &
+  Pick<DefaultLegendContentProps, 'payload'> & {
+    verticalAlign?: 'top' | 'bottom' | 'middle';
     hideIcon?: boolean;
   }) {
   const { config } = useChart();
@@ -175,13 +167,13 @@ function ChartLegendContent({
   return (
     <div
       className={cn(
-        "flex items-center justify-center gap-4",
-        verticalAlign === "top" ? "pb-3" : "pt-3",
-        className
+        'flex items-center justify-center gap-4',
+        verticalAlign === 'top' ? 'pb-3' : 'pt-3',
+        className,
       )}
     >
       {payload.map((item: LegendPayload) => {
-        const key = String(item.dataKey ?? item.value ?? "");
+        const key = String(item.dataKey ?? item.value ?? '');
         const itemConfig = config[key];
         const Icon = itemConfig?.icon;
 
@@ -190,10 +182,7 @@ function ChartLegendContent({
             {hideIcon ? null : Icon ? (
               <Icon />
             ) : (
-              <div
-                className="size-2 rounded-[2px]"
-                style={{ backgroundColor: item.color }}
-              />
+              <div className="size-2 rounded-[2px]" style={{ backgroundColor: item.color }} />
             )}
             <span>{itemConfig?.label ?? item.value}</span>
           </div>

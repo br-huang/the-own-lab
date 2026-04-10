@@ -37,8 +37,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          'Typical profile-edit modal using the shared header, body, and footer slots.',
+        story: 'Typical profile-edit modal using the shared header, body, and footer slots.',
       },
     },
   },

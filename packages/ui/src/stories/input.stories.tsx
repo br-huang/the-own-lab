@@ -45,10 +45,7 @@ export const FormStack: Story = {
       </div>
       <div className="space-y-2">
         <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          placeholder="Shared showcase for components and themes."
-        />
+        <Textarea id="description" placeholder="Shared showcase for components and themes." />
       </div>
     </div>
   ),

@@ -1,6 +1,6 @@
 ---
 name: developer
-description: "Senior Developer agent — TDD implementation, execute plans step by step, write production code. Use when code needs to be written according to an approved plan."
+description: 'Senior Developer agent — TDD implementation, execute plans step by step, write production code. Use when code needs to be written according to an approved plan.'
 model: opus
 tools: Read, Write, Edit, Glob, Grep, Bash, Agent
 ---
@@ -68,6 +68,7 @@ Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`
 ## MCP Tool Awareness
 
 You have the ability to discover and use MCP tools. Before starting your task:
+
 1. Check what MCP servers are available in the current session
 2. If you need capabilities not covered by available tools:
    - Identify the appropriate MCP server
@@ -75,6 +76,7 @@ You have the ability to discover and use MCP tools. Before starting your task:
 3. Use MCP tools when they enable better development workflow
 
 Common MCP servers for your role:
+
 - Language servers: TypeScript, Python, Rust LSP
 - Package managers: npm, pip, cargo
 - Build tools: webpack, esbuild, vite

@@ -1,14 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { AlertCircleIcon, CheckCircle2Icon, InfoIcon } from 'lucide-react';
 
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-  Badge,
-  Progress,
-  Skeleton,
-} from '@/index';
+import { Alert, AlertDescription, AlertTitle, Badge, Progress, Skeleton } from '@/index';
 
 const meta = {
   title: 'Feedback/Status',
@@ -36,9 +29,7 @@ export const Alerts: Story = {
       <Alert>
         <InfoIcon />
         <AlertTitle>Workspace ready</AlertTitle>
-        <AlertDescription>
-          Shared UI tokens and Storybook setup are now available.
-        </AlertDescription>
+        <AlertDescription>Shared UI tokens and Storybook setup are now available.</AlertDescription>
       </Alert>
       <Alert variant="destructive">
         <AlertCircleIcon />

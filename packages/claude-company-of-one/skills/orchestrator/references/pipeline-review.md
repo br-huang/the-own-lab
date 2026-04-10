@@ -40,19 +40,24 @@ TaskCreate: "Stage 3/3: Report (reviewer)"
 # Code Review Report
 
 ## Summary
+
 - Files reviewed: {N}
 - Issues: {N critical, N warning, N info}
 
 ## Critical Issues
+
 ...
 
 ## Warnings
+
 ...
 
 ## Suggestions
+
 ...
 
 ## What Went Well
+
 ...
 ```
 

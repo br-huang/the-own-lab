@@ -1,6 +1,6 @@
 ---
 name: review
-description: "Standalone code review pipeline: scan → deep-review → report. Use when existing code or a PR needs to be reviewed without a preceding development pipeline."
+description: 'Standalone code review pipeline: scan → deep-review → report. Use when existing code or a PR needs to be reviewed without a preceding development pipeline.'
 ---
 
 # /review — Standalone Code Review
@@ -26,6 +26,7 @@ This is an advisory pipeline — it produces a report, not a code change.
 Invoke the **reviewer** agent to identify and categorize changes.
 
 The reviewer agent will:
+
 - Identify all files to review (based on input mode)
 - Categorize changes (new files, modified, deleted)
 - Estimate review scope
@@ -42,21 +43,25 @@ Invoke the **reviewer** agent for thorough code review.
 The reviewer agent will apply the full review checklist:
 
 **Logic & Correctness**
+
 - Code does what it claims
 - Edge cases handled
 - Error handling appropriate
 
 **Security**
+
 - No hardcoded secrets
 - Input validation present
 - No injection risks
 
 **Maintainability**
+
 - Functions focused and sized appropriately
 - Names clear and consistent
 - No unnecessary complexity
 
 **Tests**
+
 - Tests exist for new/changed functionality
 - Tests are meaningful
 - No test interdependencies
@@ -75,24 +80,30 @@ The reviewer agent produces the final report.
 # Code Review Report
 
 ## Summary
+
 - Files reviewed: {N}
 - Issues found: {N critical, N warning, N info}
 
 ## Critical Issues (must fix)
+
 1. **{file:line}** — {description}
    - **Why**: {impact}
    - **Fix**: {suggestion}
 
 ## Warnings (should fix)
+
 1. **{file:line}** — {description}
 
 ## Suggestions (nice to have)
+
 1. **{file:line}** — {description}
 
 ## What Went Well
+
 - {Positive observations}
 
 ## Overall Assessment
+
 {Brief summary of code health}
 ```
 

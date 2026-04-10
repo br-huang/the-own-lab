@@ -1,6 +1,6 @@
 ---
 name: postmortem
-description: "Write blameless postmortems for significant bugs. Use after a bug fix to capture lessons learned."
+description: 'Write blameless postmortems for significant bugs. Use after a bug fix to capture lessons learned.'
 ---
 
 # Postmortem
@@ -58,6 +58,7 @@ Concrete preventive measures to reduce the likelihood of recurrence:
 ## Template
 
 Read the template before producing the postmortem:
+
 ```
 Read ${CLAUDE_PLUGIN_ROOT}/templates/POSTMORTEM.md
 ```

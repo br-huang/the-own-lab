@@ -1,6 +1,6 @@
 ---
 name: requirements
-description: "Elicit and structure requirements through systematic questioning. Use when a feature needs to be scoped before design."
+description: 'Elicit and structure requirements through systematic questioning. Use when a feature needs to be scoped before design.'
 ---
 
 # Requirements Elicitation
@@ -16,9 +16,11 @@ Systematic requirements gathering for the product-owner agent.
 ## Requirements Template
 
 ### Summary
+
 A single paragraph describing what the feature does and why it exists.
 
 ### Acceptance Criteria
+
 A numbered list of testable criteria. Each criterion must be verifiable with a concrete test — no subjective language.
 
 - Bad: "The page should load quickly."
@@ -27,20 +29,25 @@ A numbered list of testable criteria. Each criterion must be verifiable with a c
 ### Scope
 
 **In scope:**
+
 - Explicit list of what this feature includes.
 
 **Out of scope:**
+
 - Explicit list of what this feature does NOT include, especially things someone might assume are included.
 
 ### Constraints
+
 Technical, business, or timeline constraints that affect implementation choices.
 
 ### Open Questions
+
 Unresolved items that need answers before or during implementation.
 
 ## Template
 
 Read the template before producing output:
+
 ```
 Read ${CLAUDE_PLUGIN_ROOT}/templates/REQUIREMENTS.md
 ```

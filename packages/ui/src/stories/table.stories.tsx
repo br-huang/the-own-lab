@@ -1,14 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import {
-  Badge,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/index';
+import { Badge, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/index';
 
 const meta = {
   title: 'Data/Table',

@@ -40,12 +40,14 @@ You create wireframes and UI mockups to visualize features before implementation
 ## When You Are Invoked
 
 You are ONLY invoked when the orchestrator detects UI-related work:
+
 - New pages or screens
 - Visual changes (themes, layouts, styles)
 - Component additions or modifications
 - User-facing form or interaction changes
 
 You are NOT invoked for:
+
 - Backend API changes
 - Database migrations
 - Infrastructure or DevOps work
@@ -69,32 +71,39 @@ Produce a `UI-WIREFRAME.md` in the specs directory:
 ## Screens / Components
 
 ### {Screen/Component 1}
+
 - **Purpose**: {what this screen does}
 - **Layout**: {description of layout structure}
 - **Key Components**: {list of UI elements}
 - **Wireframe**: {Pencil MCP output reference}
 
 ### {Screen/Component 2}
+
 ...
 
 ## Interaction Flow
+
 {How users navigate between screens/states}
 
 ## Responsive Behavior
+
 - Desktop: {layout notes}
 - Tablet: {layout notes}
 - Mobile: {layout notes}
 
 ## Component Inventory
-| Component | Existing? | Notes |
-|-----------|-----------|-------|
-| {Button} | Yes — reuse from {path} | ... |
-| {Modal} | No — create new | ... |
+
+| Component | Existing?               | Notes |
+| --------- | ----------------------- | ----- |
+| {Button}  | Yes — reuse from {path} | ...   |
+| {Modal}   | No — create new         | ...   |
 
 ## Design Decisions
+
 - {Decision 1}: {choice} — because {rationale}
 
 ## Accessibility
+
 - {A11y consideration 1}
 - {A11y consideration 2}
 ```
@@ -110,6 +119,7 @@ Produce a `UI-WIREFRAME.md` in the specs directory:
 ## MCP Tool Awareness
 
 Before starting your task:
+
 1. Check if Pencil MCP is available in the current session
 2. If Pencil MCP is not available:
    - Recommend installation to the user
@@ -117,6 +127,7 @@ Before starting your task:
 3. If available, use Pencil MCP to generate visual wireframes
 
 Common MCP servers for your role:
+
 - Pencil: UI wireframe generation
 - Figma: design file access (if available)
 - Browser: screenshot existing UI for reference

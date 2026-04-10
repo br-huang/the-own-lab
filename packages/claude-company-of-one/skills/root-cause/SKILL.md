@@ -1,6 +1,6 @@
 ---
 name: root-cause
-description: "Systematic root cause analysis for bug diagnosis. Use when investigating the underlying cause of a bug."
+description: 'Systematic root cause analysis for bug diagnosis. Use when investigating the underlying cause of a bug.'
 ---
 
 # Root Cause Analysis
@@ -72,6 +72,7 @@ Once the root cause is identified, assess the full impact:
 ## Template
 
 Read the template before producing the diagnosis:
+
 ```
 Read ${CLAUDE_PLUGIN_ROOT}/templates/DIAGNOSIS.md
 ```

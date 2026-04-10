@@ -1,6 +1,6 @@
 ---
 name: git-worktree
-description: "Create and manage git worktrees for isolated development. Use when pipeline needs an isolated workspace."
+description: 'Create and manage git worktrees for isolated development. Use when pipeline needs an isolated workspace.'
 ---
 
 # Git Worktree Management

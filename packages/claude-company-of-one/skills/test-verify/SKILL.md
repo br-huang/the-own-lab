@@ -1,6 +1,6 @@
 ---
 name: test-verify
-description: "Run and analyze test results against acceptance criteria. Use when verifying implementation completeness."
+description: 'Run and analyze test results against acceptance criteria. Use when verifying implementation completeness.'
 ---
 
 # Test Verify
@@ -31,20 +31,24 @@ Run tests and verify implementation against acceptance criteria.
 ## Report Format
 
 ### Summary
+
 One paragraph: what was tested, how many tests ran, how many passed/failed.
 
 ### Criteria Verification Table
 
-| # | Acceptance Criterion | Test(s) | Result |
-|---|---|---|---|
-| 1 | Description of criterion | `test_name_here` | PASS / FAIL |
+| #   | Acceptance Criterion     | Test(s)          | Result      |
+| --- | ------------------------ | ---------------- | ----------- |
+| 1   | Description of criterion | `test_name_here` | PASS / FAIL |
 
 ### Edge Cases
+
 List of edge cases tested and their results.
 
 ### Issues Found
+
 Any bugs, regressions, or concerns discovered during verification.
 
 ### Verdict
+
 **PASS** — All acceptance criteria verified, no critical issues.
 **FAIL** — List which criteria failed and why.

@@ -1,6 +1,6 @@
 ---
 name: plan
-description: "Architecture planning pipeline: gather requirements → design → document. Use when planning a feature or system without writing code."
+description: 'Architecture planning pipeline: gather requirements → design → document. Use when planning a feature or system without writing code.'
 ---
 
 # /plan — Architecture Planning Pipeline
@@ -27,6 +27,7 @@ Invoke the **product-owner** agent to gather and structure requirements.
 **Output**: Update `briefs/current.json` field `requirements`
 
 The product-owner agent will:
+
 - Understand what the user wants to plan
 - Ask clarifying questions about constraints, goals, and priorities
 - Define success criteria for the design
@@ -58,6 +59,7 @@ Invoke the **architect** agent to explore options and design the solution.
 **Output**: Update `briefs/current.json` fields `design` + `decisions`
 
 The architect agent will:
+
 - Scan the codebase to understand current architecture
 - Propose 2-3 approaches with trade-offs
 - Analyze each approach against the success criteria
@@ -77,34 +79,44 @@ Invoke the **architect** agent to produce formal documentation.
 # ADR-{number}: {title}
 
 ## Status
+
 Proposed
 
 ## Context
+
 {Why this decision needs to be made}
 
 ## Decision
+
 {What we decided}
 
 ## Consequences
+
 ### Positive
+
 - {benefit}
 
 ### Negative
+
 - {trade-off}
 
 ### Risks
+
 - {risk}: {mitigation}
 
 ## Alternatives Considered
+
 | Option | Pros | Cons | Rejected Because |
-|--------|------|------|-----------------|
-| {A} | ... | ... | ... |
+| ------ | ---- | ---- | ---------------- |
+| {A}    | ...  | ...  | ...              |
 
 ## Implementation Roadmap
+
 1. {Phase 1}: {description} — {rough scope}
 2. {Phase 2}: ...
 
 ## Dependencies
+
 - {External dependency}: {status}
 ```
 

@@ -1,4 +1,4 @@
-import { Segment, SessionState, TranscriptState } from "../types.js";
+import { Segment, SessionState, TranscriptState } from '../types.js';
 
 function truncate(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
@@ -18,7 +18,7 @@ function formatDuration(ms: number): string {
 
 export function sessionWidget(
   session?: SessionState,
-  transcript?: TranscriptState
+  transcript?: TranscriptState,
 ): Segment | undefined {
   if (!session && !transcript?.lastUserPrompt) return undefined;
 
@@ -32,9 +32,9 @@ export function sessionWidget(
   if (parts.length === 0) return undefined;
 
   return {
-    id: "session",
-    text: parts.join(" "),
-    tone: "neutral",
-    priority: 60
+    id: 'session',
+    text: parts.join(' '),
+    tone: 'neutral',
+    priority: 60,
   };
 }

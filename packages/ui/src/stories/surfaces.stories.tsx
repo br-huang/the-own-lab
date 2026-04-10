@@ -82,8 +82,7 @@ export const AccordionAndScrollArea: Story = {
         <AccordionItem value="item-1">
           <AccordionTrigger>Why use shared primitives?</AccordionTrigger>
           <AccordionContent>
-            Shared components reduce duplication and keep visual behavior
-            consistent across apps.
+            Shared components reduce duplication and keep visual behavior consistent across apps.
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-2">
@@ -103,8 +102,8 @@ export const AccordionAndScrollArea: Story = {
                 Update {index + 1}
               </div>
               <p className="text-muted-foreground text-sm">
-                Shared Storybook stories make it easier to inspect surface-level
-                consistency and interaction states.
+                Shared Storybook stories make it easier to inspect surface-level consistency and
+                interaction states.
               </p>
             </div>
           ))}

@@ -1,12 +1,10 @@
-import * as React from "react";
-import { Tooltip as TooltipPrimitive } from "radix-ui";
+import * as React from 'react';
+import { Tooltip as TooltipPrimitive } from 'radix-ui';
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 /** Provider props that control global tooltip timing and delay behavior. */
-export type TooltipProviderProps = React.ComponentProps<
-  typeof TooltipPrimitive.Provider
->;
+export type TooltipProviderProps = React.ComponentProps<typeof TooltipPrimitive.Provider>;
 
 function TooltipProvider(props: TooltipProviderProps) {
   return <TooltipPrimitive.Provider data-slot="tooltip-provider" {...props} />;
@@ -19,9 +17,7 @@ function Tooltip(props: TooltipProps) {
   return <TooltipPrimitive.Root data-slot="tooltip" {...props} />;
 }
 
-function TooltipTrigger(
-  props: React.ComponentProps<typeof TooltipPrimitive.Trigger>
-) {
+function TooltipTrigger(props: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {
   return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />;
 }
 
@@ -36,8 +32,8 @@ function TooltipContent({
         data-slot="tooltip-content"
         sideOffset={sideOffset}
         className={cn(
-          "bg-primary text-primary-foreground animate-in fade-in-0 zoom-in-95 z-50 w-fit origin-(--radix-tooltip-content-transform-origin) rounded-md px-3 py-1.5 text-xs text-balance",
-          className
+          'bg-primary text-primary-foreground animate-in fade-in-0 zoom-in-95 z-50 w-fit origin-(--radix-tooltip-content-transform-origin) rounded-md px-3 py-1.5 text-xs text-balance',
+          className,
         )}
         {...props}
       />

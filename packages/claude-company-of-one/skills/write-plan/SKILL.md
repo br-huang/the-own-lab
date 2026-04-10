@@ -1,6 +1,6 @@
 ---
 name: write-plan
-description: "Write detailed implementation plans at file-level specificity. Use when breaking a design into executable steps."
+description: 'Write detailed implementation plans at file-level specificity. Use when breaking a design into executable steps.'
 ---
 
 # Write Plan
@@ -35,6 +35,7 @@ Steps must be ordered by dependency. No step should reference code that has not 
 ## Templates
 
 Read the relevant template before producing output:
+
 - Implementation plan: `Read ${CLAUDE_PLUGIN_ROOT}/templates/PLAN.md`
 - Design document: `Read ${CLAUDE_PLUGIN_ROOT}/templates/DESIGN.md`
 

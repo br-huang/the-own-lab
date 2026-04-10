@@ -11,8 +11,7 @@ const meta = {
     layout: 'centered',
     docs: {
       description: {
-        component:
-          'Primary action control with shared variants and sizes for app-wide usage.',
+        component: 'Primary action control with shared variants and sizes for app-wide usage.',
       },
     },
   },

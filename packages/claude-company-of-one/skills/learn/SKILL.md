@@ -1,6 +1,6 @@
 ---
 name: learn
-description: "Pipeline retrospective and pattern extraction for continuous learning. Use after every pipeline completion to capture lessons."
+description: 'Pipeline retrospective and pattern extraction for continuous learning. Use after every pipeline completion to capture lessons.'
 ---
 
 # Learn
@@ -47,6 +47,7 @@ Keep the project knowledge base current:
 ## Retrospective Template
 
 Read the template before producing the retrospective:
+
 ```
 Read ${CLAUDE_PLUGIN_ROOT}/templates/RETRO.md
 ```
@@ -55,12 +56,12 @@ Read ${CLAUDE_PLUGIN_ROOT}/templates/RETRO.md
 
 Patterns earn confidence through repeated observation:
 
-| Event | Score Change |
-|-------|-------------|
-| First observation | 0.3 |
-| Each additional observation | +0.2 |
-| Maximum confidence | 0.9 |
-| User rejects the pattern | -0.1 |
+| Event                       | Score Change |
+| --------------------------- | ------------ |
+| First observation           | 0.3          |
+| Each additional observation | +0.2         |
+| Maximum confidence          | 0.9          |
+| User rejects the pattern    | -0.1         |
 
 A pattern at 0.3 is a tentative observation. A pattern at 0.7+ is well-established and should be actively applied in future runs.
 

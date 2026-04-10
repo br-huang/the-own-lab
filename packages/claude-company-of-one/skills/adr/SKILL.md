@@ -1,6 +1,6 @@
 ---
 name: adr
-description: "Write Architecture Decision Records for significant technical decisions. Use when a decision will affect future development."
+description: 'Write Architecture Decision Records for significant technical decisions. Use when a decision will affect future development.'
 ---
 
 # Architecture Decision Records
@@ -43,24 +43,28 @@ State the decision clearly and concisely. Use active voice:
 ### Consequences
 
 #### Positive
+
 - Benefits gained from this decision
 
 #### Negative
+
 - Trade-offs accepted
 
 #### Risks
+
 - What could go wrong and under what conditions
 
 ### Alternatives Considered
 
 | Alternative | Pros | Cons | Reason Not Chosen |
-|-------------|------|------|-------------------|
-| Option A | ... | ... | ... |
-| Option B | ... | ... | ... |
+| ----------- | ---- | ---- | ----------------- |
+| Option A    | ...  | ...  | ...               |
+| Option B    | ...  | ...  | ...               |
 
 ## Template
 
 Read the template before producing the ADR (includes Mermaid diagrams):
+
 ```
 Read ${CLAUDE_PLUGIN_ROOT}/templates/ADR.md
 ```

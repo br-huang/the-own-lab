@@ -1,6 +1,6 @@
 ---
 name: pipeline-gate
-description: "Enforce pipeline progression rules — hard gates require user approval, soft gates auto-proceed on success. Use whenever a pipeline stage has a gate annotation."
+description: 'Enforce pipeline progression rules — hard gates require user approval, soft gates auto-proceed on success. Use whenever a pipeline stage has a gate annotation.'
 ---
 
 # Pipeline Gate
@@ -18,12 +18,12 @@ When a stage is annotated with a hard gate:
 
 ### Accepted Responses
 
-| Response | Action |
-|---|---|
-| `approved` / `yes` / `lgtm` / `proceed` | Continue to next stage |
-| Feedback text (anything else substantive) | Redo the stage incorporating feedback |
-| `skip` | Log the skip with a warning, advance to next stage |
-| `abort` | Terminate the pipeline, preserve all artifacts produced so far |
+| Response                                  | Action                                                         |
+| ----------------------------------------- | -------------------------------------------------------------- |
+| `approved` / `yes` / `lgtm` / `proceed`   | Continue to next stage                                         |
+| Feedback text (anything else substantive) | Redo the stage incorporating feedback                          |
+| `skip`                                    | Log the skip with a warning, advance to next stage             |
+| `abort`                                   | Terminate the pipeline, preserve all artifacts produced so far |
 
 ## Soft Gate Protocol
 

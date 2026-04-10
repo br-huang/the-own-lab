@@ -57,9 +57,7 @@ export const ChoiceControls: Story = {
         <div className="flex items-center justify-between rounded-lg border p-3">
           <div className="space-y-1">
             <Label htmlFor="dark-mode">Dark mode</Label>
-            <p className="text-muted-foreground text-sm">
-              Match the shared theme preview.
-            </p>
+            <p className="text-muted-foreground text-sm">Match the shared theme preview.</p>
           </div>
           <Switch id="dark-mode" defaultChecked />
         </div>

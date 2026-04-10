@@ -1,31 +1,31 @@
-import stringWidth from "string-width";
-import { Segment } from "./types.js";
+import stringWidth from 'string-width';
+import { Segment } from './types.js';
 
-const MAX_WIDTH_BY_WIDGET: Record<Segment["id"], number> = {
+const MAX_WIDTH_BY_WIDGET: Record<Segment['id'], number> = {
   model: 18,
   cwd: 18,
   git: 20,
   context: 8,
   session: 24,
-  pet: 16
+  pet: 16,
 };
 
-const MIN_WIDTH_BY_WIDGET: Record<Segment["id"], number> = {
+const MIN_WIDTH_BY_WIDGET: Record<Segment['id'], number> = {
   model: 8,
   cwd: 8,
   git: 8,
   context: 6,
   session: 10,
-  pet: 7
+  pet: 7,
 };
 
 function truncateText(text: string, maxWidth: number): string {
   if (maxWidth <= 0 || stringWidth(text) <= maxWidth) return text;
 
-  const ellipsis = "…";
+  const ellipsis = '…';
   const ellipsisWidth = stringWidth(ellipsis);
   const targetWidth = Math.max(1, maxWidth - ellipsisWidth);
-  let result = "";
+  let result = '';
 
   for (const char of text) {
     if (stringWidth(result) + stringWidth(char) > targetWidth) break;
@@ -42,7 +42,10 @@ function segmentWidth(segment: Segment): number {
 function totalWidth(segments: Segment[], separatorWidth: number): number {
   if (segments.length === 0) return 0;
 
-  return segments.reduce((sum, segment) => sum + segmentWidth(segment), 0) + separatorWidth * (segments.length - 1);
+  return (
+    segments.reduce((sum, segment) => sum + segmentWidth(segment), 0) +
+    separatorWidth * (segments.length - 1)
+  );
 }
 
 function cloneSegments(segments: Segment[]): Segment[] {
@@ -57,7 +60,9 @@ function compactSegments(segments: Segment[], separatorWidth: number, budget: nu
     .sort((left, right) => (left.priority ?? 0) - (right.priority ?? 0));
 
   for (const candidate of candidates) {
-    const target = next.find((segment) => segment.id === candidate.id && segment.text === candidate.text);
+    const target = next.find(
+      (segment) => segment.id === candidate.id && segment.text === candidate.text,
+    );
     if (!target || !target.compactText) continue;
     target.text = target.compactText;
     if (totalWidth(next, separatorWidth) <= budget) break;
@@ -66,7 +71,11 @@ function compactSegments(segments: Segment[], separatorWidth: number, budget: nu
   return next;
 }
 
-function dropLowPrioritySegments(segments: Segment[], separatorWidth: number, budget: number): Segment[] {
+function dropLowPrioritySegments(
+  segments: Segment[],
+  separatorWidth: number,
+  budget: number,
+): Segment[] {
   const next = cloneSegments(segments);
 
   while (next.length > 1 && totalWidth(next, separatorWidth) > budget) {
@@ -84,7 +93,11 @@ function dropLowPrioritySegments(segments: Segment[], separatorWidth: number, bu
   return next;
 }
 
-function trimSegmentsToBudget(segments: Segment[], separatorWidth: number, budget: number): Segment[] {
+function trimSegmentsToBudget(
+  segments: Segment[],
+  separatorWidth: number,
+  budget: number,
+): Segment[] {
   const next = cloneSegments(segments);
   const ordered = [...next].sort((left, right) => (left.priority ?? 0) - (right.priority ?? 0));
 
@@ -92,8 +105,9 @@ function trimSegmentsToBudget(segments: Segment[], separatorWidth: number, budge
     let changed = false;
 
     for (const candidate of ordered) {
-      const target = next.find((segment) => segment.id === candidate.id && segment.text === candidate.text)
-        ?? next.find((segment) => segment.id === candidate.id);
+      const target =
+        next.find((segment) => segment.id === candidate.id && segment.text === candidate.text) ??
+        next.find((segment) => segment.id === candidate.id);
       if (!target) continue;
 
       const currentWidth = stringWidth(target.text);
@@ -124,14 +138,14 @@ export function getStatuslineBudget(columns?: number): number {
 export function fitSegmentsToWidth(
   segments: Segment[],
   budget: number,
-  separatorWidth: number
+  separatorWidth: number,
 ): Segment[] {
   const normalized = segments.map((segment) => ({
     ...segment,
     text: truncateText(segment.text, MAX_WIDTH_BY_WIDGET[segment.id]),
     compactText: segment.compactText
       ? truncateText(segment.compactText, MAX_WIDTH_BY_WIDGET[segment.id])
-      : undefined
+      : undefined,
   }));
 
   if (totalWidth(normalized, separatorWidth) <= budget) return normalized;

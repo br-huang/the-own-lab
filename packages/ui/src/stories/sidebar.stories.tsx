@@ -1,10 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import {
-  BarChart3Icon,
-  BookOpenIcon,
-  HomeIcon,
-  Settings2Icon,
-} from 'lucide-react';
+import { BarChart3Icon, BookOpenIcon, HomeIcon, Settings2Icon } from 'lucide-react';
 
 import {
   Button,
@@ -105,8 +100,7 @@ export const Default: Story = {
               <CardTitle>Navigation primitives</CardTitle>
             </CardHeader>
             <CardContent className="text-muted-foreground text-sm">
-              The sidebar lives in the shared package so apps can reuse the same
-              layout shell.
+              The sidebar lives in the shared package so apps can reuse the same layout shell.
             </CardContent>
           </Card>
           <Card>
@@ -114,8 +108,8 @@ export const Default: Story = {
               <CardTitle>Theme validation</CardTitle>
             </CardHeader>
             <CardContent className="text-muted-foreground text-sm">
-              Toggle the Storybook theme toolbar to verify sidebar tokens in
-              both light and dark mode.
+              Toggle the Storybook theme toolbar to verify sidebar tokens in both light and dark
+              mode.
             </CardContent>
           </Card>
         </div>

@@ -1,6 +1,6 @@
-export type WidgetId = "model" | "cwd" | "git" | "context" | "session" | "pet";
-export type RendererId = "plain" | "powerline";
-export type Tone = "neutral" | "info" | "success" | "warning" | "danger" | "muted";
+export type WidgetId = 'model' | 'cwd' | 'git' | 'context' | 'session' | 'pet';
+export type RendererId = 'plain' | 'powerline';
+export type Tone = 'neutral' | 'info' | 'success' | 'warning' | 'danger' | 'muted';
 
 export interface StatuslineContext {
   cwd: string;

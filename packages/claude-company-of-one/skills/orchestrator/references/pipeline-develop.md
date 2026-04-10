@@ -3,6 +3,7 @@
 ## Task Creation
 
 At pipeline start, create ALL tasks:
+
 ```
 TaskCreate: "Wave 1: Requirements + Branch Setup"
 TaskCreate: "Wave 2: Design + Test Plan"
@@ -17,6 +18,7 @@ Initialize brief: `bash hooks/scripts/lib/brief-manager.sh init develop {feature
 ---
 
 ## Wave 1: Requirements + Branch Setup
+
 **Agents: product-owner + devops (PARALLEL)**
 
 Launch both agents in the SAME message:
@@ -39,6 +41,7 @@ TaskUpdate → completed.
 ---
 
 ## Wave 2: Design + Test Plan
+
 **Agents: architect + qa (PARALLEL) + ui-designer (conditional)**
 
 Launch in the SAME message:
@@ -64,6 +67,7 @@ Agent(ui-designer):  ← ONLY if UI detected
 **Sync 2**: Wait for all agents.
 
 **HARD GATE 1**: Present design summary to user.
+
 ```
 Design ready. Key decisions:
 - {decision 1}
@@ -77,6 +81,7 @@ TaskUpdate → completed.
 ---
 
 ## Wave 3: Plan + Scaffold
+
 **Agents: architect + developer (PARALLEL)**
 
 ```
@@ -100,6 +105,7 @@ TaskUpdate → completed.
 ---
 
 ## Wave 4: Implement
+
 **Agent: developer (primary), architect available for questions**
 
 ```
@@ -119,6 +125,7 @@ TaskUpdate → completed.
 ---
 
 ## Wave 5: Verify + Review
+
 **Agents: qa + reviewer (PARALLEL)**
 
 Launch both in the SAME message:
@@ -142,6 +149,7 @@ Agent(reviewer):
 **Sync 5**: Wait for both.
 
 ### Review-Fix Loop (if needed)
+
 ```
 If review has warnings only:
   → Agent(developer): "Fix these warnings: {list}. On branch feature/{slug}."
@@ -153,6 +161,7 @@ If critical issues:
 ```
 
 **HARD GATE 2**: Present results to user.
+
 ```
 QA: {pass/fail summary}
 Review: {verdict} — {N issues}
@@ -164,6 +173,7 @@ TaskUpdate → completed.
 ---
 
 ## Wave 6: Merge + Ship
+
 **Agent: devops**
 
 ```

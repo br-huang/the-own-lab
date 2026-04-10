@@ -1,14 +1,14 @@
-import fs from "node:fs";
-import os from "node:os";
-import path from "node:path";
-import { z } from "zod";
-import { Config } from "./types.js";
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { z } from 'zod';
+import { Config } from './types.js';
 
 const configSchema = z.object({
-  renderer: z.enum(["plain", "powerline"]).default("powerline"),
+  renderer: z.enum(['plain', 'powerline']).default('powerline'),
   widgets: z
-    .array(z.enum(["model", "cwd", "git", "context", "session", "pet"]))
-    .default(["model", "cwd", "git", "context", "pet"]),
+    .array(z.enum(['model', 'cwd', 'git', 'context', 'session', 'pet']))
+    .default(['model', 'cwd', 'git', 'context', 'pet']),
   nerdFont: z.boolean().default(true),
   theme: z
     .object({
@@ -19,31 +19,31 @@ const configSchema = z.object({
       danger: z.object({ fg: z.string(), bg: z.string() }).partial().optional(),
       muted: z.object({ fg: z.string(), bg: z.string() }).partial().optional(),
       separator: z.string().optional(),
-      separatorAscii: z.string().optional()
+      separatorAscii: z.string().optional(),
     })
-    .default({})
+    .default({}),
 });
 
 export const defaultConfig: Config = {
-  renderer: "powerline",
-  widgets: ["model", "cwd", "git", "context", "pet"],
+  renderer: 'powerline',
+  widgets: ['model', 'cwd', 'git', 'context', 'pet'],
   nerdFont: true,
-  theme: {}
+  theme: {},
 };
 
 function configPaths(cwd: string): string[] {
   return [
-    path.join(cwd, ".claude-best-statusline.json"),
-    path.join(cwd, ".claude-code-statusline.json"),
-    path.join(os.homedir(), ".config", "claude-best-statusline", "config.json"),
-    path.join(os.homedir(), ".config", "claude-code-statusline", "config.json")
+    path.join(cwd, '.claude-best-statusline.json'),
+    path.join(cwd, '.claude-code-statusline.json'),
+    path.join(os.homedir(), '.config', 'claude-best-statusline', 'config.json'),
+    path.join(os.homedir(), '.config', 'claude-code-statusline', 'config.json'),
   ];
 }
 
 export function loadConfig(cwd: string): Config {
   for (const candidate of configPaths(cwd)) {
     if (!fs.existsSync(candidate)) continue;
-    const parsed = JSON.parse(fs.readFileSync(candidate, "utf8"));
+    const parsed = JSON.parse(fs.readFileSync(candidate, 'utf8'));
     return configSchema.parse(parsed);
   }
 

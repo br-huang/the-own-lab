@@ -1,6 +1,6 @@
 ---
 name: execute-plan
-description: "Execute an implementation plan step by step with verification at each step. Use when implementing code from an approved plan."
+description: 'Execute an implementation plan step by step with verification at each step. Use when implementing code from an approved plan.'
 ---
 
 # Execute Plan

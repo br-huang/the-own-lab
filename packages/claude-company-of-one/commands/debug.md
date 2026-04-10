@@ -1,6 +1,6 @@
 ---
 name: debug
-description: "Systematic debugging pipeline: reproduce → diagnose → fix → verify → document. Use when investigating and fixing a bug with full traceability."
+description: 'Systematic debugging pipeline: reproduce → diagnose → fix → verify → document. Use when investigating and fixing a bug with full traceability.'
 ---
 
 # /debug — Systematic Debugging Pipeline
@@ -27,6 +27,7 @@ Invoke the **debugger** agent to reproduce and document the bug.
 **Output**: `REPRODUCE.md` in the specs directory
 
 The debugger agent will:
+
 - Gather all available information (error messages, logs, user report)
 - Create a minimal reproduction case
 - Define expected vs. actual behavior
@@ -44,6 +45,7 @@ Invoke the **debugger** agent to perform root cause analysis.
 **Output**: `DIAGNOSIS.md` in the specs directory
 
 The debugger agent will:
+
 - Form a hypothesis about the root cause
 - Trace the code path from input to error
 - Use binary search to narrow down the problem area
@@ -73,6 +75,7 @@ Fixing the wrong root cause creates new bugs — this gate exists for a reason.
 ### Stage 3: FIX (Agent: devops → developer)
 
 **Step 3a**: Invoke the **devops** agent to create a fix branch.
+
 - Create branch: `fix/{bug-slug}`
 
 **Step 3b**: Invoke the **developer** agent to implement the fix.
@@ -81,6 +84,7 @@ Fixing the wrong root cause creates new bugs — this gate exists for a reason.
 **Output**: Bug fix with regression test
 
 The developer agent will:
+
 - Write a failing test that reproduces the bug (RED)
 - Implement the minimum fix to make it pass (GREEN)
 - Refactor if needed (REFACTOR)
@@ -98,6 +102,7 @@ Invoke the **qa** agent to verify the fix.
 **Output**: `VERIFY.md` in the specs directory
 
 The qa agent will:
+
 - Confirm the original reproduction case now passes
 - Run the full test suite (check for regressions)
 - Verify edge cases related to the bug
@@ -113,6 +118,7 @@ The qa agent will:
 {Summary of failures}
 
 Options:
+
 - **'rediagnose'** — return to Stage 2 (root cause may be wrong)
 - **'fix'** — return to Stage 3 (fix was incomplete)
 - **'abort'** — stop the pipeline"
@@ -130,10 +136,12 @@ This becomes a HARD GATE.
 **Output**: `POSTMORTEM.md` in the specs directory (if warranted)
 
 The debugger agent will assess whether a postmortem is warranted:
+
 - If the bug could recur or affects critical paths → write postmortem
 - If the bug was a simple typo or one-off → skip postmortem, note in retro only
 
 **Step 5b**: Invoke the **devops** agent to merge and run retrospective.
+
 - Squash merge to target branch
 - Clean up fix branch
 - Run pipeline retrospective
@@ -150,6 +158,7 @@ Branch: merged to {target branch}
 Specs: `{specsDir}/{date}-fix-{bug}/`
 
 Artifacts produced:
+
 - REPRODUCE.md
 - DIAGNOSIS.md
 - VERIFY.md
@@ -161,7 +170,9 @@ Artifacts produced:
 ## Strictness Overrides
 
 If `userConfig.strictness == "fast"`:
+
 - Stage 2 hard gate → soft gate (auto-proceed if diagnosis confidence is high)
 
 If `userConfig.strictness == "strict"`:
+
 - All stages become hard gates

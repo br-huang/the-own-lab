@@ -1,10 +1,10 @@
-import { Segment, StatuslineContext } from "../types.js";
+import { Segment, StatuslineContext } from '../types.js';
 
 export function cwdWidget(input: StatuslineContext): Segment {
   return {
-    id: "cwd",
+    id: 'cwd',
     text: input.projectName,
-    tone: "muted",
-    priority: 90
+    tone: 'muted',
+    priority: 90,
   };
 }
