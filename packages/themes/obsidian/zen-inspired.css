@@ -4,8 +4,7 @@
  * https://tweakcn.com/themes/cmlm03etv000204lh15608kec?p=colors
  */
 
-.theme-dark.zen-inspired,
-body.theme-dark.zen-inspired {
+.theme-dark {
   --background-primary: #141414;
   --background-primary-alt: #1c1c1c;
   --background-secondary: #1c1c1c;
@@ -103,8 +102,5 @@ body.theme-dark.zen-inspired {
   --table-header-border-color: #363636;
   --table-header-background: #1c1c1c;
   --table-row-alt-background: rgba(255, 255, 255, 0.02);
-}
-
-body.theme-dark.zen-inspired {
   color-scheme: dark;
 }
