@@ -1,52 +1,52 @@
-# docs/projects/ 文件規範
+# docs/projects/ Documentation Guide
 
-`docs/projects/` 是所有專案管理文件的唯一入口。禁止在 `apps/`、`packages/`、`scripts/` 內建立 `docs/`。
+`docs/projects/` is the single source of truth for all project management artifacts. Never create `docs/` inside `apps/`, `packages/`, or `scripts/`.
 
-## 結構
+## Structure
 
 ```
 docs/projects/<project-name>/
-├── specs/                     ← 功能規格
+├── specs/                     ← feature specifications
 │   └── YYYY-MM-DD-<slug>/
-│       ├── REQUIREMENTS.md    ← 必要
+│       ├── REQUIREMENTS.md    ← required
 │       ├── DESIGN.md
 │       ├── PLAN.md
-│       ├── REVIEW.md          ← 選填
-│       └── TEST.md            ← 選填
-├── adr/                       ← 架構決策紀錄
+│       ├── REVIEW.md          ← optional
+│       └── TEST.md            ← optional
+├── adr/                       ← architecture decision records
 │   └── NNN-<title>.md
-└── issues/                    ← Bug 追蹤
+└── issues/                    ← bug tracking
     └── NNN-<title>.md
 ```
 
-## 四種文件類型
+## Document Types
 
-| 類型 | 回答的問題 | 生命週期 |
-|------|-----------|---------|
-| specs/ | 這個功能要做什麼、怎麼做？ | 開發前寫 → 開發中參考 → 完成後歸檔 |
-| adr/ | 為什麼選 A 不選 B？ | 決策時寫一次，永久保留 |
-| issues/ | 出了什麼問題、怎麼修的？ | 發現時建 → 修復後關閉 |
+| Type | Question it answers | Lifecycle |
+|------|-------------------|-----------|
+| specs/ | What does this feature do and how? | Write before dev → reference during → archive after |
+| adr/ | Why did we choose A over B? | Write once at decision time, keep forever |
+| issues/ | What broke and how was it fixed? | Create on discovery → close on fix |
 
-## 命名規則
+## Naming Conventions
 
-- **Spec 目錄**: `YYYY-MM-DD-<verb>-<feature-slug>` (e.g., `2026-04-09-add-dark-mode`)
-- **Spec 檔案**: 大寫 `REQUIREMENTS.md`, `DESIGN.md`, `PLAN.md`, `REVIEW.md`, `TEST.md`
-- **ADR**: `001-chose-electron-over-tauri.md` (零填充, 過去式動詞)
-- **Issue**: `001-tab-crash-on-close.md` (零填充, 描述性)
+- **Spec directory**: `YYYY-MM-DD-<verb>-<feature-slug>` (e.g., `2026-04-09-add-dark-mode`)
+- **Spec files**: uppercase `REQUIREMENTS.md`, `DESIGN.md`, `PLAN.md`, `REVIEW.md`, `TEST.md`
+- **ADR**: `001-chose-electron-over-tauri.md` (zero-padded, past tense verb)
+- **Issue**: `001-tab-crash-on-close.md` (zero-padded, descriptive)
 
-## Specs 流程
+## Specs Workflow
 
 ```
-REQUIREMENTS.md → DESIGN.md → PLAN.md → [實作] → REVIEW.md → TEST.md
+REQUIREMENTS.md → DESIGN.md → PLAN.md → [implement] → REVIEW.md → TEST.md
 ```
 
-- **REQUIREMENTS.md** — 需求定義：目標、範圍、驗收條件
-- **DESIGN.md** — 技術設計：架構、資料流、介面定義
-- **PLAN.md** — 實作計畫：分步驟、每步驟對應檔案
-- **REVIEW.md** — 開發後回顧：實際 vs 預期、取捨紀錄
-- **TEST.md** — 測試計畫：測試策略、邊界條件、驗收結果
+- **REQUIREMENTS.md** — Goals, scope, acceptance criteria
+- **DESIGN.md** — Architecture, data flow, interface definitions
+- **PLAN.md** — Step-by-step implementation plan with file-level specificity
+- **REVIEW.md** — Post-dev review: actual vs expected, trade-off notes
+- **TEST.md** — Test strategy, edge cases, verification results
 
-## ADR 格式
+## ADR Template
 
 ```markdown
 # NNN-<title>
@@ -55,18 +55,18 @@ REQUIREMENTS.md → DESIGN.md → PLAN.md → [實作] → REVIEW.md → TEST.md
 - Date: YYYY-MM-DD
 
 ## Context
-（背景：遇到什麼問題）
+(What problem did we face?)
 
 ## Decision
-（決策：選了什麼方案）
+(What did we choose?)
 
 ## Consequences
-（後果：帶來什麼影響）
+(What are the trade-offs?)
 ```
 
-一旦寫入不刪除，只能用新的 ADR 取代（標記舊的為 `superseded`）。
+Once written, ADRs are never deleted. Supersede with a new ADR and mark the old one as `superseded`.
 
-## Issues 格式
+## Issue Template
 
 ```markdown
 # NNN-<title>
@@ -75,11 +75,11 @@ REQUIREMENTS.md → DESIGN.md → PLAN.md → [實作] → REVIEW.md → TEST.md
 - Date: YYYY-MM-DD
 
 ## Problem
-（問題描述 + 重現步驟）
+(Description + reproduction steps)
 
 ## Root Cause
-（根因分析）
+(Analysis)
 
 ## Fix
-（修復方案）
+(Solution applied)
 ```
