@@ -1,0 +1,110 @@
+/*
+ * Zen Inspired Theme for Obsidian
+ * Source tokens adapted from tweakcn:
+ * https://tweakcn.com/themes/cmlm03etv000204lh15608kec?p=colors
+ */
+
+.theme-dark.zen-inspired,
+body.theme-dark.zen-inspired {
+  --background-primary: #141414;
+  --background-primary-alt: #1c1c1c;
+  --background-secondary: #1c1c1c;
+  --background-secondary-alt: #222222;
+  --background-modifier-hover: #2a2a2a;
+  --background-modifier-active-hover: #363636;
+  --background-modifier-border: #2c2c2c;
+  --background-modifier-border-hover: #363636;
+  --background-modifier-form-field: #1c1c1c;
+  --background-modifier-form-field-highlighted: #222222;
+  --background-modifier-box-shadow: rgba(0, 0, 0, 0.35);
+  --background-modifier-success: #d1cfc0;
+  --background-modifier-error: #ef4444;
+  --background-modifier-error-rgb: 239, 68, 68;
+
+  --text-normal: #e8e3da;
+  --text-muted: #8e8a83;
+  --text-faint: #5c5a56;
+  --text-on-accent: #d1cfc0;
+  --text-on-accent-inverted: #363636;
+  --text-accent: #d1cfc0;
+  --text-accent-hover: #e8e3da;
+  --text-error: #ef4444;
+  --text-success: #d1cfc0;
+  --text-selection: rgba(209, 207, 192, 0.2);
+
+  --interactive-normal: #222222;
+  --interactive-hover: #2a2a2a;
+  --interactive-accent: #363636;
+  --interactive-accent-hover: #2c2c2c;
+  --interactive-success: #d1cfc0;
+  --scrollbar-bg: transparent;
+  --scrollbar-thumb-bg: #363636;
+  --scrollbar-active-thumb-bg: #d1cfc0;
+
+  --border-color: #2c2c2c;
+  --divider-color: #2c2c2c;
+  --icon-color: #8e8a83;
+  --icon-color-hover: #e8e3da;
+  --icon-color-focused: #d1cfc0;
+
+  --titlebar-background: #101010;
+  --titlebar-background-focused: #141414;
+  --tab-container-background: #101010;
+  --tab-background-active: #1c1c1c;
+  --tab-background-inactive: #101010;
+  --tab-text-color: #8e8a83;
+  --tab-text-color-active: #e8e3da;
+  --tab-divider-color: #2c2c2c;
+
+  --sidebar-background: #101010;
+  --sidebar-background-collapsed: #101010;
+  --sidebar-border-color: #2c2c2c;
+  --nav-item-background-hover: #1c1c1c;
+  --nav-item-background-active: #363636;
+  --nav-item-color: #e8e3da;
+  --nav-item-color-hover: #e8e3da;
+  --nav-item-color-active: #d1cfc0;
+
+  --metadata-label-text-color: #8e8a83;
+  --metadata-input-background: #1c1c1c;
+  --metadata-input-text-color: #e8e3da;
+  --metadata-input-border-color: #2c2c2c;
+
+  --blockquote-border-color: #d1cfc0;
+  --blockquote-background-color: #1c1c1c;
+  --code-background: #1c1c1c;
+  --code-normal: #d9cfc2;
+  --code-comment: #8e8a83;
+  --code-function: #f26a4b;
+  --code-important: #ef4444;
+  --code-keyword: #d1cfc0;
+  --code-operator: #e8e3da;
+  --code-property: #d9cfc2;
+  --code-punctuation: #8e8a83;
+  --code-string: #d9cfc2;
+  --code-tag: #f26a4b;
+  --code-value: #d1cfc0;
+
+  --h1-color: #e8e3da;
+  --h2-color: #d1cfc0;
+  --h3-color: #d9cfc2;
+  --h4-color: #8e8a83;
+  --h5-color: #5c5a56;
+  --h6-color: #8e8a83;
+  --link-color: #d1cfc0;
+  --link-color-hover: #e8e3da;
+  --tag-color: #d1cfc0;
+  --tag-background: rgba(209, 207, 192, 0.08);
+  --tag-color-hover: #e8e3da;
+  --tag-background-hover: rgba(209, 207, 192, 0.14);
+
+  --hr-color: #2c2c2c;
+  --table-border-color: #2c2c2c;
+  --table-header-border-color: #363636;
+  --table-header-background: #1c1c1c;
+  --table-row-alt-background: rgba(255, 255, 255, 0.02);
+}
+
+body.theme-dark.zen-inspired {
+  color-scheme: dark;
+}
