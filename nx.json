@@ -1,25 +1,16 @@
 {
   "extends": "nx/presets/npm.json",
   "defaultBase": "main",
+  "nxCloudId": "69748ae2e63a2e7d78ef9ded",
   "namedInputs": {
-    "default": [
-      "{projectRoot}/**/*"
-    ],
-    "production": [
-      "default",
-      "!{projectRoot}/**/*.spec.*",
-      "!{projectRoot}/**/*.test.*"
-    ]
+    "default": ["{projectRoot}/**/*"],
+    "production": ["default", "!{projectRoot}/**/*.spec.*", "!{projectRoot}/**/*.test.*"]
   },
   "targetDefaults": {
     "build": {
       "cache": true,
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [
-        "{projectRoot}/dist"
-      ]
+      "dependsOn": ["^build"],
+      "outputs": ["{projectRoot}/dist"]
     },
     "test": {
       "cache": true
