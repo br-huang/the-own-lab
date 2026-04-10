@@ -19,24 +19,49 @@ export class BbTabItem extends LitElement {
       transition: background var(--bb-transition-fast);
       user-select: none;
     }
-    :host(:hover) { background: var(--bb-bg-hover); }
-    :host([active]) { background: var(--bb-bg-active); }
-    .favicon { width: 16px; height: 16px; border-radius: 2px; flex-shrink: 0; }
+    :host(:hover) {
+      background: var(--bb-bg-hover);
+    }
+    :host([active]) {
+      background: var(--bb-bg-active);
+    }
+    .favicon {
+      width: 16px;
+      height: 16px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
     .title {
-      flex: 1; min-width: 0;
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       font-size: var(--bb-font-size-sm);
       color: var(--bb-text-primary);
     }
     .close-btn {
-      opacity: 0; width: 16px; height: 16px; border: none;
-      background: none; color: var(--bb-text-muted); cursor: pointer;
-      border-radius: var(--bb-radius-sm); display: flex;
-      align-items: center; justify-content: center; flex-shrink: 0;
+      opacity: 0;
+      width: 16px;
+      height: 16px;
+      border: none;
+      background: none;
+      color: var(--bb-text-muted);
+      cursor: pointer;
+      border-radius: var(--bb-radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
       font-size: 14px;
     }
-    :host(:hover) .close-btn { opacity: 1; }
-    .close-btn:hover { background: var(--bb-danger); color: white; }
+    :host(:hover) .close-btn {
+      opacity: 1;
+    }
+    .close-btn:hover {
+      background: var(--bb-danger);
+      color: white;
+    }
   `;
 
   private _onActivate = () => {
@@ -65,7 +90,7 @@ export class BbTabItem extends LitElement {
         class="favicon"
         src=${this.tab.favicon || fallbackFavicon}
         alt=""
-        @error=${(e: Event) => (e.target as HTMLImageElement).style.visibility = 'hidden'}
+        @error=${(e: Event) => ((e.target as HTMLImageElement).style.visibility = 'hidden')}
       />
       <span class="title">${this.tab.title || this.tab.url || 'New Tab'}</span>
       <button class="close-btn" @click=${this._onClose} title="Close tab">&times;</button>

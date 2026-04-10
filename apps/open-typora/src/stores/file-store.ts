@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
 interface FileState {
   currentFilePath: string | null;
@@ -9,6 +9,5 @@ interface FileState {
 export const useFileStore = create<FileState>((set) => ({
   currentFilePath: null,
   currentFileName: null,
-  setCurrentFile: (path, name) =>
-    set({ currentFilePath: path, currentFileName: name }),
+  setCurrentFile: (path, name) => set({ currentFilePath: path, currentFileName: name }),
 }));

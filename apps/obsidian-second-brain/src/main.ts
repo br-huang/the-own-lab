@@ -1,19 +1,19 @@
-import { Plugin, WorkspaceLeaf, FileSystemAdapter } from "obsidian";
-import * as path from "path";
-import { PluginSettings, DEFAULT_SETTINGS, PluginData, ChatProviderType } from "./types";
-import { SessionStore } from "./core/session-store";
-import { LLMProvider } from "./llm/provider";
-import { createProvider } from "./llm/provider-factory";
-import { LocalEmbeddingProvider } from "./llm/local-embeddings";
-import { VectorStore } from "./core/vector-store";
-import { VaultIndexer } from "./core/vault-indexer";
-import { RagEngine } from "./core/rag-engine";
-import { ChatView, CHAT_VIEW_TYPE } from "./ui/chat-view";
-import { KBSettingTab } from "./settings";
-import { UrlIngestor } from "./ingestor/url-ingestor";
-import { IngestUrlModal } from "./ui/ingest-url-modal";
-import { PdfIngestor } from "./ingestor/pdf-ingestor";
-import { IngestPdfModal } from "./ui/ingest-pdf-modal";
+import { Plugin, WorkspaceLeaf, FileSystemAdapter } from 'obsidian';
+import * as path from 'path';
+import { PluginSettings, DEFAULT_SETTINGS, PluginData, ChatProviderType } from './types';
+import { SessionStore } from './core/session-store';
+import { LLMProvider } from './llm/provider';
+import { createProvider } from './llm/provider-factory';
+import { LocalEmbeddingProvider } from './llm/local-embeddings';
+import { VectorStore } from './core/vector-store';
+import { VaultIndexer } from './core/vault-indexer';
+import { RagEngine } from './core/rag-engine';
+import { ChatView, CHAT_VIEW_TYPE } from './ui/chat-view';
+import { KBSettingTab } from './settings';
+import { UrlIngestor } from './ingestor/url-ingestor';
+import { IngestUrlModal } from './ui/ingest-url-modal';
+import { PdfIngestor } from './ingestor/pdf-ingestor';
+import { IngestPdfModal } from './ui/ingest-pdf-modal';
 
 export default class ObsidianKBPlugin extends Plugin {
   private pluginData: PluginData = {
@@ -44,7 +44,9 @@ export default class ObsidianKBPlugin extends Plugin {
     if (adapter instanceof FileSystemAdapter) {
       return adapter.getBasePath();
     }
-    throw new Error("KB: Unsupported vault adapter. This plugin requires a local filesystem vault.");
+    throw new Error(
+      'KB: Unsupported vault adapter. This plugin requires a local filesystem vault.',
+    );
   }
 
   async onload(): Promise<void> {
@@ -58,14 +60,14 @@ export default class ObsidianKBPlugin extends Plugin {
     // Pass plugin directory so it can resolve @xenova/transformers via absolute path
     const pluginDir = (this.manifest as any).dir
       ? path.join(vaultPath, (this.manifest as any).dir)
-      : path.join(vaultPath, ".obsidian", "plugins", this.manifest.id);
+      : path.join(vaultPath, '.obsidian', 'plugins', this.manifest.id);
     this.embeddingProvider = new LocalEmbeddingProvider(pluginDir);
 
     this.vectorStore = new VectorStore(vaultPath);
     await this.vectorStore.initialize();
 
     this.statusBarEl = this.addStatusBarItem();
-    this.statusBarEl.setText("KB: Initializing...");
+    this.statusBarEl.setText('KB: Initializing...');
 
     this.vaultIndexer = new VaultIndexer(
       this.app.vault,
@@ -92,17 +94,9 @@ export default class ObsidianKBPlugin extends Plugin {
       }),
     );
 
-    this.pdfIngestor = new PdfIngestor(
-      this.app.vault,
-      () => this.settings.ingestFolder,
-      pluginDir,
-    );
+    this.pdfIngestor = new PdfIngestor(this.app.vault, () => this.settings.ingestFolder, pluginDir);
 
-    this.sessionStore = new SessionStore(
-      vaultPath,
-      this.pluginData,
-      () => this.saveSettings(),
-    );
+    this.sessionStore = new SessionStore(vaultPath, this.pluginData, () => this.saveSettings());
     await this.sessionStore.initialize();
 
     this.registerView(CHAT_VIEW_TYPE, (leaf: WorkspaceLeaf) => {
@@ -122,29 +116,29 @@ export default class ObsidianKBPlugin extends Plugin {
       );
     });
 
-    this.addRibbonIcon("message-square", "Second Brain: Chat", () => {
+    this.addRibbonIcon('message-square', 'Second Brain: Chat', () => {
       this.activateChatView();
     });
 
     this.addCommand({
-      id: "open-second-brain-chat",
-      name: "Second Brain: Chat",
+      id: 'open-second-brain-chat',
+      name: 'Second Brain: Chat',
       callback: () => {
         this.activateChatView();
       },
     });
 
     this.addCommand({
-      id: "second-brain-ingest-url",
-      name: "Second Brain: Ingest URL",
+      id: 'second-brain-ingest-url',
+      name: 'Second Brain: Ingest URL',
       callback: () => {
         new IngestUrlModal(this.app, this.urlIngestor).open();
       },
     });
 
     this.addCommand({
-      id: "second-brain-ingest-pdf",
-      name: "Second Brain: Ingest PDF",
+      id: 'second-brain-ingest-pdf',
+      name: 'Second Brain: Ingest PDF',
       callback: () => {
         new IngestPdfModal(this.app, this.pdfIngestor).open();
       },
@@ -158,8 +152,8 @@ export default class ObsidianKBPlugin extends Plugin {
         await this.vaultIndexer.initialIndex();
         this.vaultIndexer.watchForChanges();
       } catch (err) {
-        console.error("KB: Failed during initial indexing", err);
-        this.statusBarEl.setText("KB: Indexing failed — check console");
+        console.error('KB: Failed during initial indexing', err);
+        this.statusBarEl.setText('KB: Indexing failed — check console');
       }
     });
   }
@@ -189,7 +183,7 @@ export default class ObsidianKBPlugin extends Plugin {
         sessionIndex: Array.isArray(raw.sessionIndex) ? raw.sessionIndex : [],
         activeSessionId: raw.activeSessionId ?? null,
       };
-    } else if (raw && typeof raw === "object") {
+    } else if (raw && typeof raw === 'object') {
       // Legacy format: settings at top level
       this.pluginData = {
         settings: Object.assign({}, DEFAULT_SETTINGS, raw),

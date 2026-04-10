@@ -13,7 +13,11 @@
       "command": "swift test",
       "options": { "cwd": "{projectRoot}" },
       "cache": true,
-      "inputs": ["{projectRoot}/Sources/**/*.swift", "{projectRoot}/Tests/**/*.swift", "{projectRoot}/Package.swift"]
+      "inputs": [
+        "{projectRoot}/Sources/**/*.swift",
+        "{projectRoot}/Tests/**/*.swift",
+        "{projectRoot}/Package.swift"
+      ]
     }
   }
 }

@@ -1,8 +1,8 @@
-import { TitleBar } from "./TitleBar";
-import { StatusBar } from "./StatusBar";
-import { Sidebar } from "./Sidebar";
-import { EditorArea } from "../editor/EditorArea";
-import { useAppStore } from "../../stores/app-store";
+import { TitleBar } from './TitleBar';
+import { StatusBar } from './StatusBar';
+import { Sidebar } from './Sidebar';
+import { EditorArea } from '../editor/EditorArea';
+import { useAppStore } from '../../stores/app-store';
 
 export function AppShell() {
   const sidebarOpen = useAppStore((s) => s.sidebarOpen);

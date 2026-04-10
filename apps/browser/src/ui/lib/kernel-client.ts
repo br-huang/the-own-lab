@@ -1,4 +1,11 @@
-import type { Tab, Workspace, Suggestion, SecurityInfo, Rect, KernelEvent } from '@kernel/interfaces';
+import type {
+  Tab,
+  Workspace,
+  Suggestion,
+  SecurityInfo,
+  Rect,
+  KernelEvent,
+} from '@kernel/interfaces';
 
 // Type definition for what the preload script exposes
 export interface KernelClient {

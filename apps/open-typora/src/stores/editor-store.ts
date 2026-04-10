@@ -1,6 +1,6 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
-export type EditorMode = "wysiwyg" | "source";
+export type EditorMode = 'wysiwyg' | 'source';
 
 interface EditorState {
   mode: EditorMode;
@@ -10,7 +10,7 @@ interface EditorState {
 }
 
 export const useEditorStore = create<EditorState>((set) => ({
-  mode: "wysiwyg",
+  mode: 'wysiwyg',
   isDirty: false,
   setMode: (mode) => set({ mode }),
   setDirty: (isDirty) => set({ isDirty }),

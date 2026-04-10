@@ -51,19 +51,17 @@ export class BbApp extends LitElement {
         this.tabs = [...this.tabs, tab];
       }),
       window.kernel.tabs.onTabClosed.subscribe(({ tabId }) => {
-        this.tabs = this.tabs.filter(t => t.id !== tabId);
+        this.tabs = this.tabs.filter((t) => t.id !== tabId);
         if (this.activeTabId === tabId) {
           this.activeTabId = null;
         }
       }),
       window.kernel.tabs.onTabUpdated.subscribe(({ tabId, changes }) => {
-        this.tabs = this.tabs.map(t =>
-          t.id === tabId ? { ...t, ...changes } : t
-        );
+        this.tabs = this.tabs.map((t) => (t.id === tabId ? { ...t, ...changes } : t));
       }),
       window.kernel.tabs.onTabActivated.subscribe(({ tabId }) => {
         this.activeTabId = tabId;
-        this.tabs = this.tabs.map(t => ({
+        this.tabs = this.tabs.map((t) => ({
           ...t,
           isActive: t.id === tabId,
         }));
@@ -72,11 +70,11 @@ export class BbApp extends LitElement {
         this.workspaces = [...this.workspaces, ws];
       }),
       window.kernel.workspaces.onWorkspaceDeleted.subscribe(({ workspaceId }) => {
-        this.workspaces = this.workspaces.filter(w => w.id !== workspaceId);
+        this.workspaces = this.workspaces.filter((w) => w.id !== workspaceId);
       }),
       window.kernel.workspaces.onWorkspaceUpdated.subscribe(({ workspaceId, changes }) => {
-        this.workspaces = this.workspaces.map(w =>
-          w.id === workspaceId ? { ...w, ...changes } : w
+        this.workspaces = this.workspaces.map((w) =>
+          w.id === workspaceId ? { ...w, ...changes } : w,
         );
       }),
       window.kernel.workspaces.onWorkspaceActivated.subscribe(({ workspaceId }) => {
@@ -104,7 +102,7 @@ export class BbApp extends LitElement {
   render() {
     return html`
       <bb-sidebar
-        .tabs=${this.tabs.filter(t => t.workspaceId === this.activeWorkspaceId)}
+        .tabs=${this.tabs.filter((t) => t.workspaceId === this.activeWorkspaceId)}
         .workspaces=${this.workspaces}
         .activeWorkspaceId=${this.activeWorkspaceId}
         .activeTabId=${this.activeTabId}
@@ -112,7 +110,7 @@ export class BbApp extends LitElement {
       ></bb-sidebar>
       <div class="right-panel">
         <bb-toolbar
-          .activeTab=${this.tabs.find(t => t.id === this.activeTabId) ?? null}
+          .activeTab=${this.tabs.find((t) => t.id === this.activeTabId) ?? null}
         ></bb-toolbar>
         <bb-content-area></bb-content-area>
       </div>

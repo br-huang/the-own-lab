@@ -18,12 +18,14 @@ export class BbWorkspaceSwitcher extends LitElement {
 
   render() {
     return html`
-      ${this.workspaces.map(ws => html`
-        <bb-workspace-chip
-          .workspace=${ws}
-          ?active=${ws.id === this.activeWorkspaceId}
-        ></bb-workspace-chip>
-      `)}
+      ${this.workspaces.map(
+        (ws) => html`
+          <bb-workspace-chip
+            .workspace=${ws}
+            ?active=${ws.id === this.activeWorkspaceId}
+          ></bb-workspace-chip>
+        `,
+      )}
     `;
   }
 }

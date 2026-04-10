@@ -1,6 +1,6 @@
-import * as fs from "fs";
-import * as path from "path";
-import { VectorChunk } from "../types";
+import * as fs from 'fs';
+import * as path from 'path';
+import { VectorChunk } from '../types';
 
 /**
  * Pure JS vector store — stores embeddings as JSON, searches via cosine similarity.
@@ -12,14 +12,14 @@ export class VectorStore {
   private dirty = false;
 
   constructor(vaultPath: string) {
-    const dir = path.join(vaultPath, ".obsidian-kb");
+    const dir = path.join(vaultPath, '.obsidian-kb');
     fs.mkdirSync(dir, { recursive: true });
-    this.storagePath = path.join(dir, "vectors.json");
+    this.storagePath = path.join(dir, 'vectors.json');
   }
 
   async initialize(): Promise<void> {
     try {
-      const data = fs.readFileSync(this.storagePath, "utf-8");
+      const data = fs.readFileSync(this.storagePath, 'utf-8');
       this.chunks = JSON.parse(data);
     } catch {
       this.chunks = [];
@@ -31,10 +31,10 @@ export class VectorStore {
       return;
     }
 
-    const filePaths = new Set(newChunks.map(c => c.filePath));
+    const filePaths = new Set(newChunks.map((c) => c.filePath));
 
     // Delete existing chunks for these files (delete-then-insert)
-    this.chunks = this.chunks.filter(c => !filePaths.has(c.filePath));
+    this.chunks = this.chunks.filter((c) => !filePaths.has(c.filePath));
 
     // Insert new chunks
     this.chunks.push(...newChunks);
@@ -48,7 +48,7 @@ export class VectorStore {
     }
 
     // Compute cosine similarity for each chunk
-    const scored = this.chunks.map(chunk => ({
+    const scored = this.chunks.map((chunk) => ({
       chunk,
       score: cosineSimilarity(embedding, chunk.vector),
     }));
@@ -56,12 +56,12 @@ export class VectorStore {
     // Sort by similarity descending, take top-k
     scored.sort((a, b) => b.score - a.score);
 
-    return scored.slice(0, topK).map(s => s.chunk);
+    return scored.slice(0, topK).map((s) => s.chunk);
   }
 
   async delete(filePath: string): Promise<void> {
     const before = this.chunks.length;
-    this.chunks = this.chunks.filter(c => c.filePath !== filePath);
+    this.chunks = this.chunks.filter((c) => c.filePath !== filePath);
     if (this.chunks.length !== before) {
       this.dirty = true;
       this.persist();

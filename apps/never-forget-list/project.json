@@ -6,7 +6,11 @@
       "command": "xcodebuild -workspace NotForgetList.xcworkspace -scheme NotForgetList -configuration Debug build",
       "options": { "cwd": "{projectRoot}" },
       "cache": true,
-      "inputs": ["{projectRoot}/**/*.swift", "{projectRoot}/**/*.xib", "{projectRoot}/**/*.storyboard"],
+      "inputs": [
+        "{projectRoot}/**/*.swift",
+        "{projectRoot}/**/*.xib",
+        "{projectRoot}/**/*.storyboard"
+      ],
       "outputs": ["{projectRoot}/DerivedData"]
     }
   }

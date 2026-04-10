@@ -10,7 +10,10 @@ export class BbOmnibar extends LitElement {
   @query('input') private inputEl!: HTMLInputElement;
 
   static styles = css`
-    :host { flex: 1; min-width: 0; }
+    :host {
+      flex: 1;
+      min-width: 0;
+    }
     .omnibar-container {
       display: flex;
       align-items: center;
@@ -34,7 +37,9 @@ export class BbOmnibar extends LitElement {
       font-family: var(--bb-font-family);
       min-width: 0;
     }
-    input::placeholder { color: var(--bb-text-muted); }
+    input::placeholder {
+      color: var(--bb-text-muted);
+    }
   `;
 
   updated(changed: Map<string, unknown>) {

@@ -20,7 +20,11 @@ export class BbSidebar extends LitElement {
       /* macOS traffic light spacing */
       padding-top: 38px;
     }
-    .tab-list-container { flex: 1; overflow-y: auto; overflow-x: hidden; }
+    .tab-list-container {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
   `;
 
   render() {
@@ -30,10 +34,7 @@ export class BbSidebar extends LitElement {
         .activeWorkspaceId=${this.activeWorkspaceId}
       ></bb-workspace-switcher>
       <div class="tab-list-container">
-        <bb-tab-list
-          .tabs=${this.tabs}
-          .activeTabId=${this.activeTabId}
-        ></bb-tab-list>
+        <bb-tab-list .tabs=${this.tabs} .activeTabId=${this.activeTabId}></bb-tab-list>
       </div>
       <bb-new-tab-button></bb-new-tab-button>
     `;

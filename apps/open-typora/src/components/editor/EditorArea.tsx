@@ -1,6 +1,6 @@
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import "../../styles/editor.css";
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import '../../styles/editor.css';
 
 const defaultContent = `
 <h1>Welcome to Open Typora</h1>
@@ -22,7 +22,7 @@ export function EditorArea() {
     content: defaultContent,
     editorProps: {
       attributes: {
-        class: "tiptap",
+        class: 'tiptap',
       },
     },
   });

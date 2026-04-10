@@ -1,11 +1,11 @@
-import { Vault, TFile, EventRef } from "obsidian";
-import * as crypto from "crypto";
-import * as fs from "fs";
-import * as path from "path";
-import { PluginSettings, FileHashManifest, VectorChunk } from "../types";
-import { chunk as chunkText } from "./chunker";
-import { VectorStore } from "./vector-store";
-import { EmbeddingProvider } from "../llm/provider";
+import { Vault, TFile, EventRef } from 'obsidian';
+import * as crypto from 'crypto';
+import * as fs from 'fs';
+import * as path from 'path';
+import { PluginSettings, FileHashManifest, VectorChunk } from '../types';
+import { chunk as chunkText } from './chunker';
+import { VectorStore } from './vector-store';
+import { EmbeddingProvider } from '../llm/provider';
 
 export class VaultIndexer {
   private vault: Vault;
@@ -31,13 +31,13 @@ export class VaultIndexer {
     this.settings = settings;
     this.statusBarEl = statusBarEl;
     const vaultPath = (this.vault.adapter as any).basePath as string;
-    this.manifestPath = path.join(vaultPath, ".obsidian-kb", "manifest.json");
+    this.manifestPath = path.join(vaultPath, '.obsidian-kb', 'manifest.json');
   }
 
   async initialIndex(): Promise<void> {
     this.loadManifest();
 
-    const files = this.vault.getMarkdownFiles().filter(f => this.shouldIndex(f));
+    const files = this.vault.getMarkdownFiles().filter((f) => this.shouldIndex(f));
     const changedFiles: { file: TFile; hash: string }[] = [];
 
     for (const file of files) {
@@ -61,7 +61,7 @@ export class VaultIndexer {
         const chunks = chunkText(
           content,
           { filePath: file.path, fileTitle: file.basename },
-          { chunkSize: this.settings.chunkSize, chunkOverlap: this.settings.chunkOverlap }
+          { chunkSize: this.settings.chunkSize, chunkOverlap: this.settings.chunkOverlap },
         );
         batchChunks.push({ file, hash, chunks });
         for (const c of chunks) {
@@ -78,7 +78,7 @@ export class VaultIndexer {
           for (const { chunks } of batchChunks) {
             for (const c of chunks) {
               vectorChunks.push({
-                id: c.metadata.filePath + "::" + c.metadata.chunkIndex,
+                id: c.metadata.filePath + '::' + c.metadata.chunkIndex,
                 text: c.text,
                 filePath: c.metadata.filePath,
                 fileTitle: c.metadata.fileTitle,
@@ -91,8 +91,8 @@ export class VaultIndexer {
 
           await this.vectorStore.upsert(vectorChunks);
         } catch (err) {
-          console.error("KB: Embedding batch failed, skipping batch", err);
-          this.statusBarEl.setText("KB: Indexing error — check console");
+          console.error('KB: Embedding batch failed, skipping batch', err);
+          this.statusBarEl.setText('KB: Indexing error — check console');
           continue;
         }
       }
@@ -102,12 +102,12 @@ export class VaultIndexer {
       }
 
       processedCount += batch.length;
-      this.statusBarEl.setText("Indexing: " + processedCount + " / " + totalCount + " notes");
-      await new Promise(r => setTimeout(r, 200));
+      this.statusBarEl.setText('Indexing: ' + processedCount + ' / ' + totalCount + ' notes');
+      await new Promise((r) => setTimeout(r, 200));
     }
 
     // Detect deleted files
-    const currentPaths = new Set(files.map(f => f.path));
+    const currentPaths = new Set(files.map((f) => f.path));
     for (const filePath of Object.keys(this.manifest)) {
       if (!currentPaths.has(filePath)) {
         await this.vectorStore.delete(filePath);
@@ -116,39 +116,39 @@ export class VaultIndexer {
     }
 
     this.saveManifest();
-    this.statusBarEl.setText("KB: " + Object.keys(this.manifest).length + " notes indexed");
+    this.statusBarEl.setText('KB: ' + Object.keys(this.manifest).length + ' notes indexed');
   }
 
   watchForChanges(): void {
-    const modifyRef = this.vault.on("modify", (file) => {
+    const modifyRef = this.vault.on('modify', (file) => {
       if (file instanceof TFile && this.shouldIndex(file)) {
         this.debounceIndex(file);
       }
     });
     this.eventRefs.push(modifyRef);
 
-    const createRef = this.vault.on("create", (file) => {
+    const createRef = this.vault.on('create', (file) => {
       if (file instanceof TFile && this.shouldIndex(file)) {
         this.debounceIndex(file);
       }
     });
     this.eventRefs.push(createRef);
 
-    const deleteRef = this.vault.on("delete", (file) => {
+    const deleteRef = this.vault.on('delete', (file) => {
       if (file instanceof TFile && this.shouldIndex(file)) {
         this.vectorStore.delete(file.path);
         delete this.manifest[file.path];
         this.saveManifest();
-        this.statusBarEl.setText("KB: " + Object.keys(this.manifest).length + " notes indexed");
+        this.statusBarEl.setText('KB: ' + Object.keys(this.manifest).length + ' notes indexed');
       }
     });
     this.eventRefs.push(deleteRef);
   }
 
   async destroy(): Promise<void> {
-    this.debounceTimers.forEach(t => clearTimeout(t));
+    this.debounceTimers.forEach((t) => clearTimeout(t));
     this.debounceTimers.clear();
-    this.eventRefs.forEach(ref => this.vault.offref(ref));
+    this.eventRefs.forEach((ref) => this.vault.offref(ref));
   }
 
   private debounceIndex(file: TFile): void {
@@ -172,7 +172,7 @@ export class VaultIndexer {
       const chunks = chunkText(
         content,
         { filePath: file.path, fileTitle: file.basename },
-        { chunkSize: this.settings.chunkSize, chunkOverlap: this.settings.chunkOverlap }
+        { chunkSize: this.settings.chunkSize, chunkOverlap: this.settings.chunkOverlap },
       );
 
       if (chunks.length === 0) {
@@ -182,10 +182,10 @@ export class VaultIndexer {
         return;
       }
 
-      const chunkTexts = chunks.map(c => c.text);
+      const chunkTexts = chunks.map((c) => c.text);
       const embeddings = await this.embeddingProvider.embed(chunkTexts);
       const vectorChunks: VectorChunk[] = chunks.map((c, i) => ({
-        id: c.metadata.filePath + "::" + c.metadata.chunkIndex,
+        id: c.metadata.filePath + '::' + c.metadata.chunkIndex,
         text: c.text,
         filePath: c.metadata.filePath,
         fileTitle: c.metadata.fileTitle,
@@ -196,15 +196,15 @@ export class VaultIndexer {
       await this.vectorStore.upsert(vectorChunks);
       this.manifest[file.path] = hash;
       this.saveManifest();
-      this.statusBarEl.setText("KB: " + Object.keys(this.manifest).length + " notes indexed");
+      this.statusBarEl.setText('KB: ' + Object.keys(this.manifest).length + ' notes indexed');
     } catch (err) {
-      console.error("KB: Failed to index " + file.path, err);
+      console.error('KB: Failed to index ' + file.path, err);
     }
   }
 
   private loadManifest(): void {
     try {
-      const data = fs.readFileSync(this.manifestPath, "utf-8");
+      const data = fs.readFileSync(this.manifestPath, 'utf-8');
       this.manifest = JSON.parse(data);
     } catch {
       this.manifest = {};
@@ -217,14 +217,14 @@ export class VaultIndexer {
   }
 
   private hashContent(content: string): string {
-    return crypto.createHash("md5").update(content).digest("hex");
+    return crypto.createHash('md5').update(content).digest('hex');
   }
 
   private shouldIndex(file: TFile): boolean {
     return (
-      file.extension === "md" &&
-      !file.path.startsWith(".obsidian/") &&
-      !file.path.startsWith(".obsidian-kb/")
+      file.extension === 'md' &&
+      !file.path.startsWith('.obsidian/') &&
+      !file.path.startsWith('.obsidian-kb/')
     );
   }
 }

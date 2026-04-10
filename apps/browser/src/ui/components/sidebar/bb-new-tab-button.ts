@@ -21,7 +21,10 @@ export class BbNewTabButton extends LitElement {
       font-family: var(--bb-font-family);
       transition: all var(--bb-transition-fast);
     }
-    button:hover { background: var(--bb-bg-hover); color: var(--bb-text-primary); }
+    button:hover {
+      background: var(--bb-bg-hover);
+      color: var(--bb-text-primary);
+    }
   `;
 
   private async _onClick() {

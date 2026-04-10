@@ -22,7 +22,8 @@ function setupKeybindings(): void {
 
       case 'l': {
         e.preventDefault();
-        const omnibar = document.querySelector('bb-app')
+        const omnibar = document
+          .querySelector('bb-app')
           ?.shadowRoot?.querySelector('bb-toolbar')
           ?.shadowRoot?.querySelector('bb-omnibar') as HTMLElement | null;
         omnibar?.focus();
@@ -46,7 +47,8 @@ setupKeybindings();
 // Listen for focus-omnibar IPC from native menu
 if ((window as any).__electronOn) {
   (window as any).__electronOn('kernel:focus-omnibar', () => {
-    const omnibar = document.querySelector('bb-app')
+    const omnibar = document
+      .querySelector('bb-app')
       ?.shadowRoot?.querySelector('bb-toolbar')
       ?.shadowRoot?.querySelector('bb-omnibar') as HTMLElement | null;
     omnibar?.focus();

@@ -1,8 +1,8 @@
-import { PluginSettings } from "../types";
-import { LLMProvider } from "./provider";
-import { OpenAICompatibleProvider } from "./openai-compatible";
-import { AnthropicProvider } from "./anthropic";
-import { GeminiProvider } from "./gemini";
+import { PluginSettings } from '../types';
+import { LLMProvider } from './provider';
+import { OpenAICompatibleProvider } from './openai-compatible';
+import { AnthropicProvider } from './anthropic';
+import { GeminiProvider } from './gemini';
 
 /**
  * Create an LLMProvider based on current plugin settings.
@@ -10,43 +10,37 @@ import { GeminiProvider } from "./gemini";
  */
 export function createProvider(settings: PluginSettings): LLMProvider {
   switch (settings.chatProvider) {
-    case "openai":
+    case 'openai':
       return new OpenAICompatibleProvider({
-        providerName: "OpenAI",
+        providerName: 'OpenAI',
         apiKey: settings.openaiApiKey,
         chatModel: settings.chatModel,
         maxTokens: 128_000,
       });
 
-    case "deepseek":
+    case 'deepseek':
       return new OpenAICompatibleProvider({
-        providerName: "DeepSeek",
+        providerName: 'DeepSeek',
         apiKey: settings.deepseekApiKey,
-        baseURL: "https://api.deepseek.com",
+        baseURL: 'https://api.deepseek.com',
         chatModel: settings.chatModel,
         maxTokens: 64_000,
       });
 
-    case "ollama":
+    case 'ollama':
       return new OpenAICompatibleProvider({
-        providerName: "Ollama",
-        apiKey: "",
+        providerName: 'Ollama',
+        apiKey: '',
         baseURL: `${settings.ollamaUrl}/v1`,
         chatModel: settings.chatModel,
         maxTokens: 128_000,
       });
 
-    case "claude":
-      return new AnthropicProvider(
-        settings.anthropicApiKey,
-        settings.chatModel,
-      );
+    case 'claude':
+      return new AnthropicProvider(settings.anthropicApiKey, settings.chatModel);
 
-    case "gemini":
-      return new GeminiProvider(
-        settings.geminiApiKey,
-        settings.chatModel,
-      );
+    case 'gemini':
+      return new GeminiProvider(settings.geminiApiKey, settings.chatModel);
 
     default: {
       // Exhaustiveness check — if a new provider is added to the union type

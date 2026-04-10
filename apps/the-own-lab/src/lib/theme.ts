@@ -1,4 +1,4 @@
-export const THEME_STORAGE_KEY = "the-own-lab-theme";
+export const THEME_STORAGE_KEY = 'the-own-lab-theme';
 
 export const themeInitScript = `(function() {
   const key = "${THEME_STORAGE_KEY}";

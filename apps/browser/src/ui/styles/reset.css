@@ -1,2 +1,17 @@
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; overflow: hidden; font-family: var(--bb-font-family); font-size: var(--bb-font-size-md); color: var(--bb-text-primary); background: var(--bb-bg-primary); -webkit-font-smoothing: antialiased; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--bb-font-family);
+  font-size: var(--bb-font-size-md);
+  color: var(--bb-text-primary);
+  background: var(--bb-bg-primary);
+  -webkit-font-smoothing: antialiased;
+}

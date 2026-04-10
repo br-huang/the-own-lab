@@ -20,14 +20,20 @@ export class BbWorkspaceChip extends LitElement {
       transition: all var(--bb-transition-fast);
       border: 1px solid transparent;
     }
-    :host(:hover) { background: var(--bb-bg-hover); }
+    :host(:hover) {
+      background: var(--bb-bg-hover);
+    }
     :host([active]) {
       background: var(--bb-bg-active);
       color: var(--bb-text-primary);
       border-color: var(--bb-border);
     }
-    .icon { font-size: 14px; }
-    .name { white-space: nowrap; }
+    .icon {
+      font-size: 14px;
+    }
+    .name {
+      white-space: nowrap;
+    }
     .count {
       font-size: var(--bb-font-size-xs);
       color: var(--bb-text-muted);

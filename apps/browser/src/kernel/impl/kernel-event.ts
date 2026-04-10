@@ -5,7 +5,9 @@ export class KernelEventEmitter<T> implements KernelEvent<T> {
 
   subscribe(callback: (data: T) => void): () => void {
     this.listeners.add(callback);
-    return () => { this.listeners.delete(callback); };
+    return () => {
+      this.listeners.delete(callback);
+    };
   }
 
   emit(data: T): void {

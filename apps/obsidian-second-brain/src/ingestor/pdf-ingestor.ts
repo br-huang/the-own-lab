@@ -1,6 +1,6 @@
-import { Vault, TFile } from "obsidian";
-import * as path from "path";
-import { IngestPhase, IngestResult, OnProgress } from "./url-ingestor";
+import { Vault, TFile } from 'obsidian';
+import * as path from 'path';
+import { IngestPhase, IngestResult, OnProgress } from './url-ingestor';
 
 export class PdfIngestor {
   private pdfjsLib: any | null = null;
@@ -16,7 +16,7 @@ export class PdfIngestor {
     onProgress?: OnProgress,
     onPageProgress?: (current: number, total: number) => void,
   ): Promise<IngestResult> {
-    onProgress?.("fetching");
+    onProgress?.('fetching');
     let arrayBuffer: ArrayBuffer;
     try {
       arrayBuffer = await this.vault.readBinary(file);
@@ -24,7 +24,7 @@ export class PdfIngestor {
       throw new Error(`Failed to read PDF: ${(err as Error).message}`);
     }
 
-    onProgress?.("extracting");
+    onProgress?.('extracting');
     const pdfjsLib = this.loadPdfjs();
 
     let pdfDocument: any;
@@ -32,8 +32,8 @@ export class PdfIngestor {
       const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
       pdfDocument = await loadingTask.promise;
     } catch (err: any) {
-      if (err?.name === "PasswordException") {
-        throw new Error("This PDF is password-protected and cannot be ingested.");
+      if (err?.name === 'PasswordException') {
+        throw new Error('This PDF is password-protected and cannot be ingested.');
       }
       throw new Error(`Failed to parse PDF: ${(err as Error).message}`);
     }
@@ -41,9 +41,12 @@ export class PdfIngestor {
     let title: string;
     try {
       const metadata = await pdfDocument.getMetadata();
-      title = metadata?.info?.Title && typeof metadata.info.Title === "string" && metadata.info.Title.trim()
-        ? metadata.info.Title.trim()
-        : file.basename;
+      title =
+        metadata?.info?.Title &&
+        typeof metadata.info.Title === 'string' &&
+        metadata.info.Title.trim()
+          ? metadata.info.Title.trim()
+          : file.basename;
     } catch {
       title = file.basename;
     }
@@ -57,7 +60,7 @@ export class PdfIngestor {
       const content = await page.getTextContent();
       const text = content.items
         .map((item: any) => item.str)
-        .join(" ")
+        .join(' ')
         .trim();
       if (text.length > 0) {
         pages.push({ pageNum: i, text });
@@ -66,26 +69,24 @@ export class PdfIngestor {
 
     if (pages.length === 0) {
       throw new Error(
-        "No text content found. This PDF may be a scanned image and cannot be ingested without OCR."
+        'No text content found. This PDF may be a scanned image and cannot be ingested without OCR.',
       );
     }
 
     const frontmatter = this.buildFrontmatter({
       url: file.path,
       title,
-      sourceType: "pdf",
+      sourceType: 'pdf',
       pages: totalPages,
       ingestedAt: new Date().toISOString(),
     });
 
-    const body = pages
-      .map((p) => `## Page ${p.pageNum}\n\n${p.text}`)
-      .join("\n\n");
+    const body = pages.map((p) => `## Page ${p.pageNum}\n\n${p.text}`).join('\n\n');
 
-    const fullContent = frontmatter + "\n" + body;
+    const fullContent = frontmatter + '\n' + body;
 
-    onProgress?.("saving");
-    const folder = this.getIngestFolder() || "Ingested";
+    onProgress?.('saving');
+    const folder = this.getIngestFolder() || 'Ingested';
     await this.ensureFolder(folder);
     const slug = this.slugify(title);
     const filePath = await this.resolveFilePath(folder, slug);
@@ -104,8 +105,14 @@ export class PdfIngestor {
       return this.pdfjsLib;
     }
 
-    const modulePath = path.join(this.pluginDir, "node_modules", "pdfjs-dist", "build", "pdf.js");
-    const workerPath = path.join(this.pluginDir, "node_modules", "pdfjs-dist", "build", "pdf.worker.js");
+    const modulePath = path.join(this.pluginDir, 'node_modules', 'pdfjs-dist', 'build', 'pdf.js');
+    const workerPath = path.join(
+      this.pluginDir,
+      'node_modules',
+      'pdfjs-dist',
+      'build',
+      'pdf.worker.js',
+    );
 
     // In Obsidian's renderer, pdf.js may fall back to loadScript(workerSrc), which
     // breaks on app:// URLs. Preloading the worker module exposes WorkerMessageHandler
@@ -116,7 +123,7 @@ export class PdfIngestor {
 
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const pdfjsLib = require(modulePath);
-    pdfjsLib.GlobalWorkerOptions.workerSrc = "";
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '';
 
     this.pdfjsLib = pdfjsLib;
     return pdfjsLib;
@@ -129,25 +136,25 @@ export class PdfIngestor {
     pages: number;
     ingestedAt: string;
   }): string {
-    const lines: string[] = ["---"];
+    const lines: string[] = ['---'];
     lines.push(`url: "${meta.url.replace(/"/g, '\\"')}"`);
     lines.push(`title: "${meta.title.replace(/"/g, '\\"')}"`);
     lines.push(`source_type: "${meta.sourceType}"`);
     lines.push(`pages: ${meta.pages}`);
     lines.push(`ingested_at: "${meta.ingestedAt}"`);
-    lines.push("---");
-    return lines.join("\n") + "\n";
+    lines.push('---');
+    return lines.join('\n') + '\n';
   }
 
   private slugify(title: string): string {
     let slug = title
       .toLowerCase()
-      .replace(/[\s_]+/g, "-")
-      .replace(/[^a-z0-9-]/g, "")
-      .replace(/-{2,}/g, "-")
-      .replace(/^-|-$/g, "");
-    if (slug.length === 0) slug = "ingested-page";
-    return slug.substring(0, 60).replace(/-$/, "");
+      .replace(/[\s_]+/g, '-')
+      .replace(/[^a-z0-9-]/g, '')
+      .replace(/-{2,}/g, '-')
+      .replace(/^-|-$/g, '');
+    if (slug.length === 0) slug = 'ingested-page';
+    return slug.substring(0, 60).replace(/-$/, '');
   }
 
   private async resolveFilePath(folder: string, slug: string): Promise<string> {
@@ -157,19 +164,19 @@ export class PdfIngestor {
       candidate = `${folder}/${slug}-${i}.md`;
       if (!this.vault.getAbstractFileByPath(candidate)) return candidate;
     }
-    throw new Error("Failed to save note: too many files with the same name.");
+    throw new Error('Failed to save note: too many files with the same name.');
   }
 
   private async ensureFolder(folderPath: string): Promise<void> {
     const existing = this.vault.getAbstractFileByPath(folderPath);
     if (existing) return;
-    const parts = folderPath.split("/");
-    let current = "";
+    const parts = folderPath.split('/');
+    let current = '';
     for (const part of parts) {
       current = current ? `${current}/${part}` : part;
       const node = this.vault.getAbstractFileByPath(current);
       if (node) {
-        if (!("children" in node)) {
+        if (!('children' in node)) {
           throw new Error(`Failed to save note: "${current}" exists as a file, not a folder.`);
         }
         continue;
@@ -178,7 +185,7 @@ export class PdfIngestor {
         await this.vault.createFolder(current);
       } catch {
         const recheck = this.vault.getAbstractFileByPath(current);
-        if (!recheck || !("children" in recheck)) {
+        if (!recheck || !('children' in recheck)) {
           throw new Error(`Failed to save note: could not create folder "${current}".`);
         }
       }

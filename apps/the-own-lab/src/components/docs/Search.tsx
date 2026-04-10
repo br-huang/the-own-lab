@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback } from 'react';
 
 interface PagefindResult {
   url: string;
@@ -7,7 +7,7 @@ interface PagefindResult {
 }
 
 export default function Search() {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const [results, setResults] = useState<PagefindResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const pagefindRef = useRef<any>(null);
@@ -23,11 +23,11 @@ export default function Search() {
 
     try {
       // Pagefind generates its assets at /pagefind/pagefind.js after build
-      const modulePath = "/pagefind/pagefind.js";
+      const modulePath = '/pagefind/pagefind.js';
       pagefindRef.current = await import(/* @vite-ignore */ modulePath);
       await pagefindRef.current.init();
     } catch {
-      console.warn("Pagefind not available — run a production build to generate the search index.");
+      console.warn('Pagefind not available — run a production build to generate the search index.');
     }
   }, []);
 
@@ -42,12 +42,10 @@ export default function Search() {
       if (!pagefindRef.current) return;
 
       const search = await pagefindRef.current.search(value);
-      const data = await Promise.all(
-        search.results.slice(0, 8).map((r: any) => r.data())
-      );
+      const data = await Promise.all(search.results.slice(0, 8).map((r: any) => r.data()));
       setResults(data);
     },
-    [loadPagefind]
+    [loadPagefind],
   );
 
   return (
@@ -58,18 +56,17 @@ export default function Search() {
         placeholder="Search docs..."
         className="docs-search-input"
         value={query}
-        onFocus={() => { setIsOpen(true); loadPagefind(); }}
+        onFocus={() => {
+          setIsOpen(true);
+          loadPagefind();
+        }}
         onChange={(e) => handleSearch(e.target.value)}
         onBlur={() => setTimeout(() => setIsOpen(false), 200)}
       />
       {isOpen && results.length > 0 && (
         <div className="docs-search-panel">
           {results.map((result, i) => (
-            <a
-              key={i}
-              href={result.url}
-              className="docs-search-result"
-            >
+            <a key={i} href={result.url} className="docs-search-result">
               <div className="docs-search-result-title">{result.meta.title}</div>
               <div
                 className="docs-search-result-snippet"

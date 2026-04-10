@@ -1,9 +1,9 @@
-import { EmbeddingProvider } from "./provider";
-import * as path from "path";
+import { EmbeddingProvider } from './provider';
+import * as path from 'path';
 
 let extractor: any = null;
 
-const DEFAULT_MODEL = "Xenova/bge-small-en-v1.5";
+const DEFAULT_MODEL = 'Xenova/bge-small-en-v1.5';
 
 /**
  * Local embedding provider using Transformers.js (runs entirely in-process).
@@ -13,7 +13,7 @@ const DEFAULT_MODEL = "Xenova/bge-small-en-v1.5";
  * cannot resolve bare module specifiers via dynamic import().
  */
 export class LocalEmbeddingProvider implements EmbeddingProvider {
-  readonly name = "local";
+  readonly name = 'local';
   private model: string;
   private pluginDir: string;
   private initPromise: Promise<void> | null = null;
@@ -35,10 +35,10 @@ export class LocalEmbeddingProvider implements EmbeddingProvider {
 
   private async loadModel(): Promise<void> {
     // Use absolute path require — Obsidian cannot resolve bare specifiers
-    const modulePath = path.join(this.pluginDir, "node_modules", "@xenova", "transformers");
+    const modulePath = path.join(this.pluginDir, 'node_modules', '@xenova', 'transformers');
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { pipeline } = require(modulePath);
-    extractor = await pipeline("feature-extraction", this.model, {
+    extractor = await pipeline('feature-extraction', this.model, {
       quantized: true,
     });
   }
@@ -49,7 +49,7 @@ export class LocalEmbeddingProvider implements EmbeddingProvider {
     const results: number[][] = [];
     for (const text of texts) {
       const output = await extractor(text, {
-        pooling: "cls",
+        pooling: 'cls',
         normalize: true,
       });
       results.push(Array.from(output.data as Float32Array));

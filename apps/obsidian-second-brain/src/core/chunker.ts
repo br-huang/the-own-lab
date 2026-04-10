@@ -1,4 +1,4 @@
-import { Chunk, ChunkMetadata } from "../types";
+import { Chunk, ChunkMetadata } from '../types';
 
 /**
  * Estimate token count using the ~4 chars per token approximation.
@@ -12,8 +12,8 @@ export function estimateTokens(text: string): number {
  */
 export function chunk(
   content: string,
-  metadata: Omit<ChunkMetadata, "chunkIndex">,
-  options?: { chunkSize?: number; chunkOverlap?: number }
+  metadata: Omit<ChunkMetadata, 'chunkIndex'>,
+  options?: { chunkSize?: number; chunkOverlap?: number },
 ): Chunk[] {
   const chunkSize = options?.chunkSize ?? 500;
   const chunkOverlap = options?.chunkOverlap ?? 50;
@@ -22,7 +22,7 @@ export function chunk(
     return [];
   }
 
-  const separators = ["\n# ", "\n## ", "\n### ", "\n\n", "\n", ". "];
+  const separators = ['\n# ', '\n## ', '\n### ', '\n\n', '\n', '. '];
 
   const sections = splitText(content, 0, separators, chunkSize);
   const merged = mergeSections(sections, chunkSize);
@@ -39,7 +39,7 @@ function splitText(
   text: string,
   sepIndex: number,
   separators: string[],
-  chunkSize: number
+  chunkSize: number,
 ): string[] {
   if (estimateTokens(text) <= chunkSize) {
     return [text];
@@ -78,7 +78,7 @@ function splitText(
 
 function mergeSections(sections: string[], chunkSize: number): string[] {
   const merged: string[] = [];
-  let buffer = "";
+  let buffer = '';
 
   for (const section of sections) {
     if (buffer.length === 0) {

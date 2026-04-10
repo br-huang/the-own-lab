@@ -12,17 +12,13 @@ app.whenReady().then(() => {
   const { window: mainWindow, uiView } = createMainWindow();
 
   // Create WindowManager first (provides getContentBounds)
-  const windowManager = new ElectronWindowManager(
-    mainWindow,
-    uiView,
-    () => tabManager.updateAllBounds(),
+  const windowManager = new ElectronWindowManager(mainWindow, uiView, () =>
+    tabManager.updateAllBounds(),
   );
 
   // Create TabManager with content bounds provider
-  const tabManager = new ElectronTabManager(
-    mainWindow,
-    uiView,
-    () => windowManager.getContentBounds(),
+  const tabManager = new ElectronTabManager(mainWindow, uiView, () =>
+    windowManager.getContentBounds(),
   );
 
   // Create WorkspaceManager
@@ -46,18 +42,28 @@ app.whenReady().then(() => {
     }
   };
 
-  tabManager.onTabCreated.subscribe(data => send(IPC_CHANNELS.tabs.onTabCreated, data));
-  tabManager.onTabClosed.subscribe(data => send(IPC_CHANNELS.tabs.onTabClosed, data));
-  tabManager.onTabUpdated.subscribe(data => send(IPC_CHANNELS.tabs.onTabUpdated, data));
-  tabManager.onTabActivated.subscribe(data => send(IPC_CHANNELS.tabs.onTabActivated, data));
-  tabManager.onTabMoved.subscribe(data => send(IPC_CHANNELS.tabs.onTabMoved, data));
+  tabManager.onTabCreated.subscribe((data) => send(IPC_CHANNELS.tabs.onTabCreated, data));
+  tabManager.onTabClosed.subscribe((data) => send(IPC_CHANNELS.tabs.onTabClosed, data));
+  tabManager.onTabUpdated.subscribe((data) => send(IPC_CHANNELS.tabs.onTabUpdated, data));
+  tabManager.onTabActivated.subscribe((data) => send(IPC_CHANNELS.tabs.onTabActivated, data));
+  tabManager.onTabMoved.subscribe((data) => send(IPC_CHANNELS.tabs.onTabMoved, data));
 
-  workspaceManager.onWorkspaceCreated.subscribe(data => send(IPC_CHANNELS.workspaces.onWorkspaceCreated, data));
-  workspaceManager.onWorkspaceDeleted.subscribe(data => send(IPC_CHANNELS.workspaces.onWorkspaceDeleted, data));
-  workspaceManager.onWorkspaceUpdated.subscribe(data => send(IPC_CHANNELS.workspaces.onWorkspaceUpdated, data));
-  workspaceManager.onWorkspaceActivated.subscribe(data => send(IPC_CHANNELS.workspaces.onWorkspaceActivated, data));
+  workspaceManager.onWorkspaceCreated.subscribe((data) =>
+    send(IPC_CHANNELS.workspaces.onWorkspaceCreated, data),
+  );
+  workspaceManager.onWorkspaceDeleted.subscribe((data) =>
+    send(IPC_CHANNELS.workspaces.onWorkspaceDeleted, data),
+  );
+  workspaceManager.onWorkspaceUpdated.subscribe((data) =>
+    send(IPC_CHANNELS.workspaces.onWorkspaceUpdated, data),
+  );
+  workspaceManager.onWorkspaceActivated.subscribe((data) =>
+    send(IPC_CHANNELS.workspaces.onWorkspaceActivated, data),
+  );
 
-  windowManager.onBoundsChanged.subscribe(data => send(IPC_CHANNELS.window.onBoundsChanged, data));
+  windowManager.onBoundsChanged.subscribe((data) =>
+    send(IPC_CHANNELS.window.onBoundsChanged, data),
+  );
 
   // Handle window resize -- update tab content bounds
   mainWindow.on('resize', () => {

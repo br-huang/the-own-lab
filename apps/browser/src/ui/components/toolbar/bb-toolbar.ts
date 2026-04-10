@@ -19,7 +19,10 @@ export class BbToolbar extends LitElement {
       /* Allow dragging the window from the toolbar area */
       -webkit-app-region: drag;
     }
-    bb-navigation-buttons, bb-omnibar { -webkit-app-region: no-drag; }
+    bb-navigation-buttons,
+    bb-omnibar {
+      -webkit-app-region: no-drag;
+    }
   `;
 
   render() {

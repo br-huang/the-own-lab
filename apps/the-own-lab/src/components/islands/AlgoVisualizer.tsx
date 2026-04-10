@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import type { AlgoStep } from "@/types/docs";
-import type { ReactNode } from "react";
+import { useState, useEffect, useRef, useCallback } from 'react';
+import type { AlgoStep } from '@/types/docs';
+import type { ReactNode } from 'react';
 
 interface Props {
   steps: AlgoStep[];
@@ -10,11 +10,7 @@ interface Props {
   children?: never;
 }
 
-export default function AlgoVisualizer({
-  steps,
-  autoPlayInterval = null,
-  render,
-}: Props) {
+export default function AlgoVisualizer({ steps, autoPlayInterval = null, render }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -26,7 +22,7 @@ export default function AlgoVisualizer({
     (index: number) => {
       setCurrentIndex(Math.max(0, Math.min(index, totalSteps - 1)));
     },
-    [totalSteps]
+    [totalSteps],
   );
 
   const next = useCallback(() => goTo(currentIndex + 1), [currentIndex, goTo]);
@@ -67,9 +63,9 @@ export default function AlgoVisualizer({
           <button
             onClick={() => setIsPlaying(!isPlaying)}
             className="button-secondary"
-            aria-label={isPlaying ? "Pause" : "Play"}
+            aria-label={isPlaying ? 'Pause' : 'Play'}
           >
-            {isPlaying ? "Pause" : "Play"}
+            {isPlaying ? 'Pause' : 'Play'}
           </button>
         )}
 

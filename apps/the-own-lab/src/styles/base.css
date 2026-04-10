@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -75,7 +75,11 @@
   body {
     @apply min-h-screen bg-background text-foreground font-sans;
     background-image:
-      radial-gradient(circle at top, color-mix(in oklab, var(--hero-glow) 34%, transparent), transparent 40%),
+      radial-gradient(
+        circle at top,
+        color-mix(in oklab, var(--hero-glow) 34%, transparent),
+        transparent 40%
+      ),
       linear-gradient(180deg, var(--background), var(--surface-subtle));
     letter-spacing: var(--tracking-normal-token, 0);
   }

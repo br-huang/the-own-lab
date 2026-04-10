@@ -41,8 +41,12 @@ var SYSTEM_PROMPT = [
 
 // ===== Tab Switching =====
 function switchTab(tab) {
-  document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.remove('active'); });
-  document.querySelectorAll('.tab-btn').forEach(function(el) { el.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function (el) {
+    el.classList.remove('active');
+  });
+  document.querySelectorAll('.tab-btn').forEach(function (el) {
+    el.classList.remove('active');
+  });
   document.getElementById('tab-' + tab).classList.add('active');
   var btns = document.querySelectorAll('.tab-btn');
   for (var i = 0; i < btns.length; i++) {
@@ -67,7 +71,9 @@ var API_KEY = 'AIzaSyBklVOb5EFH-YAkkSJqOWDXzAlf-S7qu4U';
 // ===== Collect Form Data =====
 function getCheckedValues(name) {
   var checked = document.querySelectorAll('input[name="' + name + '"]:checked');
-  return Array.from(checked).map(function(el) { return el.value; });
+  return Array.from(checked).map(function (el) {
+    return el.value;
+  });
 }
 
 function collectFormData() {
@@ -163,10 +169,13 @@ async function generateReport() {
   var outputArea = document.getElementById('outputArea');
   var outputBody = document.getElementById('outputBody');
   outputArea.style.display = 'block';
-  outputBody.innerHTML = '<div class="loading"><div class="spinner"></div><span>AI 正在生成評估報告，請稍候...</span></div>';
+  outputBody.innerHTML =
+    '<div class="loading"><div class="spinner"></div><span>AI 正在生成評估報告，請稍候...</span></div>';
 
   var userPrompt = buildUserPrompt(data);
-  var apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=' + API_KEY;
+  var apiUrl =
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=' +
+    API_KEY;
 
   try {
     var response = await fetch(apiUrl, {
@@ -178,8 +187,8 @@ async function generateReport() {
         generationConfig: {
           temperature: 0.7,
           maxOutputTokens: 4096,
-        }
-      })
+        },
+      }),
     });
 
     var result = await response.json();
@@ -188,7 +197,13 @@ async function generateReport() {
       throw new Error(result.error.message || 'API 錯誤');
     }
 
-    var text = result.candidates && result.candidates[0] && result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts[0] && result.candidates[0].content.parts[0].text;
+    var text =
+      result.candidates &&
+      result.candidates[0] &&
+      result.candidates[0].content &&
+      result.candidates[0].content.parts &&
+      result.candidates[0].content.parts[0] &&
+      result.candidates[0].content.parts[0].text;
     if (!text) throw new Error('未收到有效回應');
 
     outputBody.textContent = text;
@@ -199,7 +214,10 @@ async function generateReport() {
 
     showToast('報告生成完成！');
   } catch (err) {
-    outputBody.innerHTML = '<div style="color:var(--danger);padding:20px;">生成失敗：' + escapeHtml(err.message) + '</div>';
+    outputBody.innerHTML =
+      '<div style="color:var(--danger);padding:20px;">生成失敗：' +
+      escapeHtml(err.message) +
+      '</div>';
   } finally {
     btn.disabled = false;
     btn.textContent = '生成評估報告';
@@ -210,20 +228,31 @@ async function generateReport() {
 function copyOutput() {
   var outputArea = document.getElementById('outputArea');
   var text = outputArea.dataset.generatedText;
-  if (!text) { showToast('尚無可複製的內容'); return; }
-  navigator.clipboard.writeText(text).then(function() { showToast('已複製到剪貼簿！'); });
+  if (!text) {
+    showToast('尚無可複製的內容');
+    return;
+  }
+  navigator.clipboard.writeText(text).then(function () {
+    showToast('已複製到剪貼簿！');
+  });
 }
 
 // ===== History (localStorage) =====
 function getHistory() {
-  try { return JSON.parse(localStorage.getItem('sw_history') || '[]'); }
-  catch(e) { return []; }
+  try {
+    return JSON.parse(localStorage.getItem('sw_history') || '[]');
+  } catch (e) {
+    return [];
+  }
 }
 
 function saveToHistory() {
   var outputArea = document.getElementById('outputArea');
   var text = outputArea.dataset.generatedText;
-  if (!text) { showToast('尚無可儲存的內容'); return; }
+  if (!text) {
+    showToast('尚無可儲存的內容');
+    return;
+  }
 
   var formData = JSON.parse(outputArea.dataset.formData || '{}');
   var history = getHistory();
@@ -255,32 +284,49 @@ function renderHistory() {
   var html = '';
   for (var i = 0; i < history.length; i++) {
     var item = history[i];
-    html += '<div class="history-card">' +
+    html +=
+      '<div class="history-card">' +
       '<div class="history-card-header">' +
-        '<div class="meta"><strong>' + escapeHtml(item.label) + '</strong></div>' +
-        '<span class="meta">' + escapeHtml(item.timestamp) + '</span>' +
+      '<div class="meta"><strong>' +
+      escapeHtml(item.label) +
+      '</strong></div>' +
+      '<span class="meta">' +
+      escapeHtml(item.timestamp) +
+      '</span>' +
       '</div>' +
-      '<div class="history-card-body">' + escapeHtml(item.text) + '</div>' +
+      '<div class="history-card-body">' +
+      escapeHtml(item.text) +
+      '</div>' +
       '<div class="history-card-actions">' +
-        '<button class="btn btn-success btn-sm" onclick="copyHistoryItem(' + item.id + ')">複製</button>' +
-        '<button class="btn btn-outline btn-sm" onclick="deleteHistoryItem(' + item.id + ')">刪除</button>' +
+      '<button class="btn btn-success btn-sm" onclick="copyHistoryItem(' +
+      item.id +
+      ')">複製</button>' +
+      '<button class="btn btn-outline btn-sm" onclick="deleteHistoryItem(' +
+      item.id +
+      ')">刪除</button>' +
       '</div>' +
-    '</div>';
+      '</div>';
   }
   container.innerHTML = html;
 }
 
 function copyHistoryItem(id) {
   var history = getHistory();
-  var item = history.find(function(h) { return h.id === id; });
+  var item = history.find(function (h) {
+    return h.id === id;
+  });
   if (item) {
-    navigator.clipboard.writeText(item.text).then(function() { showToast('已複製到剪貼簿！'); });
+    navigator.clipboard.writeText(item.text).then(function () {
+      showToast('已複製到剪貼簿！');
+    });
   }
 }
 
 function deleteHistoryItem(id) {
   var history = getHistory();
-  history = history.filter(function(h) { return h.id !== id; });
+  history = history.filter(function (h) {
+    return h.id !== id;
+  });
   localStorage.setItem('sw_history', JSON.stringify(history));
   renderHistory();
   showToast('已刪除');
@@ -296,9 +342,17 @@ function clearHistory() {
 // ===== Clear Form =====
 function clearForm() {
   if (!confirm('確定要清除所有欄位嗎？')) return;
-  document.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(function(el) { el.value = ''; });
-  document.querySelectorAll('select').forEach(function(el) { el.selectedIndex = 0; });
-  document.querySelectorAll('input[type="checkbox"]').forEach(function(el) { el.checked = false; });
+  document
+    .querySelectorAll('input[type="text"], input[type="number"], textarea')
+    .forEach(function (el) {
+      el.value = '';
+    });
+  document.querySelectorAll('select').forEach(function (el) {
+    el.selectedIndex = 0;
+  });
+  document.querySelectorAll('input[type="checkbox"]').forEach(function (el) {
+    el.checked = false;
+  });
   document.getElementById('outputArea').style.display = 'none';
   showToast('表單已清除');
 }
@@ -317,7 +371,9 @@ function showToast(message) {
   toast.className = 'toast';
   toast.textContent = message;
   document.body.appendChild(toast);
-  setTimeout(function() { toast.remove(); }, 2500);
+  setTimeout(function () {
+    toast.remove();
+  }, 2500);
 }
 
 // ===== Init =====

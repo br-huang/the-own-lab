@@ -1,4 +1,4 @@
-import { useAppStore } from "../../stores/app-store";
+import { useAppStore } from '../../stores/app-store';
 
 export function Sidebar() {
   const sidebarWidth = useAppStore((s) => s.sidebarWidth);

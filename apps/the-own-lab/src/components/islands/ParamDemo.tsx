@@ -1,6 +1,6 @@
-import { useState } from "react";
-import type { ParamDef } from "@/types/docs";
-import type { ReactNode } from "react";
+import { useState } from 'react';
+import type { ParamDef } from '@/types/docs';
+import type { ReactNode } from 'react';
 
 function initValues(params: Record<string, ParamDef>): Record<string, number | boolean | string> {
   const values: Record<string, number | boolean | string> = {};
@@ -23,7 +23,7 @@ function ControlInput({
 }) {
   const label = def.label ?? name;
 
-  if (def.type === "number") {
+  if (def.type === 'number') {
     return (
       <label className="control-row">
         <span className="control-label">{label}</span>
@@ -41,7 +41,7 @@ function ControlInput({
     );
   }
 
-  if (def.type === "boolean") {
+  if (def.type === 'boolean') {
     return (
       <label className="control-row">
         <span className="control-label">{label}</span>
@@ -55,7 +55,7 @@ function ControlInput({
     );
   }
 
-  if (def.type === "select" && def.options) {
+  if (def.type === 'select' && def.options) {
     return (
       <label className="control-row">
         <span className="control-label">{label}</span>
@@ -65,7 +65,9 @@ function ControlInput({
           className="control-input"
         >
           {def.options.map((opt) => (
-            <option key={opt} value={opt}>{opt}</option>
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
           ))}
         </select>
       </label>

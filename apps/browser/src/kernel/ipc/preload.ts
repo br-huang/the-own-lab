@@ -79,9 +79,12 @@ const kernelAPI = {
 contextBridge.exposeInMainWorld('kernel', kernelAPI);
 
 // Expose a focused event listener for non-kernel IPC (e.g., menu-triggered focus)
-contextBridge.exposeInMainWorld('__electronOn', (channel: string, callback: (...args: unknown[]) => void) => {
-  const allowedChannels = ['kernel:focus-omnibar'];
-  if (allowedChannels.includes(channel)) {
-    ipcRenderer.on(channel, (_event, ...args) => callback(...args));
-  }
-});
+contextBridge.exposeInMainWorld(
+  '__electronOn',
+  (channel: string, callback: (...args: unknown[]) => void) => {
+    const allowedChannels = ['kernel:focus-omnibar'];
+    if (allowedChannels.includes(channel)) {
+      ipcRenderer.on(channel, (_event, ...args) => callback(...args));
+    }
+  },
+);

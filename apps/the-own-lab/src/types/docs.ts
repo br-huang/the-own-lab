@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 
 // ─── _meta.ts Schema ───
 
@@ -19,7 +19,7 @@ export interface MetaConfig {
 // ─── Sidebar Tree ───
 
 export interface SidebarLink {
-  kind: "link";
+  kind: 'link';
   title: string;
   href: string;
   order: number;
@@ -28,7 +28,7 @@ export interface SidebarLink {
 }
 
 export interface SidebarSection {
-  kind: "section";
+  kind: 'section';
   title: string;
   order: number;
   children: SidebarNode[];
@@ -50,12 +50,12 @@ export interface TocHeading {
 
 export interface CodePlaygroundProps {
   files: Record<string, string>;
-  template?: "react-ts" | "react" | "vanilla-ts" | "vanilla";
+  template?: 'react-ts' | 'react' | 'vanilla-ts' | 'vanilla';
   showPreview?: boolean;
 }
 
 export interface ParamDef {
-  type: "number" | "boolean" | "select";
+  type: 'number' | 'boolean' | 'select';
   default: number | boolean | string;
   min?: number;
   max?: number;

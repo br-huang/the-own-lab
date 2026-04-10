@@ -1,14 +1,19 @@
-import { ItemView, WorkspaceLeaf, MarkdownRenderer, App } from "obsidian";
-import { RagEngine } from "../core/rag-engine";
+import { ItemView, WorkspaceLeaf, MarkdownRenderer, App } from 'obsidian';
+import { RagEngine } from '../core/rag-engine';
 import {
-  SourceReference, ChatMessage, ChatSession,
-  ChatProviderType, CHAT_PROVIDER_LABELS, CHAT_PROVIDER_MODELS, PluginSettings,
-} from "../types";
-import { UrlIngestor, IngestPhase } from "../ingestor/url-ingestor";
-import { detectVideoProvider } from "../ingestor/video-detector";
-import { SessionStore } from "../core/session-store";
+  SourceReference,
+  ChatMessage,
+  ChatSession,
+  ChatProviderType,
+  CHAT_PROVIDER_LABELS,
+  CHAT_PROVIDER_MODELS,
+  PluginSettings,
+} from '../types';
+import { UrlIngestor, IngestPhase } from '../ingestor/url-ingestor';
+import { detectVideoProvider } from '../ingestor/video-detector';
+import { SessionStore } from '../core/session-store';
 
-export const CHAT_VIEW_TYPE = "second-brain-chat";
+export const CHAT_VIEW_TYPE = 'second-brain-chat';
 
 export class ChatView extends ItemView {
   private ragEngine: RagEngine;
@@ -29,7 +34,7 @@ export class ChatView extends ItemView {
   private autocompleteIndex = -1;
   private autocompleteDebounceTimer: ReturnType<typeof setTimeout> | null = null;
   private isStreaming = false;
-  private fullResponseText = "";
+  private fullResponseText = '';
   private renderThrottleTimer: ReturnType<typeof setTimeout> | null = null;
   private getSettings: () => PluginSettings;
   private onProviderChange: (provider: ChatProviderType, model: string) => void;
@@ -52,7 +57,7 @@ export class ChatView extends ItemView {
     this.sessionStore = sessionStore;
     this.getSettings = getSettings;
     this.onProviderChange = onProviderChange;
-    this.isMac = navigator.platform.toUpperCase().includes("MAC");
+    this.isMac = navigator.platform.toUpperCase().includes('MAC');
   }
 
   getViewType(): string {
@@ -60,124 +65,124 @@ export class ChatView extends ItemView {
   }
 
   getDisplayText(): string {
-    return "Second Brain";
+    return 'Second Brain';
   }
 
   getIcon(): string {
-    return "message-square";
+    return 'message-square';
   }
 
   async onOpen(): Promise<void> {
     const container = this.contentEl;
     container.empty();
-    container.addClass("kb-chat-container");
+    container.addClass('kb-chat-container');
 
     // ─── Session Panel (left) ───
-    this.sessionPanelEl = container.createDiv({ cls: "kb-session-panel" });
+    this.sessionPanelEl = container.createDiv({ cls: 'kb-session-panel' });
 
-    const sessionHeader = this.sessionPanelEl.createDiv({ cls: "kb-session-panel-header" });
-    const newBtn = sessionHeader.createEl("button", {
-      cls: "kb-session-new-btn",
-      text: "+ New",
+    const sessionHeader = this.sessionPanelEl.createDiv({ cls: 'kb-session-panel-header' });
+    const newBtn = sessionHeader.createEl('button', {
+      cls: 'kb-session-new-btn',
+      text: '+ New',
     });
-    newBtn.addEventListener("click", () => this.handleNewSession());
+    newBtn.addEventListener('click', () => this.handleNewSession());
 
-    this.sessionListEl = this.sessionPanelEl.createDiv({ cls: "kb-session-list" });
+    this.sessionListEl = this.sessionPanelEl.createDiv({ cls: 'kb-session-list' });
 
     // ─── Chat Main Panel (right) ───
-    const chatMainEl = container.createDiv({ cls: "kb-chat-main" });
+    const chatMainEl = container.createDiv({ cls: 'kb-chat-main' });
 
     // Header bar
-    const headerEl = chatMainEl.createDiv({ cls: "kb-chat-header" });
+    const headerEl = chatMainEl.createDiv({ cls: 'kb-chat-header' });
 
-    const toggleBtn = headerEl.createEl("button", {
-      cls: "kb-session-toggle",
-      attr: { "aria-label": "Toggle session list" },
+    const toggleBtn = headerEl.createEl('button', {
+      cls: 'kb-session-toggle',
+      attr: { 'aria-label': 'Toggle session list' },
     });
-    toggleBtn.textContent = "\u2630";
-    toggleBtn.addEventListener("click", () => {
+    toggleBtn.textContent = '\u2630';
+    toggleBtn.addEventListener('click', () => {
       this.sessionListVisible = !this.sessionListVisible;
-      this.sessionPanelEl.toggleClass("is-collapsed", !this.sessionListVisible);
+      this.sessionPanelEl.toggleClass('is-collapsed', !this.sessionListVisible);
     });
 
-    headerEl.createEl("span", { cls: "kb-chat-header-title", text: "Second Brain" });
+    headerEl.createEl('span', { cls: 'kb-chat-header-title', text: 'Second Brain' });
 
     // Provider & Model dropdowns in header
-    const providerArea = headerEl.createDiv({ cls: "kb-chat-provider-area" });
+    const providerArea = headerEl.createDiv({ cls: 'kb-chat-provider-area' });
 
-    const providerSelect = providerArea.createEl("select", { cls: "kb-chat-provider-select" });
+    const providerSelect = providerArea.createEl('select', { cls: 'kb-chat-provider-select' });
     for (const [key, label] of Object.entries(CHAT_PROVIDER_LABELS)) {
-      providerSelect.createEl("option", { value: key, text: label });
+      providerSelect.createEl('option', { value: key, text: label });
     }
     providerSelect.value = this.getSettings().chatProvider;
 
-    this.modelSelectEl = providerArea.createEl("select", { cls: "kb-chat-model-select" });
+    this.modelSelectEl = providerArea.createEl('select', { cls: 'kb-chat-model-select' });
     this.populateModelDropdown(this.getSettings().chatProvider);
     this.modelSelectEl.value = this.getSettings().chatModel;
 
-    providerSelect.addEventListener("change", () => {
+    providerSelect.addEventListener('change', () => {
       const provider = providerSelect.value as ChatProviderType;
       this.populateModelDropdown(provider);
-      const defaultModel = CHAT_PROVIDER_MODELS[provider][0] || "";
+      const defaultModel = CHAT_PROVIDER_MODELS[provider][0] || '';
       this.modelSelectEl.value = defaultModel;
       this.onProviderChange(provider, defaultModel);
     });
 
-    this.modelSelectEl.addEventListener("change", () => {
+    this.modelSelectEl.addEventListener('change', () => {
       const provider = providerSelect.value as ChatProviderType;
       this.onProviderChange(provider, this.modelSelectEl.value);
     });
 
-    this.messagesEl = chatMainEl.createDiv({ cls: "kb-chat-messages" });
+    this.messagesEl = chatMainEl.createDiv({ cls: 'kb-chat-messages' });
 
-    const inputArea = chatMainEl.createDiv({ cls: "kb-chat-input-area" });
+    const inputArea = chatMainEl.createDiv({ cls: 'kb-chat-input-area' });
 
-    this.inputWrapperEl = inputArea.createDiv({ cls: "kb-chat-input-wrapper" });
+    this.inputWrapperEl = inputArea.createDiv({ cls: 'kb-chat-input-wrapper' });
 
     // Chip tray (above textarea, inside wrapper)
-    this.chipTrayEl = this.inputWrapperEl.createDiv({ cls: "kb-chat-chip-tray" });
-    this.chipTrayEl.style.display = "none";
+    this.chipTrayEl = this.inputWrapperEl.createDiv({ cls: 'kb-chat-chip-tray' });
+    this.chipTrayEl.style.display = 'none';
 
     // Textarea (inside wrapper)
-    this.inputEl = this.inputWrapperEl.createEl("textarea", {
-      cls: "kb-chat-input",
-      attr: { placeholder: "Ask about your notes... (@ to mention a file)", rows: "3" },
+    this.inputEl = this.inputWrapperEl.createEl('textarea', {
+      cls: 'kb-chat-input',
+      attr: { placeholder: 'Ask about your notes... (@ to mention a file)', rows: '3' },
     });
 
     // Autocomplete dropdown (inside wrapper, absolutely positioned)
-    this.autocompleteEl = this.inputWrapperEl.createDiv({ cls: "kb-chat-autocomplete" });
-    this.autocompleteEl.style.display = "none";
+    this.autocompleteEl = this.inputWrapperEl.createDiv({ cls: 'kb-chat-autocomplete' });
+    this.autocompleteEl.style.display = 'none';
 
     // Send button with platform-specific shortcut hint
-    const sendShortcut = this.isMac ? "⌘↵" : "Ctrl↵";
-    this.sendBtn = inputArea.createEl("button", {
-      cls: "kb-chat-send",
+    const sendShortcut = this.isMac ? '⌘↵' : 'Ctrl↵';
+    this.sendBtn = inputArea.createEl('button', {
+      cls: 'kb-chat-send',
     });
-    this.sendBtn.createSpan({ text: "Send" });
-    this.sendBtn.createSpan({ cls: "kb-chat-send-hint", text: sendShortcut });
+    this.sendBtn.createSpan({ text: 'Send' });
+    this.sendBtn.createSpan({ cls: 'kb-chat-send-hint', text: sendShortcut });
 
     // Event listeners
-    this.inputEl.addEventListener("input", () => this.onInputChange());
+    this.inputEl.addEventListener('input', () => this.onInputChange());
 
-    this.inputEl.addEventListener("keydown", (e: KeyboardEvent) => {
+    this.inputEl.addEventListener('keydown', (e: KeyboardEvent) => {
       // If autocomplete is open, handle navigation keys
-      if (this.autocompleteEl.style.display !== "none") {
-        if (e.key === "ArrowDown") {
+      if (this.autocompleteEl.style.display !== 'none') {
+        if (e.key === 'ArrowDown') {
           e.preventDefault();
           this.moveAutocomplete(1);
           return;
         }
-        if (e.key === "ArrowUp") {
+        if (e.key === 'ArrowUp') {
           e.preventDefault();
           this.moveAutocomplete(-1);
           return;
         }
-        if (e.key === "Enter") {
+        if (e.key === 'Enter') {
           e.preventDefault();
           this.selectAutocompleteItem();
           return;
         }
-        if (e.key === "Escape") {
+        if (e.key === 'Escape') {
           e.preventDefault();
           this.hideAutocomplete();
           return;
@@ -185,19 +190,23 @@ export class ChatView extends ItemView {
       }
 
       // Normal submit: Cmd/Ctrl+Enter
-      if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         this.handleSubmit(this.inputEl.value);
       }
 
       // Backspace at position 0 removes last chip
-      if (e.key === "Backspace" && this.inputEl.selectionStart === 0
-          && this.inputEl.selectionEnd === 0 && this.mentionedFiles.length > 0) {
+      if (
+        e.key === 'Backspace' &&
+        this.inputEl.selectionStart === 0 &&
+        this.inputEl.selectionEnd === 0 &&
+        this.mentionedFiles.length > 0
+      ) {
         this.removeChip(this.mentionedFiles.length - 1);
       }
     });
 
-    this.sendBtn.addEventListener("click", () => {
+    this.sendBtn.addEventListener('click', () => {
       this.handleSubmit(this.inputEl.value);
     });
 
@@ -216,7 +225,7 @@ export class ChatView extends ItemView {
       try {
         await this.sessionStore.saveSession(this.currentSession);
       } catch (err) {
-        console.error("KB: Failed to save session on close", err);
+        console.error('KB: Failed to save session on close', err);
       }
     }
   }
@@ -228,14 +237,14 @@ export class ChatView extends ItemView {
     const models = CHAT_PROVIDER_MODELS[provider];
     if (models.length === 0) {
       // Ollama: free-text input — add a single editable option
-      this.modelSelectEl.createEl("option", { value: "", text: "(type model name)" });
-      this.modelSelectEl.style.display = "none";
+      this.modelSelectEl.createEl('option', { value: '', text: '(type model name)' });
+      this.modelSelectEl.style.display = 'none';
       // Replace with text input for Ollama
       return;
     }
-    this.modelSelectEl.style.display = "";
+    this.modelSelectEl.style.display = '';
     for (const model of models) {
-      this.modelSelectEl.createEl("option", { value: model, text: model });
+      this.modelSelectEl.createEl('option', { value: model, text: model });
     }
   }
 
@@ -244,29 +253,27 @@ export class ChatView extends ItemView {
     const entries = this.sessionStore.getSessionIndex();
 
     for (const entry of entries) {
-      const item = this.sessionListEl.createDiv({ cls: "kb-session-item" });
+      const item = this.sessionListEl.createDiv({ cls: 'kb-session-item' });
       if (entry.id === this.currentSession?.id) {
-        item.addClass("is-active");
+        item.addClass('is-active');
       }
 
-      item.createEl("span", {
-        cls: "kb-session-item-title",
+      item.createEl('span', {
+        cls: 'kb-session-item-title',
         text: entry.title,
       });
-      item.createEl("span", {
-        cls: "kb-session-item-date",
+      item.createEl('span', {
+        cls: 'kb-session-item-date',
         text: this.formatRelativeDate(entry.updatedAt),
       });
 
-      const deleteBtn = item.createEl("button", {
-        cls: "kb-session-item-delete",
-        text: "x",
+      const deleteBtn = item.createEl('button', {
+        cls: 'kb-session-item-delete',
+        text: 'x',
       });
 
-      item.addEventListener("click", () => this.switchToSession(entry.id));
-      deleteBtn.addEventListener("click", (event) =>
-        this.handleDeleteSession(entry.id, event),
-      );
+      item.addEventListener('click', () => this.switchToSession(entry.id));
+      deleteBtn.addEventListener('click', (event) => this.handleDeleteSession(entry.id, event));
     }
   }
 
@@ -277,10 +284,10 @@ export class ChatView extends ItemView {
     const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const yesterdayMidnight = new Date(todayMidnight.getTime() - 86400000);
 
-    if (date >= todayMidnight) return "Today";
-    if (date >= yesterdayMidnight) return "Yesterday";
+    if (date >= todayMidnight) return 'Today';
+    if (date >= yesterdayMidnight) return 'Yesterday';
 
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }
 
   // ─── Session Switching ───
@@ -307,9 +314,9 @@ export class ChatView extends ItemView {
     if (!this.currentSession) return;
 
     for (const msg of this.currentSession.messages) {
-      if (msg.role === "user") {
+      if (msg.role === 'user') {
         this.addUserMessage(msg.text);
-      } else if (msg.role === "assistant") {
+      } else if (msg.role === 'assistant') {
         const bubbleEl = this.addAssistantMessage();
         this.fullResponseText = msg.text;
         this.renderMarkdown(bubbleEl);
@@ -336,7 +343,7 @@ export class ChatView extends ItemView {
   private async handleDeleteSession(sessionId: string, event: MouseEvent): Promise<void> {
     event.stopPropagation();
     if (this.isStreaming) return;
-    if (!confirm("Delete this session?")) return;
+    if (!confirm('Delete this session?')) return;
 
     const wasActive = this.currentSession?.id === sessionId;
     await this.sessionStore.deleteSession(sessionId);
@@ -373,13 +380,13 @@ export class ChatView extends ItemView {
 
     let atPos = -1;
     for (let i = cursor - 1; i >= 0; i--) {
-      if (text[i] === "@") {
-        if (i === 0 || text[i - 1] === " " || text[i - 1] === "\n") {
+      if (text[i] === '@') {
+        if (i === 0 || text[i - 1] === ' ' || text[i - 1] === '\n') {
           atPos = i;
         }
         break;
       }
-      if (text[i] === " " || text[i] === "\n") {
+      if (text[i] === ' ' || text[i] === '\n') {
         break;
       }
     }
@@ -397,9 +404,7 @@ export class ChatView extends ItemView {
 
     const files = this.appRef.vault.getMarkdownFiles();
     const lowerQuery = query.toLowerCase();
-    const matches = files
-      .filter((f) => f.path.toLowerCase().includes(lowerQuery))
-      .slice(0, 10);
+    const matches = files.filter((f) => f.path.toLowerCase().includes(lowerQuery)).slice(0, 10);
 
     if (matches.length === 0) {
       this.hideAutocomplete();
@@ -419,44 +424,44 @@ export class ChatView extends ItemView {
       const file = matches[i];
       const needsDisambiguation = (basenameCounts.get(file.basename) ?? 0) > 1;
       const displayText = needsDisambiguation
-        ? `${file.basename} (${file.parent?.path ?? ""})`
+        ? `${file.basename} (${file.parent?.path ?? ''})`
         : file.basename;
 
       const item = this.autocompleteEl.createDiv({
-        cls: "kb-chat-autocomplete-item",
+        cls: 'kb-chat-autocomplete-item',
         text: displayText,
       });
       item.dataset.filepath = file.path;
       item.dataset.displayname = file.basename;
       item.dataset.index = String(i);
 
-      item.addEventListener("mousedown", (e) => {
+      item.addEventListener('mousedown', (e) => {
         e.preventDefault();
         this.selectFile(file.path, file.basename);
       });
     }
 
-    this.autocompleteEl.style.display = "block";
+    this.autocompleteEl.style.display = 'block';
   }
 
   private moveAutocomplete(direction: number): void {
-    const items = this.autocompleteEl.querySelectorAll(".kb-chat-autocomplete-item");
+    const items = this.autocompleteEl.querySelectorAll('.kb-chat-autocomplete-item');
     if (items.length === 0) return;
 
     if (this.autocompleteIndex >= 0 && this.autocompleteIndex < items.length) {
-      items[this.autocompleteIndex].removeClass("is-selected");
+      items[this.autocompleteIndex].removeClass('is-selected');
     }
 
     this.autocompleteIndex += direction;
     if (this.autocompleteIndex < 0) this.autocompleteIndex = items.length - 1;
     if (this.autocompleteIndex >= items.length) this.autocompleteIndex = 0;
 
-    items[this.autocompleteIndex].addClass("is-selected");
-    (items[this.autocompleteIndex] as HTMLElement).scrollIntoView({ block: "nearest" });
+    items[this.autocompleteIndex].addClass('is-selected');
+    (items[this.autocompleteIndex] as HTMLElement).scrollIntoView({ block: 'nearest' });
   }
 
   private selectAutocompleteItem(): void {
-    const items = this.autocompleteEl.querySelectorAll(".kb-chat-autocomplete-item");
+    const items = this.autocompleteEl.querySelectorAll('.kb-chat-autocomplete-item');
     if (this.autocompleteIndex < 0 || this.autocompleteIndex >= items.length) {
       if (items.length > 0) {
         this.autocompleteIndex = 0;
@@ -476,7 +481,7 @@ export class ChatView extends ItemView {
 
     let atPos = -1;
     for (let i = cursor - 1; i >= 0; i--) {
-      if (text[i] === "@") {
+      if (text[i] === '@') {
         atPos = i;
         break;
       }
@@ -494,7 +499,7 @@ export class ChatView extends ItemView {
   }
 
   private hideAutocomplete(): void {
-    this.autocompleteEl.style.display = "none";
+    this.autocompleteEl.style.display = 'none';
     this.autocompleteEl.empty();
     this.autocompleteIndex = -1;
   }
@@ -517,18 +522,18 @@ export class ChatView extends ItemView {
     this.chipTrayEl.empty();
 
     if (this.mentionedFiles.length === 0) {
-      this.chipTrayEl.style.display = "none";
+      this.chipTrayEl.style.display = 'none';
       return;
     }
 
-    this.chipTrayEl.style.display = "flex";
+    this.chipTrayEl.style.display = 'flex';
 
     for (let i = 0; i < this.mentionedFiles.length; i++) {
       const file = this.mentionedFiles[i];
-      const chip = this.chipTrayEl.createDiv({ cls: "kb-chat-chip" });
+      const chip = this.chipTrayEl.createDiv({ cls: 'kb-chat-chip' });
       chip.createSpan({ text: `@${file.displayName}` });
-      const closeBtn = chip.createSpan({ cls: "kb-chat-chip-close", text: "\u00d7" });
-      closeBtn.addEventListener("click", () => this.removeChip(i));
+      const closeBtn = chip.createSpan({ cls: 'kb-chat-chip-close', text: '\u00d7' });
+      closeBtn.addEventListener('click', () => this.removeChip(i));
     }
   }
 
@@ -545,37 +550,45 @@ export class ChatView extends ItemView {
 
     // URL detection (only if no chips are attached)
     if (/^https?:\/\/\S+$/.test(trimmed) && this.mentionedFiles.length === 0) {
-      this.inputEl.value = "";
+      this.inputEl.value = '';
       await this.handleUrlIngest(trimmed);
       return;
     }
 
     const forcedFiles = this.mentionedFiles.map((f) => f.filePath);
 
-    const chipMentions = this.mentionedFiles.map((f) => `@[[${f.displayName}]]`).join(" ");
+    const chipMentions = this.mentionedFiles.map((f) => `@[[${f.displayName}]]`).join(' ');
     const displayText = chipMentions ? `${chipMentions} ${trimmed}` : trimmed;
 
     const cleanQuestion = trimmed;
 
-    this.inputEl.value = "";
+    this.inputEl.value = '';
     this.clearChips();
     this.setInputEnabled(false);
     this.addUserMessage(displayText);
 
-    this.pushHistory({ role: "user", text: displayText, sources: [], timestamp: new Date().toISOString() });
+    this.pushHistory({
+      role: 'user',
+      text: displayText,
+      sources: [],
+      timestamp: new Date().toISOString(),
+    });
 
     const bubbleEl = this.addAssistantMessage();
-    this.fullResponseText = "";
+    this.fullResponseText = '';
     let responseSources: SourceReference[] = [];
 
     try {
-      for await (const response of this.ragEngine.query(cleanQuestion, forcedFiles.length > 0 ? forcedFiles : undefined)) {
-        if (response.type === "token") {
+      for await (const response of this.ragEngine.query(
+        cleanQuestion,
+        forcedFiles.length > 0 ? forcedFiles : undefined,
+      )) {
+        if (response.type === 'token') {
           this.appendToken(bubbleEl, response.token);
-        } else if (response.type === "sources") {
+        } else if (response.type === 'sources') {
           responseSources = response.sources;
           this.renderSources(bubbleEl, response.sources);
-        } else if (response.type === "error") {
+        } else if (response.type === 'error') {
           this.fullResponseText = response.message;
           this.renderError(bubbleEl, response.message);
         }
@@ -588,7 +601,7 @@ export class ChatView extends ItemView {
       this.setInputEnabled(true);
 
       this.pushHistory({
-        role: "assistant",
+        role: 'assistant',
         text: this.fullResponseText,
         sources: responseSources,
         timestamp: new Date().toISOString(),
@@ -599,29 +612,31 @@ export class ChatView extends ItemView {
   private async handleUrlIngest(url: string): Promise<void> {
     this.setInputEnabled(false);
     this.addUserMessage(url);
-    this.pushHistory({ role: "user", text: url, sources: [], timestamp: new Date().toISOString() });
+    this.pushHistory({ role: 'user', text: url, sources: [], timestamp: new Date().toISOString() });
     const bubbleEl = this.addAssistantMessage();
 
     const provider = detectVideoProvider(url);
     const phaseText: Record<IngestPhase, string> = {
-      fetching: provider === "youtube"
-        ? "Fetching video info..."
-        : provider === "bilibili"
-          ? "Fetching Bilibili video info..."
-          : "Fetching page...",
-      extracting: provider === "youtube"
-        ? "Extracting transcript..."
-        : provider === "bilibili"
-          ? "Extracting subtitles..."
-          : "Extracting content...",
-      saving: "Saving note...",
+      fetching:
+        provider === 'youtube'
+          ? 'Fetching video info...'
+          : provider === 'bilibili'
+            ? 'Fetching Bilibili video info...'
+            : 'Fetching page...',
+      extracting:
+        provider === 'youtube'
+          ? 'Extracting transcript...'
+          : provider === 'bilibili'
+            ? 'Extracting subtitles...'
+            : 'Extracting content...',
+      saving: 'Saving note...',
     };
 
     try {
-      const contentEl = bubbleEl.querySelector(".kb-chat-content") as HTMLElement;
+      const contentEl = bubbleEl.querySelector('.kb-chat-content') as HTMLElement;
       if (contentEl) {
         contentEl.empty();
-        contentEl.setText("Ingesting URL...");
+        contentEl.setText('Ingesting URL...');
       }
 
       const result = await this.urlIngestor.ingest(url, (phase: IngestPhase) => {
@@ -638,10 +653,20 @@ export class ChatView extends ItemView {
       }
 
       const resultText = `Ingested: "${result.title}" \u2192 ${result.filePath}`;
-      this.pushHistory({ role: "assistant", text: resultText, sources: [], timestamp: new Date().toISOString() });
+      this.pushHistory({
+        role: 'assistant',
+        text: resultText,
+        sources: [],
+        timestamp: new Date().toISOString(),
+      });
     } catch (err) {
       this.renderError(bubbleEl, (err as Error).message);
-      this.pushHistory({ role: "assistant", text: `Error: ${(err as Error).message}`, sources: [], timestamp: new Date().toISOString() });
+      this.pushHistory({
+        role: 'assistant',
+        text: `Error: ${(err as Error).message}`,
+        sources: [],
+        timestamp: new Date().toISOString(),
+      });
     } finally {
       this.setInputEnabled(true);
     }
@@ -660,38 +685,38 @@ export class ChatView extends ItemView {
     }
 
     // Auto-title on first user message
-    if (message.role === "user" && this.currentSession.title === "New Chat") {
-      const cleanText = message.text.replace(/@\[\[[^\]]*\]\]\s*/g, "").trim();
-      this.currentSession.title = cleanText.slice(0, 30) || "New Chat";
+    if (message.role === 'user' && this.currentSession.title === 'New Chat') {
+      const cleanText = message.text.replace(/@\[\[[^\]]*\]\]\s*/g, '').trim();
+      this.currentSession.title = cleanText.slice(0, 30) || 'New Chat';
       this.renderSessionList();
     }
 
     try {
       await this.sessionStore.saveSession(this.currentSession);
     } catch (err) {
-      console.error("KB: Failed to save session", err);
+      console.error('KB: Failed to save session', err);
     }
   }
 
   // ─── Message Rendering ───
 
   private addUserMessage(text: string): void {
-    const msgEl = this.messagesEl.createDiv({ cls: "kb-chat-message kb-chat-user" });
+    const msgEl = this.messagesEl.createDiv({ cls: 'kb-chat-message kb-chat-user' });
     msgEl.textContent = text;
     this.scrollToBottom();
   }
 
   private addAssistantMessage(): HTMLElement {
-    const msgEl = this.messagesEl.createDiv({ cls: "kb-chat-message kb-chat-assistant" });
-    const bubbleEl = msgEl.createDiv({ cls: "kb-chat-bubble" });
-    const contentEl = bubbleEl.createDiv({ cls: "kb-chat-content" });
-    contentEl.createSpan({ cls: "kb-chat-loader", text: "..." });
+    const msgEl = this.messagesEl.createDiv({ cls: 'kb-chat-message kb-chat-assistant' });
+    const bubbleEl = msgEl.createDiv({ cls: 'kb-chat-bubble' });
+    const contentEl = bubbleEl.createDiv({ cls: 'kb-chat-content' });
+    contentEl.createSpan({ cls: 'kb-chat-loader', text: '...' });
     this.scrollToBottom();
     return bubbleEl;
   }
 
   private appendToken(bubbleEl: HTMLElement, token: string): void {
-    const loader = bubbleEl.querySelector(".kb-chat-loader");
+    const loader = bubbleEl.querySelector('.kb-chat-loader');
     if (loader) loader.remove();
 
     this.fullResponseText += token;
@@ -705,43 +730,37 @@ export class ChatView extends ItemView {
   }
 
   private renderMarkdown(bubbleEl: HTMLElement): void {
-    const contentEl = bubbleEl.querySelector(".kb-chat-content");
+    const contentEl = bubbleEl.querySelector('.kb-chat-content');
     if (!contentEl) return;
 
     contentEl.empty();
-    MarkdownRenderer.render(
-      this.app,
-      this.fullResponseText,
-      contentEl as HTMLElement,
-      "",
-      this,
-    );
+    MarkdownRenderer.render(this.app, this.fullResponseText, contentEl as HTMLElement, '', this);
     this.scrollToBottom();
   }
 
   private renderSources(bubbleEl: HTMLElement, sources: SourceReference[]): void {
-    const sourcesEl = bubbleEl.createDiv({ cls: "kb-chat-sources" });
-    sourcesEl.createEl("div", { cls: "kb-chat-sources-label", text: "Sources:" });
+    const sourcesEl = bubbleEl.createDiv({ cls: 'kb-chat-sources' });
+    sourcesEl.createEl('div', { cls: 'kb-chat-sources-label', text: 'Sources:' });
 
     for (const source of sources) {
-      const link = sourcesEl.createEl("a", {
-        cls: "kb-chat-source-link",
+      const link = sourcesEl.createEl('a', {
+        cls: 'kb-chat-source-link',
         text: source.fileTitle,
       });
-      link.addEventListener("click", (e) => {
+      link.addEventListener('click', (e) => {
         e.preventDefault();
-        this.app.workspace.openLinkText(source.filePath, "");
+        this.app.workspace.openLinkText(source.filePath, '');
       });
     }
   }
 
   private renderError(bubbleEl: HTMLElement, message: string): void {
-    const loader = bubbleEl.querySelector(".kb-chat-loader");
+    const loader = bubbleEl.querySelector('.kb-chat-loader');
     if (loader) loader.remove();
 
-    const contentEl = bubbleEl.querySelector(".kb-chat-content") as HTMLElement;
+    const contentEl = bubbleEl.querySelector('.kb-chat-content') as HTMLElement;
     if (contentEl) {
-      contentEl.createDiv({ cls: "kb-chat-error", text: message });
+      contentEl.createDiv({ cls: 'kb-chat-error', text: message });
     }
   }
 

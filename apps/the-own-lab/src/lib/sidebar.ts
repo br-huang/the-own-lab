@@ -1,5 +1,5 @@
-import { getCollection } from "astro:content";
-import type { MetaConfig, SidebarNode, SidebarLink, SidebarSection } from "@/types/docs";
+import { getCollection } from 'astro:content';
+import type { MetaConfig, SidebarNode, SidebarLink, SidebarSection } from '@/types/docs';
 
 /**
  * Convert a kebab-case string to Title Case.
@@ -7,9 +7,9 @@ import type { MetaConfig, SidebarNode, SidebarLink, SidebarSection } from "@/typ
  */
 export function kebabToTitle(str: string): string {
   return str
-    .split("-")
+    .split('-')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+    .join(' ');
 }
 
 /**
@@ -19,10 +19,9 @@ export function kebabToTitle(str: string): string {
  * For "algorithms/", the key is "algorithms".
  */
 async function loadMetaFiles(): Promise<Map<string, MetaConfig>> {
-  const metaModules = import.meta.glob<{ default: MetaConfig }>(
-    "/src/content/docs/**/_meta.ts",
-    { eager: true }
-  );
+  const metaModules = import.meta.glob<{ default: MetaConfig }>('/src/content/docs/**/_meta.ts', {
+    eager: true,
+  });
 
   const metaMap = new Map<string, MetaConfig>();
 
@@ -30,9 +29,9 @@ async function loadMetaFiles(): Promise<Map<string, MetaConfig>> {
     // path example: "/src/content/docs/_meta.ts" → dir = ""
     // path example: "/src/content/docs/algorithms/_meta.ts" → dir = "algorithms"
     const dir = path
-      .replace("/src/content/docs/", "")
-      .replace("/_meta.ts", "")
-      .replace("_meta.ts", ""); // handles root case where path ends with just "_meta.ts"
+      .replace('/src/content/docs/', '')
+      .replace('/_meta.ts', '')
+      .replace('_meta.ts', ''); // handles root case where path ends with just "_meta.ts"
     metaMap.set(dir, mod.default);
   }
 
@@ -46,7 +45,7 @@ async function loadMetaFiles(): Promise<Map<string, MetaConfig>> {
  *                      used to mark the active link and expanded sections.
  */
 export async function buildSidebarTree(currentSlug: string): Promise<SidebarNode[]> {
-  const allDocs = await getCollection("docs", (entry) => {
+  const allDocs = await getCollection('docs', (entry) => {
     // Filter out drafts in production
     if (import.meta.env.PROD && entry.data.draft) return false;
     return true;
@@ -60,21 +59,21 @@ export async function buildSidebarTree(currentSlug: string): Promise<SidebarNode
   const docsByDir = new Map<string, typeof allDocs>();
 
   for (const doc of allDocs) {
-    const parts = doc.id.split("/");
-    const dir = parts.length > 1 ? parts.slice(0, -1).join("/") : "";
+    const parts = doc.id.split('/');
+    const dir = parts.length > 1 ? parts.slice(0, -1).join('/') : '';
     if (!docsByDir.has(dir)) docsByDir.set(dir, []);
     docsByDir.get(dir)!.push(doc);
   }
 
   // Collect all directory paths that have children (for building sections)
   const allDirs = new Set<string>();
-  allDirs.add(""); // root always exists
+  allDirs.add(''); // root always exists
   for (const doc of allDocs) {
-    const parts = doc.id.split("/");
+    const parts = doc.id.split('/');
     if (parts.length > 1) {
       // Add all ancestor directories
       for (let i = 1; i < parts.length; i++) {
-        allDirs.add(parts.slice(0, i).join("/"));
+        allDirs.add(parts.slice(0, i).join('/'));
       }
     }
   }
@@ -86,7 +85,7 @@ export async function buildSidebarTree(currentSlug: string): Promise<SidebarNode
     // Add document links at this level
     const docsAtLevel = docsByDir.get(dir) ?? [];
     for (const doc of docsAtLevel) {
-      const filename = doc.id.split("/").pop()!;
+      const filename = doc.id.split('/').pop()!;
       const metaItem = meta?.items[filename];
 
       const title = metaItem?.title ?? doc.data.title ?? kebabToTitle(filename);
@@ -94,7 +93,7 @@ export async function buildSidebarTree(currentSlug: string): Promise<SidebarNode
       const href = `/docs/${doc.id}/`;
 
       nodes.push({
-        kind: "link",
+        kind: 'link',
         title,
         href,
         order,
@@ -106,9 +105,9 @@ export async function buildSidebarTree(currentSlug: string): Promise<SidebarNode
     for (const childDir of allDirs) {
       // Only direct children of current dir
       if (childDir === dir) continue;
-      const expectedPrefix = dir === "" ? "" : dir + "/";
-      const relative = dir === "" ? childDir : childDir.slice(expectedPrefix.length);
-      if (!childDir.startsWith(expectedPrefix) || relative.includes("/")) continue;
+      const expectedPrefix = dir === '' ? '' : dir + '/';
+      const relative = dir === '' ? childDir : childDir.slice(expectedPrefix.length);
+      if (!childDir.startsWith(expectedPrefix) || relative.includes('/')) continue;
 
       const folderName = relative;
       const childMeta = metaMap.get(childDir);
@@ -120,12 +119,11 @@ export async function buildSidebarTree(currentSlug: string): Promise<SidebarNode
       const children = buildLevel(childDir);
       const expanded = children.some(
         (child) =>
-          (child.kind === "link" && child.active) ||
-          (child.kind === "section" && child.expanded)
+          (child.kind === 'link' && child.active) || (child.kind === 'section' && child.expanded),
       );
 
       nodes.push({
-        kind: "section",
+        kind: 'section',
         title: sectionTitle,
         order: sectionOrder,
         children,
@@ -142,7 +140,7 @@ export async function buildSidebarTree(currentSlug: string): Promise<SidebarNode
     return nodes;
   }
 
-  return buildLevel("");
+  return buildLevel('');
 }
 
 /**
@@ -151,7 +149,7 @@ export async function buildSidebarTree(currentSlug: string): Promise<SidebarNode
 export function flattenSidebarLinks(nodes: SidebarNode[]): SidebarLink[] {
   const links: SidebarLink[] = [];
   for (const node of nodes) {
-    if (node.kind === "link") {
+    if (node.kind === 'link') {
       links.push(node);
     } else {
       links.push(...flattenSidebarLinks(node.children));
@@ -165,7 +163,7 @@ export function flattenSidebarLinks(nodes: SidebarNode[]): SidebarLink[] {
  */
 export function getPagination(
   nodes: SidebarNode[],
-  currentSlug: string
+  currentSlug: string,
 ): { prev: SidebarLink | null; next: SidebarLink | null } {
   const flat = flattenSidebarLinks(nodes);
   const index = flat.findIndex((link) => link.href === `/docs/${currentSlug}/`);

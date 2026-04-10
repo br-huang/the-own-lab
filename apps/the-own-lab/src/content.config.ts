@@ -1,8 +1,8 @@
-import { defineCollection, z } from "astro:content";
-import { glob } from "astro/loaders";
+import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
 
 const docs = defineCollection({
-  loader: glob({ pattern: "**/*.mdx", base: "./src/content/docs" }),
+  loader: glob({ pattern: '**/*.mdx', base: './src/content/docs' }),
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
@@ -12,13 +12,13 @@ const docs = defineCollection({
 });
 
 const portfolio = defineCollection({
-  loader: glob({ pattern: "**/*.mdx", base: "./src/content/portfolio" }),
+  loader: glob({ pattern: '**/*.mdx', base: './src/content/portfolio' }),
   schema: z.object({
     title: z.string(),
     summary: z.string(),
     year: z.number(),
     role: z.string(),
-    status: z.enum(["shipping", "active", "archived"]),
+    status: z.enum(['shipping', 'active', 'archived']),
     stack: z.array(z.string()).default([]),
     featured: z.boolean().optional().default(false),
     order: z.number().optional(),
@@ -27,7 +27,7 @@ const portfolio = defineCollection({
 });
 
 const blog = defineCollection({
-  loader: glob({ pattern: "**/*.mdx", base: "./src/content/blog" }),
+  loader: glob({ pattern: '**/*.mdx', base: './src/content/blog' }),
   schema: z.object({
     title: z.string(),
     summary: z.string(),

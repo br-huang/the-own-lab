@@ -2,59 +2,59 @@
 
 // ─── LLM Provider Config ───
 
-export type ChatProviderType = "openai" | "claude" | "gemini" | "deepseek" | "ollama";
+export type ChatProviderType = 'openai' | 'claude' | 'gemini' | 'deepseek' | 'ollama';
 
 export const CHAT_PROVIDER_LABELS: Record<ChatProviderType, string> = {
-  openai: "OpenAI",
-  claude: "Claude (Anthropic)",
-  gemini: "Gemini (Google)",
-  deepseek: "DeepSeek",
-  ollama: "Ollama (Local)",
+  openai: 'OpenAI',
+  claude: 'Claude (Anthropic)',
+  gemini: 'Gemini (Google)',
+  deepseek: 'DeepSeek',
+  ollama: 'Ollama (Local)',
 };
 
 export const CHAT_PROVIDER_MODELS: Record<ChatProviderType, string[]> = {
   openai: [
-    "gpt-5.4",
-    "gpt-5.4-mini",
-    "gpt-5.4-nano",
-    "gpt-4.1",
-    "gpt-4.1-mini",
-    "gpt-4.1-nano",
-    "gpt-4o",
-    "gpt-4o-mini",
-    "o4-mini",
-    "o3",
-    "o3-pro",
-    "o3-mini",
+    'gpt-5.4',
+    'gpt-5.4-mini',
+    'gpt-5.4-nano',
+    'gpt-4.1',
+    'gpt-4.1-mini',
+    'gpt-4.1-nano',
+    'gpt-4o',
+    'gpt-4o-mini',
+    'o4-mini',
+    'o3',
+    'o3-pro',
+    'o3-mini',
   ],
   claude: [
-    "claude-opus-4-6",
-    "claude-sonnet-4-6",
-    "claude-haiku-4-5",
-    "claude-opus-4-5",
-    "claude-sonnet-4-5",
-    "claude-opus-4-1",
-    "claude-sonnet-4-0",
-    "claude-opus-4-0",
+    'claude-opus-4-6',
+    'claude-sonnet-4-6',
+    'claude-haiku-4-5',
+    'claude-opus-4-5',
+    'claude-sonnet-4-5',
+    'claude-opus-4-1',
+    'claude-sonnet-4-0',
+    'claude-opus-4-0',
   ],
   gemini: [
-    "gemini-3.1-pro-preview",
-    "gemini-3-flash-preview",
-    "gemini-2.5-pro",
-    "gemini-2.5-flash",
-    "gemini-2.5-flash-lite",
-    "gemini-2.0-flash",
+    'gemini-3.1-pro-preview',
+    'gemini-3-flash-preview',
+    'gemini-2.5-pro',
+    'gemini-2.5-flash',
+    'gemini-2.5-flash-lite',
+    'gemini-2.0-flash',
   ],
-  deepseek: ["deepseek-chat", "deepseek-reasoner"],
-  ollama: [],  // free-text input, no predefined list
+  deepseek: ['deepseek-chat', 'deepseek-reasoner'],
+  ollama: [], // free-text input, no predefined list
 };
 
 export const CHAT_PROVIDER_PLACEHOLDERS: Record<ChatProviderType, string> = {
-  openai: "sk-...",
-  claude: "sk-ant-...",
-  gemini: "AIza...",
-  deepseek: "sk-...",
-  ollama: "",
+  openai: 'sk-...',
+  claude: 'sk-ant-...',
+  gemini: 'AIza...',
+  deepseek: 'sk-...',
+  ollama: '',
 };
 
 export interface PluginSettings {
@@ -75,20 +75,20 @@ export interface PluginSettings {
 }
 
 export const DEFAULT_SETTINGS: PluginSettings = {
-  chatProvider: "openai",
-  chatModel: "gpt-4o",
-  openaiApiKey: "",
-  anthropicApiKey: "",
-  geminiApiKey: "",
-  deepseekApiKey: "",
-  ollamaUrl: "http://localhost:11434",
+  chatProvider: 'openai',
+  chatModel: 'gpt-4o',
+  openaiApiKey: '',
+  anthropicApiKey: '',
+  geminiApiKey: '',
+  deepseekApiKey: '',
+  ollamaUrl: 'http://localhost:11434',
   topK: 5,
   embeddingBatchSize: 20,
   chunkSize: 500,
   chunkOverlap: 50,
-  ingestFolder: "Ingested",
-  ytDlpCommand: "yt-dlp",
-  bilibiliCookiesPath: "",
+  ingestFolder: 'Ingested',
+  ytDlpCommand: 'yt-dlp',
+  bilibiliCookiesPath: '',
 };
 
 // ─── Chunking ───
@@ -108,7 +108,7 @@ export interface Chunk {
 // ─── Vector Store ───
 
 export interface VectorChunk {
-  id: string;              // deterministic: `${filePath}::${chunkIndex}`
+  id: string; // deterministic: `${filePath}::${chunkIndex}`
   text: string;
   filePath: string;
   fileTitle: string;
@@ -119,13 +119,13 @@ export interface VectorChunk {
 // ─── LLM ───
 
 export interface Message {
-  role: "system" | "user" | "assistant";
+  role: 'system' | 'user' | 'assistant';
   content: string;
 }
 
 export interface ChatOptions {
-  temperature?: number;    // default: 0.3
-  maxTokens?: number;      // default: 1024
+  temperature?: number; // default: 0.3
+  maxTokens?: number; // default: 1024
 }
 
 // ─── RAG ───
@@ -133,21 +133,21 @@ export interface ChatOptions {
 export interface SourceReference {
   filePath: string;
   fileTitle: string;
-  chunkText: string;       // first 200 chars for preview
+  chunkText: string; // first 200 chars for preview
 }
 
 export interface RagResponseToken {
-  type: "token";
+  type: 'token';
   token: string;
 }
 
 export interface RagResponseSources {
-  type: "sources";
+  type: 'sources';
   sources: SourceReference[];
 }
 
 export interface RagResponseError {
-  type: "error";
+  type: 'error';
   message: string;
 }
 
@@ -156,13 +156,13 @@ export type RagResponse = RagResponseToken | RagResponseSources | RagResponseErr
 // ─── Indexer ───
 
 export interface FileHashManifest {
-  [filePath: string]: string;  // filePath → MD5 hash of content
+  [filePath: string]: string; // filePath → MD5 hash of content
 }
 
 // ─── Chat History ───
 
 export interface ChatMessage {
-  role: "user" | "assistant";
+  role: 'user' | 'assistant';
   text: string;
   sources: SourceReference[];
   timestamp: string; // ISO-8601
@@ -185,7 +185,7 @@ export interface SessionIndexEntry {
 
 export interface PluginData {
   settings: PluginSettings;
-  chatHistory: ChatMessage[];          // kept for migration; empty post-migration
+  chatHistory: ChatMessage[]; // kept for migration; empty post-migration
   sessionIndex: SessionIndexEntry[];
   activeSessionId: string | null;
 }

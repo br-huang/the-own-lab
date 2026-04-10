@@ -32,13 +32,11 @@ export class ElectronTabManager implements TabManager {
   }
 
   async getAllTabs(): Promise<Tab[]> {
-    return this.tabOrder
-      .map(id => this.entries.get(id)?.tab)
-      .filter((t): t is Tab => t != null);
+    return this.tabOrder.map((id) => this.entries.get(id)?.tab).filter((t): t is Tab => t != null);
   }
 
   async getTabsByWorkspace(workspaceId: string): Promise<Tab[]> {
-    return (await this.getAllTabs()).filter(t => t.workspaceId === workspaceId);
+    return (await this.getAllTabs()).filter((t) => t.workspaceId === workspaceId);
   }
 
   async getActiveTab(): Promise<Tab | null> {
@@ -110,7 +108,7 @@ export class ElectronTabManager implements TabManager {
     }
 
     this.entries.delete(tabId);
-    this.tabOrder = this.tabOrder.filter(id => id !== tabId);
+    this.tabOrder = this.tabOrder.filter((id) => id !== tabId);
 
     this.onTabClosed.emit({ tabId });
   }

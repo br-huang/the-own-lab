@@ -35,7 +35,11 @@ export class ElectronWindowManager implements WindowManager {
     this.recalculateBounds();
   }
 
-  async enterSplitView(_tabId1: string, _tabId2: string, _direction: 'horizontal' | 'vertical'): Promise<void> {
+  async enterSplitView(
+    _tabId1: string,
+    _tabId2: string,
+    _direction: 'horizontal' | 'vertical',
+  ): Promise<void> {
     // Stub -- P1 feature
   }
 

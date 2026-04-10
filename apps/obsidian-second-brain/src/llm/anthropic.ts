@@ -1,9 +1,9 @@
-import Anthropic from "@anthropic-ai/sdk";
-import { Message, ChatOptions } from "../types";
-import { LLMProvider } from "./provider";
+import Anthropic from '@anthropic-ai/sdk';
+import { Message, ChatOptions } from '../types';
+import { LLMProvider } from './provider';
 
 export class AnthropicProvider implements LLMProvider {
-  readonly name = "claude";
+  readonly name = 'claude';
   readonly maxTokens = 200_000;
   private client: Anthropic;
   private chatModel: string;
@@ -19,10 +19,10 @@ export class AnthropicProvider implements LLMProvider {
   async *chat(messages: Message[], options?: ChatOptions): AsyncIterable<string> {
     // Anthropic requires system message as a separate parameter
     let systemPrompt: string | undefined;
-    const chatMessages: Array<{ role: "user" | "assistant"; content: string }> = [];
+    const chatMessages: Array<{ role: 'user' | 'assistant'; content: string }> = [];
 
     for (const msg of messages) {
-      if (msg.role === "system") {
+      if (msg.role === 'system') {
         systemPrompt = msg.content;
       } else {
         chatMessages.push({ role: msg.role, content: msg.content });
@@ -39,22 +39,19 @@ export class AnthropicProvider implements LLMProvider {
       });
 
       for await (const event of stream) {
-        if (
-          event.type === "content_block_delta" &&
-          event.delta.type === "text_delta"
-        ) {
+        if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
           yield event.delta.text;
         }
       }
     } catch (error) {
       const status = (error as any).status;
       if (status === 401) {
-        throw new Error("Invalid Anthropic API key. Please check your settings.");
+        throw new Error('Invalid Anthropic API key. Please check your settings.');
       }
       if (status === 429) {
-        throw new Error("Anthropic rate limit exceeded. Please wait a moment and try again.");
+        throw new Error('Anthropic rate limit exceeded. Please wait a moment and try again.');
       }
-      throw new Error("Anthropic API error: " + (error as Error).message);
+      throw new Error('Anthropic API error: ' + (error as Error).message);
     }
   }
 }

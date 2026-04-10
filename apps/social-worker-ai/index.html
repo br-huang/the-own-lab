@@ -1,766 +1,1029 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-TW">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>社工師 AI 個案評估報告產生器</title>
-<style>
-  :root {
-    --primary: #2563eb;
-    --primary-hover: #1d4ed8;
-    --bg: #f8fafc;
-    --card: #ffffff;
-    --border: #e2e8f0;
-    --text: #1e293b;
-    --text-secondary: #64748b;
-    --success: #16a34a;
-    --danger: #dc2626;
-    --warning: #f59e0b;
-    --section-bg: #f1f5f9;
-  }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>社工師 AI 個案評估報告產生器</title>
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-hover: #1d4ed8;
+        --bg: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --text: #1e293b;
+        --text-secondary: #64748b;
+        --success: #16a34a;
+        --danger: #dc2626;
+        --warning: #f59e0b;
+        --section-bg: #f1f5f9;
+      }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.6;
-  }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC', sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+      }
 
-  /* Header */
-  .header {
-    background: var(--primary);
-    color: white;
-    padding: 16px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-  .header h1 { font-size: 1.25rem; font-weight: 600; }
-  .header-right { display: flex; gap: 8px; align-items: center; }
+      /* Header */
+      .header {
+        background: var(--primary);
+        color: white;
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .header h1 {
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+      .header-right {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
 
-  /* Tabs */
-  .tab-bar {
-    display: flex;
-    background: var(--card);
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-  }
-  .tab-btn {
-    padding: 12px 24px;
-    border: none;
-    background: none;
-    font-size: 0.95rem;
-    cursor: pointer;
-    color: var(--text-secondary);
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s;
-  }
-  .tab-btn.active {
-    color: var(--primary);
-    border-bottom-color: var(--primary);
-    font-weight: 600;
-  }
-  .tab-btn:hover { color: var(--primary); }
+      /* Tabs */
+      .tab-bar {
+        display: flex;
+        background: var(--card);
+        border-bottom: 1px solid var(--border);
+        padding: 0 24px;
+      }
+      .tab-btn {
+        padding: 12px 24px;
+        border: none;
+        background: none;
+        font-size: 0.95rem;
+        cursor: pointer;
+        color: var(--text-secondary);
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+      }
+      .tab-btn.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+        font-weight: 600;
+      }
+      .tab-btn:hover {
+        color: var(--primary);
+      }
 
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
+      .tab-content {
+        display: none;
+      }
+      .tab-content.active {
+        display: block;
+      }
 
-  /* Layout */
-  .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+      /* Layout */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px;
+      }
 
-  /* API Key Bar */
-  .api-bar {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 16px;
-    margin-bottom: 20px;
-    display: flex;
-    gap: 12px;
-    align-items: center;
-  }
-  .api-bar label { font-weight: 600; white-space: nowrap; font-size: 0.9rem; }
-  .api-bar input {
-    flex: 1;
-    padding: 8px 12px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-size: 0.9rem;
-  }
-  .api-bar .status-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: #cbd5e1;
-    flex-shrink: 0;
-  }
-  .api-bar .status-dot.connected { background: var(--success); }
+      /* API Key Bar */
+      .api-bar {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 20px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      .api-bar label {
+        font-weight: 600;
+        white-space: nowrap;
+        font-size: 0.9rem;
+      }
+      .api-bar input {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 0.9rem;
+      }
+      .api-bar .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #cbd5e1;
+        flex-shrink: 0;
+      }
+      .api-bar .status-dot.connected {
+        background: var(--success);
+      }
 
-  /* Form Sections */
-  .form-section {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    margin-bottom: 16px;
-    overflow: hidden;
-  }
-  .form-section-header {
-    background: var(--section-bg);
-    padding: 12px 16px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    border-bottom: 1px solid var(--border);
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    user-select: none;
-  }
-  .form-section-header:hover { background: #e2e8f0; }
-  .form-section-header .toggle { font-size: 0.8rem; color: var(--text-secondary); }
-  .form-section-body { padding: 16px; }
-  .form-section-body.collapsed { display: none; }
+      /* Form Sections */
+      .form-section {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        margin-bottom: 16px;
+        overflow: hidden;
+      }
+      .form-section-header {
+        background: var(--section-bg);
+        padding: 12px 16px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        border-bottom: 1px solid var(--border);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        user-select: none;
+      }
+      .form-section-header:hover {
+        background: #e2e8f0;
+      }
+      .form-section-header .toggle {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+      }
+      .form-section-body {
+        padding: 16px;
+      }
+      .form-section-body.collapsed {
+        display: none;
+      }
 
-  /* Form Elements */
-  .form-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-  .form-group { display: flex; flex-direction: column; gap: 4px; }
-  .form-group label {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-  }
-  .form-group input, .form-group select, .form-group textarea {
-    padding: 8px 12px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-size: 0.9rem;
-    font-family: inherit;
-  }
-  .form-group textarea { resize: vertical; min-height: 80px; }
-  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
-  }
+      /* Form Elements */
+      .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .form-group label {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+      }
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        padding: 8px 12px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-family: inherit;
+      }
+      .form-group textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
 
-  /* Checkbox Grid */
-  .checkbox-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 8px;
-  }
-  .checkbox-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.15s;
-    font-size: 0.9rem;
-  }
-  .checkbox-item:hover { background: var(--section-bg); }
-  .checkbox-item input[type="checkbox"] {
-    width: 16px; height: 16px;
-    accent-color: var(--primary);
-    cursor: pointer;
-  }
+      /* Checkbox Grid */
+      .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 8px;
+      }
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.15s;
+        font-size: 0.9rem;
+      }
+      .checkbox-item:hover {
+        background: var(--section-bg);
+      }
+      .checkbox-item input[type='checkbox'] {
+        width: 16px;
+        height: 16px;
+        accent-color: var(--primary);
+        cursor: pointer;
+      }
 
-  /* Buttons */
-  .btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .btn-primary { background: var(--primary); color: white; }
-  .btn-primary:hover { background: var(--primary-hover); }
-  .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; }
-  .btn-success { background: var(--success); color: white; }
-  .btn-success:hover { background: #15803d; }
-  .btn-outline {
-    background: white;
-    color: var(--text);
-    border: 1px solid var(--border);
-  }
-  .btn-outline:hover { background: var(--section-bg); }
-  .btn-danger { background: var(--danger); color: white; }
-  .btn-danger:hover { background: #b91c1c; }
-  .btn-sm { padding: 6px 12px; font-size: 0.85rem; }
+      /* Buttons */
+      .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+      .btn-primary:hover {
+        background: var(--primary-hover);
+      }
+      .btn-primary:disabled {
+        background: #94a3b8;
+        cursor: not-allowed;
+      }
+      .btn-success {
+        background: var(--success);
+        color: white;
+      }
+      .btn-success:hover {
+        background: #15803d;
+      }
+      .btn-outline {
+        background: white;
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+      .btn-outline:hover {
+        background: var(--section-bg);
+      }
+      .btn-danger {
+        background: var(--danger);
+        color: white;
+      }
+      .btn-danger:hover {
+        background: #b91c1c;
+      }
+      .btn-sm {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+      }
 
-  /* Action Bar */
-  .action-bar {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    padding: 20px 0;
-  }
+      /* Action Bar */
+      .action-bar {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        padding: 20px 0;
+      }
 
-  /* Output Area */
-  .output-area {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    margin-top: 20px;
-    overflow: hidden;
-  }
-  .output-header {
-    background: var(--section-bg);
-    padding: 12px 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--border);
-  }
-  .output-header h3 { font-size: 0.95rem; }
-  .output-body {
-    padding: 20px;
-    min-height: 200px;
-    white-space: pre-wrap;
-    font-size: 0.95rem;
-    line-height: 1.8;
-  }
-  .output-body.empty {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-secondary);
-    min-height: 200px;
-  }
+      /* Output Area */
+      .output-area {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        margin-top: 20px;
+        overflow: hidden;
+      }
+      .output-header {
+        background: var(--section-bg);
+        padding: 12px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border);
+      }
+      .output-header h3 {
+        font-size: 0.95rem;
+      }
+      .output-body {
+        padding: 20px;
+        min-height: 200px;
+        white-space: pre-wrap;
+        font-size: 0.95rem;
+        line-height: 1.8;
+      }
+      .output-body.empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        min-height: 200px;
+      }
 
-  /* Loading */
-  .loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    padding: 40px;
-    color: var(--text-secondary);
-  }
-  .spinner {
-    width: 36px; height: 36px;
-    border: 3px solid var(--border);
-    border-top-color: var(--primary);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+      /* Loading */
+      .loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 40px;
+        color: var(--text-secondary);
+      }
+      .spinner {
+        width: 36px;
+        height: 36px;
+        border: 3px solid var(--border);
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
 
-  /* History Page */
-  .history-list { display: flex; flex-direction: column; gap: 12px; }
-  .history-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-    transition: box-shadow 0.2s;
-  }
-  .history-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-  .history-card-header {
-    padding: 12px 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--section-bg);
-    border-bottom: 1px solid var(--border);
-  }
-  .history-card-header .meta {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-  }
-  .history-card-header .meta strong {
-    color: var(--text);
-    font-size: 0.95rem;
-  }
-  .history-card-body {
-    padding: 16px;
-    font-size: 0.9rem;
-    line-height: 1.7;
-    white-space: pre-wrap;
-    max-height: 300px;
-    overflow-y: auto;
-  }
-  .history-card-actions {
-    padding: 8px 16px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-  }
-  .history-empty {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--text-secondary);
-  }
-  .history-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-  }
+      /* History Page */
+      .history-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .history-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: box-shadow 0.2s;
+      }
+      .history-card:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .history-card-header {
+        padding: 12px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--section-bg);
+        border-bottom: 1px solid var(--border);
+      }
+      .history-card-header .meta {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+      }
+      .history-card-header .meta strong {
+        color: var(--text);
+        font-size: 0.95rem;
+      }
+      .history-card-body {
+        padding: 16px;
+        font-size: 0.9rem;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+      .history-card-actions {
+        padding: 8px 16px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+      .history-empty {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-secondary);
+      }
+      .history-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
 
-  /* Toast */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: #1e293b;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    z-index: 1000;
-    animation: slideUp 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  }
-  @keyframes slideUp {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
+      /* Toast */
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: #1e293b;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        z-index: 1000;
+        animation: slideUp 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+      @keyframes slideUp {
+        from {
+          transform: translateY(20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
 
-  /* Responsive */
-  @media (max-width: 768px) {
-    .container { padding: 16px; }
-    .form-row { grid-template-columns: 1fr; }
-    .checkbox-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
-    .api-bar { flex-wrap: wrap; }
-  }
-</style>
-</head>
-<body>
-
-<!-- Header -->
-<div class="header">
-  <h1>社工師 AI 個案評估報告產生器</h1>
-  <div class="header-right">
-    <span style="font-size:0.85rem; opacity:0.8;">Gemini 3 Flash</span>
-  </div>
-</div>
-
-<!-- Tab Bar -->
-<div class="tab-bar">
-  <button class="tab-btn active" onclick="switchTab('editor')">個案輸入 / 報告生成</button>
-  <button class="tab-btn" onclick="switchTab('history')">歷史紀錄</button>
-</div>
-
-<!-- ===== Page 1: Editor ===== -->
-<div id="tab-editor" class="tab-content active">
-<div class="container">
-
-  <!-- Section 1: 案主基本資料 -->
-  <div class="form-section">
-    <div class="form-section-header" onclick="toggleSection(this)">
-      一、案主基本資料
-      <span class="toggle">收合</span>
-    </div>
-    <div class="form-section-body">
-      <div class="form-row">
-        <div class="form-group">
-          <label>案主姓名（或代號）</label>
-          <input type="text" id="clientName" placeholder="如：王OO">
-        </div>
-        <div class="form-group">
-          <label>年齡</label>
-          <input type="number" id="clientAge" placeholder="如：78">
-        </div>
-        <div class="form-group">
-          <label>性別</label>
-          <select id="clientGender">
-            <option value="">請選擇</option>
-            <option value="男">男</option>
-            <option value="女">女</option>
-          </select>
-        </div>
+      /* Responsive */
+      @media (max-width: 768px) {
+        .container {
+          padding: 16px;
+        }
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+        .checkbox-grid {
+          grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        }
+        .api-bar {
+          flex-wrap: wrap;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <div class="header">
+      <h1>社工師 AI 個案評估報告產生器</h1>
+      <div class="header-right">
+        <span style="font-size: 0.85rem; opacity: 0.8">Gemini 3 Flash</span>
       </div>
+    </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>障礙類別（可複選）</label>
-          <div class="checkbox-grid">
-            <label class="checkbox-item"><input type="checkbox" name="disabilityType" value="第1類（智能障礙）"> 第1類（智能障礙）</label>
-            <label class="checkbox-item"><input type="checkbox" name="disabilityType" value="第2類（視覺障礙）"> 第2類（視覺障礙）</label>
-            <label class="checkbox-item"><input type="checkbox" name="disabilityType" value="第3類（聽覺障礙）"> 第3類（聽覺障礙）</label>
-            <label class="checkbox-item"><input type="checkbox" name="disabilityType" value="第4類（肢體障礙）"> 第4類（肢體障礙）</label>
-            <label class="checkbox-item"><input type="checkbox" name="disabilityType" value="第5類（精神障礙）"> 第5類（精神障礙）</label>
-            <label class="checkbox-item"><input type="checkbox" name="disabilityType" value="第6類（器官障礙）"> 第6類（器官障礙）</label>
-            <label class="checkbox-item"><input type="checkbox" name="disabilityType" value="第7類（神經/肢體障礙）"> 第7類（神經/肢體）</label>
-            <label class="checkbox-item"><input type="checkbox" name="disabilityType" value="第8類（罕見疾病）"> 第8類（罕見疾病）</label>
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('editor')">個案輸入 / 報告生成</button>
+      <button class="tab-btn" onclick="switchTab('history')">歷史紀錄</button>
+    </div>
+
+    <!-- ===== Page 1: Editor ===== -->
+    <div id="tab-editor" class="tab-content active">
+      <div class="container">
+        <!-- Section 1: 案主基本資料 -->
+        <div class="form-section">
+          <div class="form-section-header" onclick="toggleSection(this)">
+            一、案主基本資料
+            <span class="toggle">收合</span>
+          </div>
+          <div class="form-section-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label>案主姓名（或代號）</label>
+                <input type="text" id="clientName" placeholder="如：王OO" />
+              </div>
+              <div class="form-group">
+                <label>年齡</label>
+                <input type="number" id="clientAge" placeholder="如：78" />
+              </div>
+              <div class="form-group">
+                <label>性別</label>
+                <select id="clientGender">
+                  <option value="">請選擇</option>
+                  <option value="男">男</option>
+                  <option value="女">女</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>障礙類別（可複選）</label>
+                <div class="checkbox-grid">
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="disabilityType" value="第1類（智能障礙）" />
+                    第1類（智能障礙）</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="disabilityType" value="第2類（視覺障礙）" />
+                    第2類（視覺障礙）</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="disabilityType" value="第3類（聽覺障礙）" />
+                    第3類（聽覺障礙）</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="disabilityType" value="第4類（肢體障礙）" />
+                    第4類（肢體障礙）</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="disabilityType" value="第5類（精神障礙）" />
+                    第5類（精神障礙）</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="disabilityType" value="第6類（器官障礙）" />
+                    第6類（器官障礙）</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="disabilityType" value="第7類（神經/肢體障礙）" />
+                    第7類（神經/肢體）</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="disabilityType" value="第8類（罕見疾病）" />
+                    第8類（罕見疾病）</label
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>障礙等級</label>
+                <select id="disabilityLevel">
+                  <option value="">請選擇</option>
+                  <option value="輕度">輕度</option>
+                  <option value="中度">中度</option>
+                  <option value="重度">重度</option>
+                  <option value="極重度">極重度</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>婚姻狀況</label>
+                <select id="maritalStatus">
+                  <option value="">請選擇</option>
+                  <option value="未婚">未婚</option>
+                  <option value="已婚">已婚</option>
+                  <option value="離婚">離婚</option>
+                  <option value="喪偶">喪偶</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>致障原因／主要疾病（可複選）</label>
+                <div class="checkbox-grid">
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="disease" value="交通事故" /> 交通事故</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="disease" value="腦梗塞" /> 腦梗塞</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="disease" value="失智症" /> 失智症</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="disease" value="帕金森氏症" /> 帕金森氏症</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="disease" value="青光眼" /> 青光眼</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="disease" value="糖尿病" /> 糖尿病</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="disease" value="高血壓" /> 高血壓</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="disease" value="腎臟疾病" /> 腎臟疾病</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="disease" value="發展遲緩" /> 發展遲緩</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="disease" value="中風" /> 中風</label
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group" style="grid-column: 1 / -1">
+                <label>其他致障原因補充</label>
+                <input type="text" id="diseaseOther" placeholder="如有其他疾病或致障原因請填寫" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group" style="grid-column: 1 / -1">
+                <label>訪視緣由</label>
+                <textarea
+                  id="visitReason"
+                  placeholder="如：有福利諮詢需求、符合高負荷指標需關懷訪視、有長照服務諮詢需求..."
+                ></textarea>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>障礙等級</label>
-          <select id="disabilityLevel">
-            <option value="">請選擇</option>
-            <option value="輕度">輕度</option>
-            <option value="中度">中度</option>
-            <option value="重度">重度</option>
-            <option value="極重度">極重度</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>婚姻狀況</label>
-          <select id="maritalStatus">
-            <option value="">請選擇</option>
-            <option value="未婚">未婚</option>
-            <option value="已婚">已婚</option>
-            <option value="離婚">離婚</option>
-            <option value="喪偶">喪偶</option>
-          </select>
-        </div>
-      </div>
+        <!-- Section 2: 家庭概況 -->
+        <div class="form-section">
+          <div class="form-section-header" onclick="toggleSection(this)">
+            二、家庭概況
+            <span class="toggle">收合</span>
+          </div>
+          <div class="form-section-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label>子女數</label>
+                <input type="text" id="childrenCount" placeholder="如：育有一子一女" />
+              </div>
+              <div class="form-group">
+                <label>同住者</label>
+                <input type="text" id="livingWith" placeholder="如：與案妻同住、獨居、機構安置" />
+              </div>
+            </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>致障原因／主要疾病（可複選）</label>
-          <div class="checkbox-grid">
-            <label class="checkbox-item"><input type="checkbox" name="disease" value="交通事故"> 交通事故</label>
-            <label class="checkbox-item"><input type="checkbox" name="disease" value="腦梗塞"> 腦梗塞</label>
-            <label class="checkbox-item"><input type="checkbox" name="disease" value="失智症"> 失智症</label>
-            <label class="checkbox-item"><input type="checkbox" name="disease" value="帕金森氏症"> 帕金森氏症</label>
-            <label class="checkbox-item"><input type="checkbox" name="disease" value="青光眼"> 青光眼</label>
-            <label class="checkbox-item"><input type="checkbox" name="disease" value="糖尿病"> 糖尿病</label>
-            <label class="checkbox-item"><input type="checkbox" name="disease" value="高血壓"> 高血壓</label>
-            <label class="checkbox-item"><input type="checkbox" name="disease" value="腎臟疾病"> 腎臟疾病</label>
-            <label class="checkbox-item"><input type="checkbox" name="disease" value="發展遲緩"> 發展遲緩</label>
-            <label class="checkbox-item"><input type="checkbox" name="disease" value="中風"> 中風</label>
+            <div class="form-row">
+              <div class="form-group">
+                <label>主要照顧者</label>
+                <select id="mainCaregiver">
+                  <option value="">請選擇</option>
+                  <option value="案妻">案妻</option>
+                  <option value="案夫">案夫</option>
+                  <option value="案母">案母</option>
+                  <option value="案父">案父</option>
+                  <option value="案子">案子</option>
+                  <option value="案女">案女</option>
+                  <option value="案姐">案姐</option>
+                  <option value="案兄">案兄</option>
+                  <option value="外籍看護">外籍看護</option>
+                  <option value="機構人員">機構人員</option>
+                  <option value="其他">其他</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>照顧者年齡</label>
+                <input type="number" id="caregiverAge" placeholder="如：76" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group" style="grid-column: 1 / -1">
+                <label>高負荷家庭照顧者初篩指標（可複選）</label>
+                <div class="checkbox-grid">
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="highLoad" value="照顧者健康狀況不佳" />
+                    照顧者健康狀況不佳</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="highLoad" value="照顧者為身心障礙者" />
+                    照顧者為身心障礙者</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="highLoad" value="高齡照顧者(65歲以上)" />
+                    高齡照顧者(65歲以上)</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="highLoad" value="需照顧兩人以上" />
+                    需照顧兩人以上</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="highLoad" value="照顧者具經濟困難" />
+                    照顧者具經濟困難</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="highLoad" value="社會參與受限" />
+                    社會參與受限</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="highLoad" value="沒有照顧替手" />
+                    沒有照顧替手</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="highLoad" value="與受照顧者關係衝突" />
+                    與受照顧者關係衝突</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="highLoad" value="過去無照顧經驗者" />
+                    過去無照顧經驗者</label
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group" style="grid-column: 1 / -1">
+                <label>家庭概況補充說明</label>
+                <textarea
+                  id="familyNote"
+                  placeholder="其他家庭相關資訊，如：經濟狀況、家庭成員關係、照顧分工等"
+                ></textarea>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="form-row">
-        <div class="form-group" style="grid-column: 1 / -1;">
-          <label>其他致障原因補充</label>
-          <input type="text" id="diseaseOther" placeholder="如有其他疾病或致障原因請填寫">
-        </div>
-      </div>
+        <!-- Section 3: 個案現況 -->
+        <div class="form-section">
+          <div class="form-section-header" onclick="toggleSection(this)">
+            三、個案現況
+            <span class="toggle">收合</span>
+          </div>
+          <div class="form-section-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label>認知能力</label>
+                <select id="cognition">
+                  <option value="">請選擇</option>
+                  <option value="無虞">無虞</option>
+                  <option value="尚可">尚可</option>
+                  <option value="薄弱">薄弱</option>
+                  <option value="無意識">無意識</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>視力</label>
+                <select id="vision">
+                  <option value="">請選擇</option>
+                  <option value="正常">正常</option>
+                  <option value="老花">老花</option>
+                  <option value="弱視">弱視</option>
+                  <option value="失明">失明</option>
+                  <option value="無法確認">無法確認</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>聽力</label>
+                <select id="hearing">
+                  <option value="">請選擇</option>
+                  <option value="正常">正常</option>
+                  <option value="重聽">重聽</option>
+                  <option value="失聰">失聰</option>
+                  <option value="無法確認">無法確認</option>
+                </select>
+              </div>
+            </div>
 
-      <div class="form-row">
-        <div class="form-group" style="grid-column: 1 / -1;">
-          <label>訪視緣由</label>
-          <textarea id="visitReason" placeholder="如：有福利諮詢需求、符合高負荷指標需關懷訪視、有長照服務諮詢需求..."></textarea>
-        </div>
-      </div>
-    </div>
-  </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>表達能力</label>
+                <select id="expression">
+                  <option value="">請選擇</option>
+                  <option value="正常">正常</option>
+                  <option value="構音尚可">構音尚可</option>
+                  <option value="表達困難">表達困難</option>
+                  <option value="無法表達">無法表達</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>行動能力</label>
+                <select id="mobility">
+                  <option value="">請選擇</option>
+                  <option value="正常">正常</option>
+                  <option value="需輔具(助行器等)">需輔具(助行器等)</option>
+                  <option value="需他人攙扶">需他人攙扶</option>
+                  <option value="輪椅代步">輪椅代步</option>
+                  <option value="臥床">臥床</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>日常自理能力</label>
+                <select id="adl">
+                  <option value="">請選擇</option>
+                  <option value="可自理">可自理</option>
+                  <option value="部分需協助">部分需協助</option>
+                  <option value="大部分需協助">大部分需協助</option>
+                  <option value="完全需協助">完全需協助</option>
+                </select>
+              </div>
+            </div>
 
-  <!-- Section 2: 家庭概況 -->
-  <div class="form-section">
-    <div class="form-section-header" onclick="toggleSection(this)">
-      二、家庭概況
-      <span class="toggle">收合</span>
-    </div>
-    <div class="form-section-body">
-      <div class="form-row">
-        <div class="form-group">
-          <label>子女數</label>
-          <input type="text" id="childrenCount" placeholder="如：育有一子一女">
-        </div>
-        <div class="form-group">
-          <label>同住者</label>
-          <input type="text" id="livingWith" placeholder="如：與案妻同住、獨居、機構安置">
-        </div>
-      </div>
+            <div class="form-row">
+              <div class="form-group" style="grid-column: 1 / -1">
+                <label>醫療與照顧設備（可複選）</label>
+                <div class="checkbox-grid">
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="equipment" value="鼻胃管" /> 鼻胃管</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="equipment" value="抽痰機" /> 抽痰機</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="equipment" value="氧氣製造機" /> 氧氣製造機</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="equipment" value="電動病床" /> 電動病床</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="equipment" value="助行器" /> 助行器</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="equipment" value="輪椅" /> 輪椅</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="equipment" value="尿布" /> 尿布</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="equipment" value="尿壺" /> 尿壺</label
+                  >
+                </div>
+              </div>
+            </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>主要照顧者</label>
-          <select id="mainCaregiver">
-            <option value="">請選擇</option>
-            <option value="案妻">案妻</option>
-            <option value="案夫">案夫</option>
-            <option value="案母">案母</option>
-            <option value="案父">案父</option>
-            <option value="案子">案子</option>
-            <option value="案女">案女</option>
-            <option value="案姐">案姐</option>
-            <option value="案兄">案兄</option>
-            <option value="外籍看護">外籍看護</option>
-            <option value="機構人員">機構人員</option>
-            <option value="其他">其他</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>照顧者年齡</label>
-          <input type="number" id="caregiverAge" placeholder="如：76">
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group" style="grid-column: 1 / -1;">
-          <label>高負荷家庭照顧者初篩指標（可複選）</label>
-          <div class="checkbox-grid">
-            <label class="checkbox-item"><input type="checkbox" name="highLoad" value="照顧者健康狀況不佳"> 照顧者健康狀況不佳</label>
-            <label class="checkbox-item"><input type="checkbox" name="highLoad" value="照顧者為身心障礙者"> 照顧者為身心障礙者</label>
-            <label class="checkbox-item"><input type="checkbox" name="highLoad" value="高齡照顧者(65歲以上)"> 高齡照顧者(65歲以上)</label>
-            <label class="checkbox-item"><input type="checkbox" name="highLoad" value="需照顧兩人以上"> 需照顧兩人以上</label>
-            <label class="checkbox-item"><input type="checkbox" name="highLoad" value="照顧者具經濟困難"> 照顧者具經濟困難</label>
-            <label class="checkbox-item"><input type="checkbox" name="highLoad" value="社會參與受限"> 社會參與受限</label>
-            <label class="checkbox-item"><input type="checkbox" name="highLoad" value="沒有照顧替手"> 沒有照顧替手</label>
-            <label class="checkbox-item"><input type="checkbox" name="highLoad" value="與受照顧者關係衝突"> 與受照顧者關係衝突</label>
-            <label class="checkbox-item"><input type="checkbox" name="highLoad" value="過去無照顧經驗者"> 過去無照顧經驗者</label>
+            <div class="form-row">
+              <div class="form-group" style="grid-column: 1 / -1">
+                <label>個案現況補充說明</label>
+                <textarea
+                  id="clientNote"
+                  placeholder="如：就醫狀況、社交狀態、心理調適、特殊照顧需求等"
+                ></textarea>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="form-row">
-        <div class="form-group" style="grid-column: 1 / -1;">
-          <label>家庭概況補充說明</label>
-          <textarea id="familyNote" placeholder="其他家庭相關資訊，如：經濟狀況、家庭成員關係、照顧分工等"></textarea>
-        </div>
-      </div>
-    </div>
-  </div>
+        <!-- Section 4: 福利資源 -->
+        <div class="form-section">
+          <div class="form-section-header" onclick="toggleSection(this)">
+            四、福利資源使用現況
+            <span class="toggle">收合</span>
+          </div>
+          <div class="form-section-body">
+            <div class="form-row">
+              <div class="form-group" style="grid-column: 1 / -1">
+                <label>正式資源（可複選）</label>
+                <div class="checkbox-grid">
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="formalResource" value="身心障礙生活補助" />
+                    身心障礙生活補助</label
+                  >
+                  <label class="checkbox-item"
+                    ><input
+                      type="checkbox"
+                      name="formalResource"
+                      value="日間照顧及住宿式照顧費用補助"
+                    />
+                    日照/住宿式照顧補助</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="formalResource" value="中低收入老人生活津貼" />
+                    中低收入老人生活津貼</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="formalResource" value="低收入戶家庭生活補助" />
+                    低收入戶家庭生活補助</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="formalResource" value="長期照顧服務" />
+                    長期照顧服務</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="formalResource" value="喘息服務" />
+                    喘息服務</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="formalResource" value="臨時暨短期照顧服務" />
+                    臨時暨短期照顧服務</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="formalResource" value="輔具用電優惠" />
+                    輔具用電優惠</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="formalResource" value="個管師服務" />
+                    個管師服務</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="formalResource" value="全日型住宿式照顧服務" />
+                    全日型住宿式照顧</label
+                  >
+                </div>
+              </div>
+            </div>
 
-  <!-- Section 3: 個案現況 -->
-  <div class="form-section">
-    <div class="form-section-header" onclick="toggleSection(this)">
-      三、個案現況
-      <span class="toggle">收合</span>
-    </div>
-    <div class="form-section-body">
-      <div class="form-row">
-        <div class="form-group">
-          <label>認知能力</label>
-          <select id="cognition">
-            <option value="">請選擇</option>
-            <option value="無虞">無虞</option>
-            <option value="尚可">尚可</option>
-            <option value="薄弱">薄弱</option>
-            <option value="無意識">無意識</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>視力</label>
-          <select id="vision">
-            <option value="">請選擇</option>
-            <option value="正常">正常</option>
-            <option value="老花">老花</option>
-            <option value="弱視">弱視</option>
-            <option value="失明">失明</option>
-            <option value="無法確認">無法確認</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>聽力</label>
-          <select id="hearing">
-            <option value="">請選擇</option>
-            <option value="正常">正常</option>
-            <option value="重聽">重聽</option>
-            <option value="失聰">失聰</option>
-            <option value="無法確認">無法確認</option>
-          </select>
-        </div>
-      </div>
+            <div class="form-row">
+              <div class="form-group" style="grid-column: 1 / -1">
+                <label>居住型態</label>
+                <select id="livingType">
+                  <option value="">請選擇</option>
+                  <option value="居家">居家</option>
+                  <option value="養護中心">養護中心</option>
+                  <option value="護理之家">護理之家</option>
+                  <option value="其他機構">其他機構</option>
+                </select>
+              </div>
+            </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>表達能力</label>
-          <select id="expression">
-            <option value="">請選擇</option>
-            <option value="正常">正常</option>
-            <option value="構音尚可">構音尚可</option>
-            <option value="表達困難">表達困難</option>
-            <option value="無法表達">無法表達</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>行動能力</label>
-          <select id="mobility">
-            <option value="">請選擇</option>
-            <option value="正常">正常</option>
-            <option value="需輔具(助行器等)">需輔具(助行器等)</option>
-            <option value="需他人攙扶">需他人攙扶</option>
-            <option value="輪椅代步">輪椅代步</option>
-            <option value="臥床">臥床</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>日常自理能力</label>
-          <select id="adl">
-            <option value="">請選擇</option>
-            <option value="可自理">可自理</option>
-            <option value="部分需協助">部分需協助</option>
-            <option value="大部分需協助">大部分需協助</option>
-            <option value="完全需協助">完全需協助</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group" style="grid-column: 1 / -1;">
-          <label>醫療與照顧設備（可複選）</label>
-          <div class="checkbox-grid">
-            <label class="checkbox-item"><input type="checkbox" name="equipment" value="鼻胃管"> 鼻胃管</label>
-            <label class="checkbox-item"><input type="checkbox" name="equipment" value="抽痰機"> 抽痰機</label>
-            <label class="checkbox-item"><input type="checkbox" name="equipment" value="氧氣製造機"> 氧氣製造機</label>
-            <label class="checkbox-item"><input type="checkbox" name="equipment" value="電動病床"> 電動病床</label>
-            <label class="checkbox-item"><input type="checkbox" name="equipment" value="助行器"> 助行器</label>
-            <label class="checkbox-item"><input type="checkbox" name="equipment" value="輪椅"> 輪椅</label>
-            <label class="checkbox-item"><input type="checkbox" name="equipment" value="尿布"> 尿布</label>
-            <label class="checkbox-item"><input type="checkbox" name="equipment" value="尿壺"> 尿壺</label>
+            <div class="form-row">
+              <div class="form-group" style="grid-column: 1 / -1">
+                <label>福利資源補充說明</label>
+                <textarea
+                  id="resourceNote"
+                  placeholder="如：補助金額、機構名稱、非正式資源等"
+                ></textarea>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="form-row">
-        <div class="form-group" style="grid-column: 1 / -1;">
-          <label>個案現況補充說明</label>
-          <textarea id="clientNote" placeholder="如：就醫狀況、社交狀態、心理調適、特殊照顧需求等"></textarea>
-        </div>
-      </div>
-    </div>
-  </div>
+        <!-- Section 5: 評估與建議 -->
+        <div class="form-section">
+          <div class="form-section-header" onclick="toggleSection(this)">
+            五、評估與服務建議
+            <span class="toggle">收合</span>
+          </div>
+          <div class="form-section-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label>分級評估結果</label>
+                <select id="evaluationLevel">
+                  <option value="">請選擇</option>
+                  <option value="第一級">第一級（持續關懷）</option>
+                  <option value="第二級">第二級（主動連結資源）</option>
+                  <option value="第三級">第三級（密切追蹤）</option>
+                  <option value="第四級">第四級（定期評估）</option>
+                </select>
+              </div>
+            </div>
 
-  <!-- Section 4: 福利資源 -->
-  <div class="form-section">
-    <div class="form-section-header" onclick="toggleSection(this)">
-      四、福利資源使用現況
-      <span class="toggle">收合</span>
-    </div>
-    <div class="form-section-body">
-      <div class="form-row">
-        <div class="form-group" style="grid-column: 1 / -1;">
-          <label>正式資源（可複選）</label>
-          <div class="checkbox-grid">
-            <label class="checkbox-item"><input type="checkbox" name="formalResource" value="身心障礙生活補助"> 身心障礙生活補助</label>
-            <label class="checkbox-item"><input type="checkbox" name="formalResource" value="日間照顧及住宿式照顧費用補助"> 日照/住宿式照顧補助</label>
-            <label class="checkbox-item"><input type="checkbox" name="formalResource" value="中低收入老人生活津貼"> 中低收入老人生活津貼</label>
-            <label class="checkbox-item"><input type="checkbox" name="formalResource" value="低收入戶家庭生活補助"> 低收入戶家庭生活補助</label>
-            <label class="checkbox-item"><input type="checkbox" name="formalResource" value="長期照顧服務"> 長期照顧服務</label>
-            <label class="checkbox-item"><input type="checkbox" name="formalResource" value="喘息服務"> 喘息服務</label>
-            <label class="checkbox-item"><input type="checkbox" name="formalResource" value="臨時暨短期照顧服務"> 臨時暨短期照顧服務</label>
-            <label class="checkbox-item"><input type="checkbox" name="formalResource" value="輔具用電優惠"> 輔具用電優惠</label>
-            <label class="checkbox-item"><input type="checkbox" name="formalResource" value="個管師服務"> 個管師服務</label>
-            <label class="checkbox-item"><input type="checkbox" name="formalResource" value="全日型住宿式照顧服務"> 全日型住宿式照顧</label>
+            <div class="form-row">
+              <div class="form-group" style="grid-column: 1 / -1">
+                <label>建議服務項目（可複選）</label>
+                <div class="checkbox-grid">
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="suggestion" value="家庭關懷訪視" />
+                    家庭關懷訪視</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="suggestion" value="長期照顧服務" />
+                    長期照顧服務</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="suggestion" value="喘息服務" /> 喘息服務</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="suggestion" value="臨時暨短期照顧服務" />
+                    臨時暨短期照顧服務</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="suggestion" value="全日型住宿式照顧服務" />
+                    全日型住宿式照顧</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="suggestion" value="視障生活重建服務" />
+                    視障生活重建服務</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="suggestion" value="實物銀行（物資補助）" />
+                    實物銀行（物資補助）</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="suggestion" value="法律扶助" /> 法律扶助</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="suggestion" value="獨居老人關懷" />
+                    獨居老人關懷</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="suggestion" value="輔具資源" /> 輔具資源</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="suggestion" value="博愛卡/陪伴卡" />
+                    博愛卡/陪伴卡</label
+                  >
+                  <label class="checkbox-item"
+                    ><input type="checkbox" name="suggestion" value="語言/職能治療" />
+                    語言/職能治療</label
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group" style="grid-column: 1 / -1">
+                <label>評估與建議補充說明</label>
+                <textarea id="evalNote" placeholder="如：特殊考量、轉介單位、其他建議等"></textarea>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="form-row">
-        <div class="form-group" style="grid-column: 1 / -1;">
-          <label>居住型態</label>
-          <select id="livingType">
-            <option value="">請選擇</option>
-            <option value="居家">居家</option>
-            <option value="養護中心">養護中心</option>
-            <option value="護理之家">護理之家</option>
-            <option value="其他機構">其他機構</option>
-          </select>
+        <!-- Action -->
+        <div class="action-bar">
+          <button class="btn btn-outline" onclick="clearForm()">清除表單</button>
+          <button class="btn btn-primary" id="generateBtn" onclick="generateReport()">
+            生成評估報告
+          </button>
         </div>
-      </div>
 
-      <div class="form-row">
-        <div class="form-group" style="grid-column: 1 / -1;">
-          <label>福利資源補充說明</label>
-          <textarea id="resourceNote" placeholder="如：補助金額、機構名稱、非正式資源等"></textarea>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Section 5: 評估與建議 -->
-  <div class="form-section">
-    <div class="form-section-header" onclick="toggleSection(this)">
-      五、評估與服務建議
-      <span class="toggle">收合</span>
-    </div>
-    <div class="form-section-body">
-      <div class="form-row">
-        <div class="form-group">
-          <label>分級評估結果</label>
-          <select id="evaluationLevel">
-            <option value="">請選擇</option>
-            <option value="第一級">第一級（持續關懷）</option>
-            <option value="第二級">第二級（主動連結資源）</option>
-            <option value="第三級">第三級（密切追蹤）</option>
-            <option value="第四級">第四級（定期評估）</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group" style="grid-column: 1 / -1;">
-          <label>建議服務項目（可複選）</label>
-          <div class="checkbox-grid">
-            <label class="checkbox-item"><input type="checkbox" name="suggestion" value="家庭關懷訪視"> 家庭關懷訪視</label>
-            <label class="checkbox-item"><input type="checkbox" name="suggestion" value="長期照顧服務"> 長期照顧服務</label>
-            <label class="checkbox-item"><input type="checkbox" name="suggestion" value="喘息服務"> 喘息服務</label>
-            <label class="checkbox-item"><input type="checkbox" name="suggestion" value="臨時暨短期照顧服務"> 臨時暨短期照顧服務</label>
-            <label class="checkbox-item"><input type="checkbox" name="suggestion" value="全日型住宿式照顧服務"> 全日型住宿式照顧</label>
-            <label class="checkbox-item"><input type="checkbox" name="suggestion" value="視障生活重建服務"> 視障生活重建服務</label>
-            <label class="checkbox-item"><input type="checkbox" name="suggestion" value="實物銀行（物資補助）"> 實物銀行（物資補助）</label>
-            <label class="checkbox-item"><input type="checkbox" name="suggestion" value="法律扶助"> 法律扶助</label>
-            <label class="checkbox-item"><input type="checkbox" name="suggestion" value="獨居老人關懷"> 獨居老人關懷</label>
-            <label class="checkbox-item"><input type="checkbox" name="suggestion" value="輔具資源"> 輔具資源</label>
-            <label class="checkbox-item"><input type="checkbox" name="suggestion" value="博愛卡/陪伴卡"> 博愛卡/陪伴卡</label>
-            <label class="checkbox-item"><input type="checkbox" name="suggestion" value="語言/職能治療"> 語言/職能治療</label>
+        <!-- Output -->
+        <div class="output-area" id="outputArea" style="display: none">
+          <div class="output-header">
+            <h3>生成結果</h3>
+            <div style="display: flex; gap: 8px">
+              <button class="btn btn-success btn-sm" onclick="copyOutput()">複製全文</button>
+              <button class="btn btn-outline btn-sm" onclick="saveToHistory()">儲存至歷史</button>
+            </div>
           </div>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group" style="grid-column: 1 / -1;">
-          <label>評估與建議補充說明</label>
-          <textarea id="evalNote" placeholder="如：特殊考量、轉介單位、其他建議等"></textarea>
+          <div class="output-body" id="outputBody"></div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Action -->
-  <div class="action-bar">
-    <button class="btn btn-outline" onclick="clearForm()">清除表單</button>
-    <button class="btn btn-primary" id="generateBtn" onclick="generateReport()">
-      生成評估報告
-    </button>
-  </div>
-
-  <!-- Output -->
-  <div class="output-area" id="outputArea" style="display:none;">
-    <div class="output-header">
-      <h3>生成結果</h3>
-      <div style="display:flex; gap:8px;">
-        <button class="btn btn-success btn-sm" onclick="copyOutput()">複製全文</button>
-        <button class="btn btn-outline btn-sm" onclick="saveToHistory()">儲存至歷史</button>
+    <!-- ===== Page 2: History ===== -->
+    <div id="tab-history" class="tab-content">
+      <div class="container">
+        <div class="history-toolbar">
+          <h2 style="font-size: 1.1rem">歷史紀錄</h2>
+          <button class="btn btn-danger btn-sm" onclick="clearHistory()">清除全部</button>
+        </div>
+        <div id="historyList" class="history-list"></div>
       </div>
     </div>
-    <div class="output-body" id="outputBody"></div>
-  </div>
 
-</div>
-</div>
-
-<!-- ===== Page 2: History ===== -->
-<div id="tab-history" class="tab-content">
-<div class="container">
-  <div class="history-toolbar">
-    <h2 style="font-size:1.1rem;">歷史紀錄</h2>
-    <button class="btn btn-danger btn-sm" onclick="clearHistory()">清除全部</button>
-  </div>
-  <div id="historyList" class="history-list"></div>
-</div>
-</div>
-
-<script src="app.js"></script>
-
-</body>
+    <script src="app.js"></script>
+  </body>
 </html>

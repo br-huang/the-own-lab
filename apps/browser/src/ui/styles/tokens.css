@@ -4,12 +4,12 @@
   --bb-bg-secondary: #16213e;
   --bb-bg-tertiary: #0f3460;
   --bb-bg-hover: rgba(255, 255, 255, 0.06);
-  --bb-bg-active: rgba(255, 255, 255, 0.10);
+  --bb-bg-active: rgba(255, 255, 255, 0.1);
   --bb-text-primary: #e0e0e0;
   --bb-text-secondary: #a0a0b0;
   --bb-text-muted: #606070;
-  --bb-accent: #5B7FFF;
-  --bb-accent-hover: #7B9FFF;
+  --bb-accent: #5b7fff;
+  --bb-accent-hover: #7b9fff;
   --bb-danger: #ff5555;
   --bb-border: rgba(255, 255, 255, 0.08);
 

@@ -1,7 +1,11 @@
 import { Workspace, WorkspaceManager } from '../interfaces/workspace';
 import { KernelEventEmitter } from './kernel-event';
 import { ElectronTabManager } from './electron-tab-manager';
-import { DEFAULT_WORKSPACE_NAME, DEFAULT_WORKSPACE_COLOR, DEFAULT_WORKSPACE_ICON } from '../../shared/constants';
+import {
+  DEFAULT_WORKSPACE_NAME,
+  DEFAULT_WORKSPACE_COLOR,
+  DEFAULT_WORKSPACE_ICON,
+} from '../../shared/constants';
 import crypto from 'crypto';
 
 export class ElectronWorkspaceManager implements WorkspaceManager {
@@ -10,7 +14,10 @@ export class ElectronWorkspaceManager implements WorkspaceManager {
 
   onWorkspaceCreated = new KernelEventEmitter<Workspace>();
   onWorkspaceDeleted = new KernelEventEmitter<{ workspaceId: string }>();
-  onWorkspaceUpdated = new KernelEventEmitter<{ workspaceId: string; changes: Partial<Workspace> }>();
+  onWorkspaceUpdated = new KernelEventEmitter<{
+    workspaceId: string;
+    changes: Partial<Workspace>;
+  }>();
   onWorkspaceActivated = new KernelEventEmitter<{ workspaceId: string; previousId: string }>();
 
   constructor(private tabManager: ElectronTabManager) {
@@ -62,7 +69,7 @@ export class ElectronWorkspaceManager implements WorkspaceManager {
     if (this.workspaces.size <= 1) return;
 
     if (this.activeId === id) {
-      const other = Array.from(this.workspaces.keys()).find(k => k !== id);
+      const other = Array.from(this.workspaces.keys()).find((k) => k !== id);
       if (other) await this.activateWorkspace(other);
     }
 

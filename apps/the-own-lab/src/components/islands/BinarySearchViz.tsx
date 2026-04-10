@@ -1,14 +1,14 @@
-import AlgoVisualizer from "./AlgoVisualizer";
-import ParamDemo from "./ParamDemo";
-import type { AlgoStep } from "@/types/docs";
+import AlgoVisualizer from './AlgoVisualizer';
+import ParamDemo from './ParamDemo';
+import type { AlgoStep } from '@/types/docs';
 
 // ─── AlgoVisualizer: Binary Search Step-Through ───
 
 const binarySearchSteps: AlgoStep[] = [
-  { label: "Start", data: { array: [1, 3, 5, 7, 9, 11], lo: 0, hi: 5, mid: 2, target: 7 } },
-  { label: "Go right", data: { array: [1, 3, 5, 7, 9, 11], lo: 3, hi: 5, mid: 4, target: 7 } },
-  { label: "Go left", data: { array: [1, 3, 5, 7, 9, 11], lo: 3, hi: 3, mid: 3, target: 7 } },
-  { label: "Found!", data: { array: [1, 3, 5, 7, 9, 11], lo: 3, hi: 3, mid: 3, target: 7 } },
+  { label: 'Start', data: { array: [1, 3, 5, 7, 9, 11], lo: 0, hi: 5, mid: 2, target: 7 } },
+  { label: 'Go right', data: { array: [1, 3, 5, 7, 9, 11], lo: 3, hi: 5, mid: 4, target: 7 } },
+  { label: 'Go left', data: { array: [1, 3, 5, 7, 9, 11], lo: 3, hi: 3, mid: 3, target: 7 } },
+  { label: 'Found!', data: { array: [1, 3, 5, 7, 9, 11], lo: 3, hi: 3, mid: 3, target: 7 } },
 ];
 
 function StepView({ step }: { step: AlgoStep }) {
@@ -23,11 +23,15 @@ function StepView({ step }: { step: AlgoStep }) {
     <div className="font-mono text-sm text-foreground">
       <div className="viz-row">
         {data.array.map((val, i) => {
-          let cls = "viz-cell ";
-          if (i === data.mid) cls += "viz-cell-mid";
-          else if (i >= data.lo && i <= data.hi) cls += "viz-cell-range";
-          else cls += "viz-cell-rest";
-          return <div key={i} className={cls}>{val}</div>;
+          let cls = 'viz-cell ';
+          if (i === data.mid) cls += 'viz-cell-mid';
+          else if (i >= data.lo && i <= data.hi) cls += 'viz-cell-range';
+          else cls += 'viz-cell-rest';
+          return (
+            <div key={i} className={cls}>
+              {val}
+            </div>
+          );
         })}
       </div>
       <div className="viz-meta">
@@ -54,12 +58,12 @@ export function BinarySearchParamDemo() {
     <ParamDemo
       params={{
         size: {
-          type: "number",
+          type: 'number',
           default: 10,
           min: 1,
           max: 1000,
           step: 1,
-          label: "Array size (n)",
+          label: 'Array size (n)',
         },
       }}
       render={(values) => {

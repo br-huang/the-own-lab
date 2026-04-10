@@ -10,5 +10,5 @@
  *   ./themes/zed.css      — neutral, Inter, compact (alias)
  * ──────────────────────────────────────────────────────────────────── */
 
-@import "./themes/claude.css";
-@import "./base.css";
+@import './themes/claude.css';
+@import './base.css';

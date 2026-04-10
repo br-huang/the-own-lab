@@ -1,12 +1,12 @@
-import { useState, useEffect, useRef } from "react";
-import type { TocHeading } from "@/types/docs";
+import { useState, useEffect, useRef } from 'react';
+import type { TocHeading } from '@/types/docs';
 
 interface Props {
   headings: TocHeading[];
 }
 
 export default function TableOfContents({ headings }: Props) {
-  const [activeId, setActiveId] = useState<string>("");
+  const [activeId, setActiveId] = useState<string>('');
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
@@ -27,9 +27,9 @@ export default function TableOfContents({ headings }: Props) {
         }
       },
       {
-        rootMargin: "0px 0px -80% 0px",
+        rootMargin: '0px 0px -80% 0px',
         threshold: 0,
-      }
+      },
     );
 
     for (const el of elements) {
@@ -50,11 +50,11 @@ export default function TableOfContents({ headings }: Props) {
             <a
               href={`#${heading.slug}`}
               className={`block text-sm py-0.5 transition-colors ${
-                heading.depth === 3 ? "pl-3" : ""
+                heading.depth === 3 ? 'pl-3' : ''
               } ${
                 activeId === heading.slug
-                  ? "font-medium text-primary"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? 'font-medium text-primary'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               {heading.text}

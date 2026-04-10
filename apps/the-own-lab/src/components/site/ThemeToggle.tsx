@@ -1,28 +1,28 @@
-import { useEffect, useState } from "react";
-import { THEME_STORAGE_KEY } from "@/lib/theme";
+import { useEffect, useState } from 'react';
+import { THEME_STORAGE_KEY } from '@/lib/theme';
 
-type ThemeMode = "light" | "dark";
+type ThemeMode = 'light' | 'dark';
 
 function getResolvedTheme(): ThemeMode {
-  if (typeof window === "undefined") return "light";
+  if (typeof window === 'undefined') return 'light';
 
   const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
-  if (stored === "light" || stored === "dark") return stored;
+  if (stored === 'light' || stored === 'dark') return stored;
 
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
 function applyTheme(theme: ThemeMode) {
   document.documentElement.dataset.theme = theme;
-  document.documentElement.classList.toggle("dark", theme === "dark");
-  document.documentElement.classList.toggle("light", theme === "light");
+  document.documentElement.classList.toggle('dark', theme === 'dark');
+  document.documentElement.classList.toggle('light', theme === 'light');
 }
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<ThemeMode>("light");
+  const [theme, setTheme] = useState<ThemeMode>('light');
 
   useEffect(() => {
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
 
     const sync = () => {
       const nextTheme = getResolvedTheme();
@@ -34,20 +34,20 @@ export default function ThemeToggle() {
 
     const onMediaChange = () => {
       const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
-      if (stored !== "light" && stored !== "dark") sync();
+      if (stored !== 'light' && stored !== 'dark') sync();
     };
 
-    media.addEventListener("change", onMediaChange);
-    window.addEventListener("storage", sync);
+    media.addEventListener('change', onMediaChange);
+    window.addEventListener('storage', sync);
 
     return () => {
-      media.removeEventListener("change", onMediaChange);
-      window.removeEventListener("storage", sync);
+      media.removeEventListener('change', onMediaChange);
+      window.removeEventListener('storage', sync);
     };
   }, []);
 
   const toggleTheme = () => {
-    const nextTheme: ThemeMode = theme === "dark" ? "light" : "dark";
+    const nextTheme: ThemeMode = theme === 'dark' ? 'light' : 'dark';
     window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
     applyTheme(nextTheme);
     setTheme(nextTheme);
@@ -58,14 +58,12 @@ export default function ThemeToggle() {
       type="button"
       className="theme-toggle"
       onClick={toggleTheme}
-      aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+      aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
     >
       <span className="theme-toggle-icon" aria-hidden="true">
-        {theme === "dark" ? "☼" : "◐"}
+        {theme === 'dark' ? '☼' : '◐'}
       </span>
-      <span className="theme-toggle-label">
-        {theme === "dark" ? "Dark" : "Light"}
-      </span>
+      <span className="theme-toggle-label">{theme === 'dark' ? 'Dark' : 'Light'}</span>
     </button>
   );
 }

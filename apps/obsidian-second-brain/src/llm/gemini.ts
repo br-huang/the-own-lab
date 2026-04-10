@@ -1,10 +1,10 @@
-import { GoogleGenerativeAI, Content } from "@google/generative-ai";
-import { Message, ChatOptions } from "../types";
-import { LLMProvider } from "./provider";
+import { GoogleGenerativeAI, Content } from '@google/generative-ai';
+import { Message, ChatOptions } from '../types';
+import { LLMProvider } from './provider';
 
 export class GeminiProvider implements LLMProvider {
-  readonly name = "gemini";
-  readonly maxTokens = 1_000_000;  // Gemini 2.0 supports up to 1M tokens
+  readonly name = 'gemini';
+  readonly maxTokens = 1_000_000; // Gemini 2.0 supports up to 1M tokens
   private genAI: GoogleGenerativeAI;
   private chatModel: string;
 
@@ -19,11 +19,11 @@ export class GeminiProvider implements LLMProvider {
     const contents: Content[] = [];
 
     for (const msg of messages) {
-      if (msg.role === "system") {
+      if (msg.role === 'system') {
         systemInstruction = msg.content;
       } else {
         contents.push({
-          role: msg.role === "assistant" ? "model" : "user",
+          role: msg.role === 'assistant' ? 'model' : 'user',
           parts: [{ text: msg.content }],
         });
       }
@@ -49,13 +49,13 @@ export class GeminiProvider implements LLMProvider {
       }
     } catch (error) {
       const message = (error as Error).message || String(error);
-      if (message.includes("API_KEY_INVALID") || message.includes("401")) {
-        throw new Error("Invalid Gemini API key. Please check your settings.");
+      if (message.includes('API_KEY_INVALID') || message.includes('401')) {
+        throw new Error('Invalid Gemini API key. Please check your settings.');
       }
-      if (message.includes("429") || message.includes("RATE_LIMIT")) {
-        throw new Error("Gemini rate limit exceeded. Please wait a moment and try again.");
+      if (message.includes('429') || message.includes('RATE_LIMIT')) {
+        throw new Error('Gemini rate limit exceeded. Please wait a moment and try again.');
       }
-      throw new Error("Gemini API error: " + message);
+      throw new Error('Gemini API error: ' + message);
     }
   }
 }

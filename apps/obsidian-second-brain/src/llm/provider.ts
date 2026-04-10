@@ -1,4 +1,4 @@
-import { Message, ChatOptions } from "../types";
+import { Message, ChatOptions } from '../types';
 
 export interface LLMProvider {
   readonly name: string;
