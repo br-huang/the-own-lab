@@ -12,6 +12,27 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
+export interface DatePickerProps {
+  /** Controlled selected date. */
+  value?: Date;
+  /** Called when the user picks a new date. */
+  onChange?: (date: Date | undefined) => void;
+  /** Placeholder shown before a date is selected. */
+  placeholder?: string;
+  /** Disables the trigger button. */
+  disabled?: boolean;
+  /** Matcher or list of matchers used to disable calendar dates. */
+  disableDate?: Matcher | Matcher[];
+  /** Extra classes for the popover content wrapper. */
+  className?: string;
+  /** Extra classes for the trigger button. */
+  buttonClassName?: string;
+  /** Horizontal alignment for the popover content. */
+  align?: React.ComponentProps<typeof PopoverContent>["align"];
+  /** `date-fns` format string used to display the selected date. */
+  formatString?: string;
+}
+
 function DatePicker({
   value,
   onChange,
@@ -22,17 +43,7 @@ function DatePicker({
   buttonClassName,
   align = "start",
   formatString = "PPP",
-}: {
-  value?: Date;
-  onChange?: (date: Date | undefined) => void;
-  placeholder?: string;
-  disabled?: boolean;
-  disableDate?: Matcher | Matcher[];
-  className?: string;
-  buttonClassName?: string;
-  align?: React.ComponentProps<typeof PopoverContent>["align"];
-  formatString?: string;
-}) {
+}: DatePickerProps) {
   const [open, setOpen] = React.useState(false);
 
   return (

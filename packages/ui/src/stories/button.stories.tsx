@@ -9,9 +9,29 @@ const meta = {
   tags: ['autodocs'],
   parameters: {
     layout: 'centered',
+    docs: {
+      description: {
+        component:
+          'Primary action control with shared variants and sizes for app-wide usage.',
+      },
+    },
   },
   args: {
     children: 'Continue',
+    variant: 'default',
+    size: 'default',
+    disabled: false,
+  },
+  argTypes: {
+    variant: {
+      control: 'inline-radio',
+      options: ['default', 'secondary', 'outline', 'ghost', 'link', 'destructive'],
+    },
+    size: {
+      control: 'inline-radio',
+      options: ['default', 'sm', 'lg', 'icon'],
+    },
+    asChild: { control: 'boolean' },
   },
 } satisfies Meta<typeof Button>;
 
@@ -19,7 +39,15 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'Interactive baseline button with controls for common props.',
+      },
+    },
+  },
+};
 
 export const Variants: Story = {
   render: () => (

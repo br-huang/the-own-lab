@@ -12,11 +12,19 @@ import {
 
 const meta = {
   title: 'Feedback/Status',
+  component: Alert,
+  subcomponents: { Badge, Progress, Skeleton },
   parameters: {
     layout: 'centered',
+    docs: {
+      description: {
+        component:
+          'Status feedback patterns built from alert, badge, progress, and skeleton primitives.',
+      },
+    },
   },
   tags: ['autodocs'],
-} satisfies Meta;
+} satisfies Meta<typeof Alert>;
 
 export default meta;
 

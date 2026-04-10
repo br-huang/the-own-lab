@@ -34,16 +34,20 @@ const buttonVariants = cva(
   }
 );
 
+export interface ButtonProps
+  extends React.ComponentProps<"button">,
+    VariantProps<typeof buttonVariants> {
+  /** Render the button by passing props to the child element via Radix Slot. */
+  asChild?: boolean;
+}
+
 function Button({
   className,
   variant,
   size,
   asChild = false,
   ...props
-}: React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean;
-  }) {
+}: ButtonProps) {
   const Comp = asChild ? Slot.Root : "button";
 
   return (

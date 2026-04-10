@@ -16,9 +16,16 @@ import {
 const meta = {
   title: 'Overlay/Dialog',
   component: Dialog,
+  subcomponents: { DialogContent },
   tags: ['autodocs'],
   parameters: {
     layout: 'centered',
+    docs: {
+      description: {
+        component:
+          'Modal dialog primitives built on Radix, suitable for focused tasks that interrupt the current flow.',
+      },
+    },
   },
 } satisfies Meta<typeof Dialog>;
 
@@ -27,6 +34,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Typical profile-edit modal using the shared header, body, and footer slots.',
+      },
+    },
+  },
   render: () => (
     <Dialog>
       <DialogTrigger asChild>

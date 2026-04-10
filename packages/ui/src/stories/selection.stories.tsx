@@ -21,11 +21,26 @@ import {
 
 const meta = {
   title: 'Forms/Selection',
+  component: DatePicker,
+  subcomponents: {
+    Checkbox,
+    RadioGroup,
+    Select,
+    Slider,
+    Switch,
+    InputOTP,
+  },
   parameters: {
     layout: 'centered',
+    docs: {
+      description: {
+        component:
+          'Selection and choice controls for dates, toggles, ranges, radio choices, and one-time passwords.',
+      },
+    },
   },
   tags: ['autodocs'],
-} satisfies Meta;
+} satisfies Meta<typeof DatePicker>;
 
 export default meta;
 

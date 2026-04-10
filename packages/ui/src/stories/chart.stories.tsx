@@ -31,11 +31,18 @@ const chartConfig = {
 
 const meta = {
   title: 'Data/Chart',
+  component: ChartContainer,
   parameters: {
     layout: 'centered',
+    docs: {
+      description: {
+        component:
+          'Chart wrapper utilities that bind shared tokens, legends, and tooltips to Recharts visualizations.',
+      },
+    },
   },
   tags: ['autodocs'],
-} satisfies Meta;
+} satisfies Meta<typeof ChartContainer>;
 
 export default meta;
 

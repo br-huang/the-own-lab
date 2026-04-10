@@ -13,9 +13,16 @@ import {
 const meta = {
   title: 'Data/Table',
   component: Table,
+  subcomponents: { TableHeader, TableBody, TableRow, TableHead, TableCell },
   tags: ['autodocs'],
   parameters: {
     layout: 'centered',
+    docs: {
+      description: {
+        component:
+          'Low-level table primitives for aligned tabular layouts without imposing data-grid behavior.',
+      },
+    },
   },
 } satisfies Meta<typeof Table>;
 

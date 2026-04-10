@@ -4,7 +4,10 @@ import { XIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-function Dialog(props: React.ComponentProps<typeof DialogPrimitive.Root>) {
+/** Root dialog state props passed through to Radix Dialog. */
+export type DialogProps = React.ComponentProps<typeof DialogPrimitive.Root>;
+
+function Dialog(props: DialogProps) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />;
 }
 
@@ -36,14 +39,18 @@ function DialogOverlay({
   );
 }
 
+export interface DialogContentProps
+  extends React.ComponentProps<typeof DialogPrimitive.Content> {
+  /** Toggle the built-in top-right close button. */
+  showCloseButton?: boolean;
+}
+
 function DialogContent({
   className,
   children,
   showCloseButton = true,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content> & {
-  showCloseButton?: boolean;
-}) {
+}: DialogContentProps) {
   return (
     <DialogPortal>
       <DialogOverlay />

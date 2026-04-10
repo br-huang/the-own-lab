@@ -2,6 +2,7 @@ import * as React from 'react';
 import type { Preview } from '@storybook/react-vite';
 
 import '../src/styles/theme.css';
+import { TooltipProvider } from '../src/components/ui/tooltip';
 
 const preview: Preview = {
   globalTypes: {
@@ -24,12 +25,16 @@ const preview: Preview = {
       const theme = context.globals.theme === 'dark' ? 'dark' : '';
 
       return React.createElement(
-        'div',
-        { className: theme },
+        TooltipProvider,
+        { delayDuration: 0 },
         React.createElement(
           'div',
-          { className: 'bg-background text-foreground min-h-screen p-6' },
-          React.createElement(Story)
+          { className: theme },
+          React.createElement(
+            'div',
+            { className: 'bg-background text-foreground min-h-screen p-6' },
+            React.createElement(Story)
+          )
         )
       );
     },

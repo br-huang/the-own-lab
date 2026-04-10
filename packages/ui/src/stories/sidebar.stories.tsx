@@ -29,9 +29,16 @@ import {
 const meta = {
   title: 'Navigation/Sidebar',
   component: Sidebar,
+  subcomponents: { SidebarProvider, SidebarTrigger, SidebarInset },
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',
+    docs: {
+      description: {
+        component:
+          'App-shell navigation system with desktop collapse modes and mobile sheet behavior.',
+      },
+    },
   },
 } satisfies Meta<typeof Sidebar>;
 

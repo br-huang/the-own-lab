@@ -16,6 +16,15 @@ const config: StorybookConfig = {
   docs: {
     autodocs: 'tag',
   },
+  typescript: {
+    reactDocgen: 'react-docgen-typescript',
+    reactDocgenTypescriptOptions: {
+      shouldExtractLiteralValuesFromEnum: true,
+      shouldRemoveUndefinedFromOptional: true,
+      propFilter: (prop) =>
+        prop.parent ? !/node_modules/.test(prop.parent.fileName) : true,
+    },
+  },
 
   viteFinal: async (config) =>
     mergeConfig(config, {

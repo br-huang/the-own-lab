@@ -28,11 +28,19 @@ import {
 
 const meta = {
   title: 'Navigation/Patterns',
+  component: Breadcrumb,
+  subcomponents: { Pagination, NavigationMenu, Tabs },
   parameters: {
     layout: 'centered',
+    docs: {
+      description: {
+        component:
+          'Navigation patterns for hierarchy, paging, top-level destinations, and section switching.',
+      },
+    },
   },
   tags: ['autodocs'],
-} satisfies Meta;
+} satisfies Meta<typeof Breadcrumb>;
 
 export default meta;
 

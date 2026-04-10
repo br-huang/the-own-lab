@@ -5,9 +5,21 @@ import { Input, Label, Textarea } from '@/index';
 const meta = {
   title: 'Forms/Input',
   component: Input,
+  subcomponents: { Textarea },
   tags: ['autodocs'],
   parameters: {
     layout: 'centered',
+    docs: {
+      description: {
+        component:
+          'Shared text input primitives for standard forms, settings panels, and inline editing.',
+      },
+    },
+  },
+  args: {
+    type: 'email',
+    placeholder: 'name@example.com',
+    disabled: false,
   },
 } satisfies Meta<typeof Input>;
 
@@ -16,10 +28,10 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: () => (
+  render: (args) => (
     <div className="w-[360px] space-y-2">
       <Label htmlFor="email">Email</Label>
-      <Input id="email" type="email" placeholder="name@example.com" />
+      <Input id="email" {...args} />
     </div>
   ),
 };

@@ -19,11 +19,19 @@ import {
 
 const meta = {
   title: 'Display/Surfaces',
+  component: Card,
+  subcomponents: { Avatar, Accordion, ScrollArea, Separator },
   parameters: {
     layout: 'centered',
+    docs: {
+      description: {
+        component:
+          'Surface primitives for grouping information, showing identity, and handling scrollable content.',
+      },
+    },
   },
   tags: ['autodocs'],
-} satisfies Meta;
+} satisfies Meta<typeof Card>;
 
 export default meta;
 

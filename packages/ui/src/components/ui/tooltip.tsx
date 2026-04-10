@@ -3,13 +3,19 @@ import { Tooltip as TooltipPrimitive } from "radix-ui";
 
 import { cn } from "@/lib/utils";
 
-function TooltipProvider(
-  props: React.ComponentProps<typeof TooltipPrimitive.Provider>
-) {
+/** Provider props that control global tooltip timing and delay behavior. */
+export type TooltipProviderProps = React.ComponentProps<
+  typeof TooltipPrimitive.Provider
+>;
+
+function TooltipProvider(props: TooltipProviderProps) {
   return <TooltipPrimitive.Provider data-slot="tooltip-provider" {...props} />;
 }
 
-function Tooltip(props: React.ComponentProps<typeof TooltipPrimitive.Root>) {
+/** Root tooltip props passed through to Radix Tooltip. */
+export type TooltipProps = React.ComponentProps<typeof TooltipPrimitive.Root>;
+
+function Tooltip(props: TooltipProps) {
   return <TooltipPrimitive.Root data-slot="tooltip" {...props} />;
 }
 

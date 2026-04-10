@@ -2,7 +2,10 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+/** Shared input props with native HTML input behavior. */
+export type InputProps = React.ComponentProps<"input">;
+
+function Input({ className, type, ...props }: InputProps) {
   return (
     <input
       type={type}

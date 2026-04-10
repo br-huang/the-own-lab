@@ -37,11 +37,19 @@ import {
 
 const meta = {
   title: 'Overlay/Patterns',
+  component: Popover,
+  subcomponents: { HoverCard, Tooltip, Sheet, Drawer, AlertDialog },
   parameters: {
     layout: 'centered',
+    docs: {
+      description: {
+        component:
+          'Overlay primitives for lightweight hints, side panels, drawers, and confirmation flows.',
+      },
+    },
   },
   tags: ['autodocs'],
-} satisfies Meta;
+} satisfies Meta<typeof Popover>;
 
 export default meta;
 
