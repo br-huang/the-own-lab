@@ -9,9 +9,11 @@ You are working in a Nx + pnpm monorepo. Read CLAUDE.md first.
 - Run tasks via Nx: `pnpm nx build <project>`, not `cd apps/foo && npm run build`
 - Register new projects with `project.json` (non-JS) or `package.json` (JS/TS) and add scope to `commitlint.config.js`
 - Use `mise.toml` for language versions, not global installs
-- Write all specs, ADRs, and issues in `docs/projects/<project>/` — read existing specs before modifying a project
+- Write all specs, ADRs, wiki, and issues in `docs/projects/<project>/` — read existing specs and wiki before modifying a project
 - Start every new feature with `docs/projects/<project>/specs/YYYY-MM-DD-<slug>/REQUIREMENTS.md`
 - Use exact file names: `REQUIREMENTS.md`, `DESIGN.md`, `PLAN.md`, `REVIEW.md`, `TEST.md` (uppercase)
+- Issue files MUST have YAML frontmatter with `issue`, `status` (pending|processing|completed), `created_at`
+- After completing a feature, distill learnings into `docs/projects/<project>/wiki/` as living documents
 - Prefer `packages/ui` shared components before creating app-local UI primitives
 
 ## You MUST NOT

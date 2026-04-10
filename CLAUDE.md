@@ -33,16 +33,19 @@ New project placement: runs independently → `apps/`, importable → `packages/
 
 ```
 docs/projects/<project-name>/
-├── specs/                          ← feature specifications
+├── CHANGELOG.md                    ← version history
+├── specs/                          ← feature specifications (snapshot, archived after dev)
 │   └── YYYY-MM-DD-<slug>/         ← one directory per feature
 │       ├── REQUIREMENTS.md
 │       ├── DESIGN.md
 │       ├── PLAN.md
 │       ├── REVIEW.md              ← optional
 │       └── TEST.md                ← optional
-├── adr/                            ← architecture decision records
+├── wiki/                           ← persistent project knowledge (kept up-to-date)
+│   └── <topic>.md
+├── adr/                            ← architecture decision records (immutable)
 │   └── NNN-<title>.md
-└── issues/                         ← bug tracking, investigations
+└── issues/                         ← bug tracking (with frontmatter)
     └── NNN-<title>.md
 ```
 
@@ -54,6 +57,8 @@ Rules:
 - Issue naming: `001-tab-crash-on-close.md` (zero-padded, descriptive)
 - Every new feature MUST start with a spec under `docs/projects/<project>/specs/`
 - Read existing specs before modifying a project: `ls docs/projects/<project>/specs/`
+- Issue files MUST have YAML frontmatter: `issue`, `status` (pending|processing|completed), `created_at`
+- Wiki pages are living documents — update them as the project evolves, never archive
 
 ## Git
 
