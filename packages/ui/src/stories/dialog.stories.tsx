@@ -16,6 +16,7 @@ import {
 const meta = {
   title: 'Overlay/Dialog',
   component: Dialog,
+  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },

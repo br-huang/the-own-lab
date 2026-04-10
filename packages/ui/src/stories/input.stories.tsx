@@ -5,6 +5,7 @@ import { Input, Label, Textarea } from '@/index';
 const meta = {
   title: 'Forms/Input',
   component: Input,
+  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },

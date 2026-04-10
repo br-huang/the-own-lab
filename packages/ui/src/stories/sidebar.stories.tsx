@@ -29,6 +29,7 @@ import {
 const meta = {
   title: 'Navigation/Sidebar',
   component: Sidebar,
+  tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',
   },

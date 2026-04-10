@@ -13,6 +13,7 @@ import {
 const meta = {
   title: 'Data/Table',
   component: Table,
+  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },
