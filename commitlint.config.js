@@ -24,6 +24,7 @@ export default {
         // learn
         'learn',
         // root / cross-cutting
+        'knowledge',
         'deps',
         'ci',
         'monorepo',
