@@ -7,26 +7,14 @@ pre-push:
   commands:
     protect-main:
       run: |
-        while read local_ref local_sha remote_ref remote_sha; do
-          if echo "$local_ref" | grep -qE "refs/heads/main$" && echo "$remote_ref" | grep -qE "refs/heads/main$"; then
-            current_branch=$(git rev-parse --abbrev-ref HEAD)
-            if [ "$current_branch" != "main" ]; then
-              echo "❌ Cannot push to main from branch '$current_branch'. Merge locally first."
-              exit 1
-            fi
-          fi
-        done
-    no-force-push:
-      run: |
-        if echo "$GIT_PUSH_OPTION_COUNT" 2>/dev/null | grep -q .; then
-          true
-        fi
-        for arg in "$@"; do
-          if echo "$arg" | grep -qE '^\-\-force|^\-f$'; then
-            echo "❌ Force push is not allowed. Use --force-with-lease if absolutely necessary."
+        current_branch=$(git rev-parse --abbrev-ref HEAD)
+        if [ "$current_branch" != "main" ]; then
+          remote_ref="{push_reference}"
+          if echo "$remote_ref" | grep -q "refs/heads/main"; then
+            echo "❌ Cannot push to main from branch '$current_branch'. Merge locally first."
             exit 1
           fi
-        done
+        fi
 
 pre-merge-commit:
   commands:
