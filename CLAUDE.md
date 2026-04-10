@@ -73,7 +73,7 @@ Subtree remotes (`sub/*`) exist for projects with independent GitHub repos. Chec
 7. Do not modify `nx.json`, `pnpm-workspace.yaml`, `lefthook.yml`, `commitlint.config.js` without understanding the blast radius.
 8. All specs, ADRs, and issues MUST live in `docs/projects/<project>/`. Never create `docs/` inside `apps/`, `packages/`, or `scripts/`.
 9. Every new feature MUST have a spec directory in `docs/projects/<project>/specs/YYYY-MM-DD-<slug>/` with at minimum `REQUIREMENTS.md`.
-10. Always use `pnpm` to run the commands
+10. Always use `pnpm` to run the commands, all packages will be installed in `.pnpm-store` globally
 
 <!-- nx configuration start-->
 <!-- Leave the start & end comments to automatically receive updates. -->
