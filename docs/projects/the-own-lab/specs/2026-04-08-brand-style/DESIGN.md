@@ -214,7 +214,8 @@ The document root should carry a class or data attribute such as:
 
 ```html
 <html data-theme="light">
-<html data-theme="dark">
+  <html data-theme="dark"></html>
+</html>
 ```
 
 ---

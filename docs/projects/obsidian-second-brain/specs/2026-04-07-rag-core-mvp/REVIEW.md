@@ -28,11 +28,11 @@
            await this.vaultIndexer.initialIndex();
            this.vaultIndexer.watchForChanges();
          } catch (err) {
-           console.error("KB: Initial indexing failed", err);
-           statusBarEl.setText("KB: Indexing failed — check console");
+           console.error('KB: Initial indexing failed', err);
+           statusBarEl.setText('KB: Indexing failed — check console');
          }
        } else {
-         statusBarEl.setText("KB: Set API key in settings");
+         statusBarEl.setText('KB: Set API key in settings');
        }
      });
      ```
@@ -68,16 +68,16 @@
 1. **src/core/vault-indexer.ts:137-140** — The `delete` event handler calls `this.vectorStore.delete(file.path)` without `await`. The async delete operation fires but its result is never observed. If it fails, the error is silently swallowed as an unhandled rejection. Additionally, `saveManifest()` on line 141 executes synchronously before the async delete completes, creating a race condition where the manifest says the file is removed but the vectors may still exist.
    - **Fix**: Make the callback async, `await` the delete, and add error handling:
      ```typescript
-     const deleteRef = this.vault.on("delete", async (file) => {
+     const deleteRef = this.vault.on('delete', async (file) => {
        if (file instanceof TFile && this.shouldIndex(file)) {
          try {
            await this.vectorStore.delete(file.path);
          } catch (err) {
-           console.error("KB: Failed to delete vectors for", file.path, err);
+           console.error('KB: Failed to delete vectors for', file.path, err);
          }
          delete this.manifest[file.path];
          this.saveManifest();
-         this.statusBarEl.setText("KB: " + Object.keys(this.manifest).length + " notes indexed");
+         this.statusBarEl.setText('KB: ' + Object.keys(this.manifest).length + ' notes indexed');
        }
      });
      ```
@@ -117,13 +117,13 @@
 
 The implementation follows DESIGN.md closely. Notable deviations:
 
-| Aspect | Design Spec | Implementation | Assessment |
-|--------|------------|----------------|------------|
-| Plugin field visibility | Public fields for `llmProvider`, `vectorStore`, `vaultIndexer`, `ragEngine` | `private` fields; `llmProvider` is a local variable in `onload()` | Minor deviation, limits future extensibility |
-| Provider recreation on settings change | Implied by constructor injection pattern | Provider never recreated | Functional gap (Critical #2) |
-| Chunker separators | Starts with `\n## ` | Starts with `\n# ` (H1 included) | Implementation is more thorough than design spec |
-| System prompt | Exact text specified | Matches exactly | PASS |
-| All other module APIs and behaviors | As specified | Match specification | PASS |
+| Aspect                                 | Design Spec                                                                 | Implementation                                                    | Assessment                                       |
+| -------------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------ |
+| Plugin field visibility                | Public fields for `llmProvider`, `vectorStore`, `vaultIndexer`, `ragEngine` | `private` fields; `llmProvider` is a local variable in `onload()` | Minor deviation, limits future extensibility     |
+| Provider recreation on settings change | Implied by constructor injection pattern                                    | Provider never recreated                                          | Functional gap (Critical #2)                     |
+| Chunker separators                     | Starts with `\n## `                                                         | Starts with `\n# ` (H1 included)                                  | Implementation is more thorough than design spec |
+| System prompt                          | Exact text specified                                                        | Matches exactly                                                   | PASS                                             |
+| All other module APIs and behaviors    | As specified                                                                | Match specification                                               | PASS                                             |
 
 ---
 

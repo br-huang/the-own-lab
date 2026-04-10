@@ -52,6 +52,7 @@ Accept ~70-80% extension compatibility for maximum development speed.
 ```
 
 **Tech Stack:**
+
 - Electron 34+ (Chromium 134+)
 - TypeScript strict mode
 - Web Components (Lit for ergonomics, compiles to standard Web Components)
@@ -59,20 +60,21 @@ Accept ~70-80% extension compatibility for maximum development speed.
 - Vite for UI bundling
 
 **How it handles key features:**
+
 - **Vertical sidebar**: Web Component in the renderer process, communicates with main process TabManager via IPC.
 - **Workspaces**: Pure UI-level filtering. Each tab has a `workspaceId` property. Switching workspace shows/hides tabs via CSS and filters the sidebar list. No process isolation.
-- **Extensions**: electron-chrome-extensions library provides chrome.* API shims. Covers content scripts, popup windows, storage, tabs API. Missing: some declarativeNetRequest rules, complex devtools APIs, certain MV3 service worker edge cases.
+- **Extensions**: electron-chrome-extensions library provides chrome.\* API shims. Covers content scripts, popup windows, storage, tabs API. Missing: some declarativeNetRequest rules, complex devtools APIs, certain MV3 service worker edge cases.
 - **UI Kernel**: TypeScript interfaces in main process. Renderer never calls Electron APIs directly; all communication through typed IPC channels mapped to kernel interfaces.
 
 **Estimated Effort:** 6-8 person-weeks to P0 features.
 
-| Pros | Cons |
-|------|------|
-| Fastest path to a working browser | Extension compat caps at ~70-80% |
+| Pros                                       | Cons                                                   |
+| ------------------------------------------ | ------------------------------------------------------ |
+| Fastest path to a working browser          | Extension compat caps at ~70-80%                       |
 | Excellent DX (hot reload, DevTools for UI) | uBlock Origin likely works; complex extensions may not |
-| Large Electron ecosystem | Higher memory baseline (~300MB vs 200MB target) |
-| Web Components UI is fast to iterate | BrowserView API may be deprecated in future Electron |
-| Solo-developer friendly | Performance ceiling for many-tab scenarios |
+| Large Electron ecosystem                   | Higher memory baseline (~300MB vs 200MB target)        |
+| Web Components UI is fast to iterate       | BrowserView API may be deprecated in future Electron   |
+| Solo-developer friendly                    | Performance ceiling for many-tab scenarios             |
 
 ---
 
@@ -101,6 +103,7 @@ Fork Chromium, strip native tab UI, replace with Web Components layer. Full Chro
 ```
 
 **Tech Stack:**
+
 - Chromium source (following Brave's build system patterns)
 - C++ for kernel layer and Mojo interfaces
 - TypeScript + Web Components (Lit) for UI layer
@@ -108,20 +111,21 @@ Fork Chromium, strip native tab UI, replace with Web Components layer. Full Chro
 - Custom patching system (inspired by Brave's chromium_src approach)
 
 **How it handles key features:**
+
 - **Vertical sidebar**: WebUI page rendered in a privileged side panel. Communicates with C++ TabStripModel via Mojo IPC.
 - **Workspaces**: Extends Chromium's TabGroupModel or builds parallel model. Tab filtering by workspace ID. Can later upgrade to profile-level isolation.
-- **Extensions**: Zero extra work. Chromium's full chrome.extensions.* API is available natively. MV3, declarativeNetRequest, all of it.
+- **Extensions**: Zero extra work. Chromium's full chrome.extensions.\* API is available natively. MV3, declarativeNetRequest, all of it.
 - **UI Kernel**: Mojo interface definitions (.mojom files) define the contract between the Web Components UI and the C++ backend. This is the cleanest possible kernel boundary.
 
 **Estimated Effort:** 16-24 person-weeks to P0 features.
 
-| Pros | Cons |
-|------|------|
-| 100% Chrome extension compatibility | 3-6x longer than Electron approach |
-| Best possible performance | Requires C++ and Mojo IPC expertise |
-| Clean architecture (Mojo = natural kernel boundary) | Chromium build is 30-60min, 50GB+ disk |
-| Following proven path (Edge, Opera, Brave) | Rebasing on Chromium updates is complex |
-| Future-proof for Phase 2+ features | Solo developer may not sustain this |
+| Pros                                                | Cons                                    |
+| --------------------------------------------------- | --------------------------------------- |
+| 100% Chrome extension compatibility                 | 3-6x longer than Electron approach      |
+| Best possible performance                           | Requires C++ and Mojo IPC expertise     |
+| Clean architecture (Mojo = natural kernel boundary) | Chromium build is 30-60min, 50GB+ disk  |
+| Following proven path (Edge, Opera, Brave)          | Rebasing on Chromium updates is complex |
+| Future-proof for Phase 2+ features                  | Solo developer may not sustain this     |
 
 ---
 
@@ -158,6 +162,7 @@ Use Electron for the app shell and UI, but launch and control a real Chrome/Chro
 ```
 
 **Tech Stack:**
+
 - Electron 34+ for UI shell
 - Chrome/Chromium instance (bundled or system-installed)
 - puppeteer-core for CDP communication (or raw WebSocket CDP client)
@@ -166,6 +171,7 @@ Use Electron for the app shell and UI, but launch and control a real Chrome/Chro
 - Vite for UI bundling
 
 **How it handles key features:**
+
 - **Vertical sidebar**: Web Component in Electron renderer. Tab metadata (title, favicon, URL) fetched via CDP `Target.getTargets()` and page events.
 - **Workspaces**: Managed entirely in the Electron UI layer. Each tab's Chrome target ID is associated with a workspace. Switching workspaces shows/hides tabs by CDP window manipulation or by moving tabs between Chrome windows.
 - **Extensions**: Fully native. Chrome is launched with `--load-extension` or the user installs from Chrome Web Store in the Chrome instance. 100% compatibility because it IS Chrome.
@@ -173,14 +179,14 @@ Use Electron for the app shell and UI, but launch and control a real Chrome/Chro
 
 **Estimated Effort:** 10-14 person-weeks to P0 features.
 
-| Pros | Cons |
-|------|------|
-| 100% extension compatibility (it is real Chrome) | Two processes: Electron + Chrome (high memory) |
-| Electron-level DX for UI development | Visual integration is the hard problem |
-| No Chromium fork maintenance burden | Tab rendering happens in Chrome windows, not Electron |
-| CDP is stable, well-documented | Latency for every UI interaction (IPC + CDP) |
-| Can swap Chrome for any CDP-compatible browser | Fragile: Chrome updates could break CDP assumptions |
-| Proven concept (Playwright, browser automation tools) | User sees Chrome in Activity Monitor (confusing) |
+| Pros                                                  | Cons                                                  |
+| ----------------------------------------------------- | ----------------------------------------------------- |
+| 100% extension compatibility (it is real Chrome)      | Two processes: Electron + Chrome (high memory)        |
+| Electron-level DX for UI development                  | Visual integration is the hard problem                |
+| No Chromium fork maintenance burden                   | Tab rendering happens in Chrome windows, not Electron |
+| CDP is stable, well-documented                        | Latency for every UI interaction (IPC + CDP)          |
+| Can swap Chrome for any CDP-compatible browser        | Fragile: Chrome updates could break CDP assumptions   |
+| Proven concept (Playwright, browser automation tools) | User sees Chrome in Activity Monitor (confusing)      |
 
 **The critical challenge with Approach C** is display integration: how do you show Chrome's rendered pages inside Electron's window? Options:
 
@@ -201,28 +207,31 @@ None of these options produce a polished single-window browser experience withou
 
 The decision comes down to this: the MVP's purpose is to validate the UX concept (vertical sidebar + workspaces), not to ship a Chrome replacement. The requirements document itself states the success criteria as "usable as a secondary browser" and lists five specific extensions that must work. Let me evaluate those against electron-chrome-extensions capabilities:
 
-| Extension | Likely Status on Electron | Risk |
-|-----------|---------------------------|------|
-| uBlock Origin (MV3) | Works -- content scripts + declarativeNetRequest basics | LOW |
-| 1Password/Bitwarden | Works -- popup + content scripts + storage | LOW |
-| React DevTools | Works -- devtools panel + content scripts | MEDIUM |
-| Dark Reader | Works -- content scripts + storage | LOW |
-| 3+ others (generic) | Varies | MEDIUM |
+| Extension           | Likely Status on Electron                               | Risk   |
+| ------------------- | ------------------------------------------------------- | ------ |
+| uBlock Origin (MV3) | Works -- content scripts + declarativeNetRequest basics | LOW    |
+| 1Password/Bitwarden | Works -- popup + content scripts + storage              | LOW    |
+| React DevTools      | Works -- devtools panel + content scripts               | MEDIUM |
+| Dark Reader         | Works -- content scripts + storage                      | LOW    |
+| 3+ others (generic) | Varies                                                  | MEDIUM |
 
 The electron-chrome-extensions library has matured since 2024. The biggest gaps are in obscure MV3 service worker behaviors and declarativeNetRequest advanced rules. For the five named extensions, the probability of success is high.
 
 **Why not Approach B (Chromium fork)?**
+
 - 16-24 person-weeks is too long for a solo developer to maintain motivation and validate the concept. By the time the browser works, the UX hypothesis is still untested.
 - C++ and Mojo IPC expertise is a steep learning curve that does not contribute to the UX innovation.
 - The right time for a Chromium fork is Phase 3+, after the UX is validated and the UI Kernel interfaces are battle-tested.
 
 **Why not Approach C (Electron + Chrome CDP)?**
+
 - The display integration problem is unsolved without hacks. A browser that shows its tabs in separate OS windows is not a usable product.
 - Double memory overhead (Electron + Chrome) violates NFR-01.
 - CDP latency on every interaction degrades the <100ms tab switch requirement.
 
 **The Extension Escape Hatch:**
 If electron-chrome-extensions proves insufficient during development, the UI Kernel abstraction allows swapping the extension host without rewriting the UI. Specifically:
+
 1. The `ExtensionHost` kernel interface is defined abstractly.
 2. Implementation A uses electron-chrome-extensions.
 3. Implementation B (escape hatch) could spawn a headless Chrome for extension execution only, using CDP to inject content scripts and relay extension actions -- without needing Chrome for tab rendering.
@@ -251,13 +260,13 @@ This hybrid escape hatch is smaller in scope than full Approach C because it onl
 
 ## Dependencies and Risks
 
-| Risk | Impact | Likelihood | Mitigation |
-|------|--------|------------|------------|
-| electron-chrome-extensions does not support critical extension | HIGH | MEDIUM | Test uBlock Origin and 1Password in week 1. If broken, invoke escape hatch or accept reduced compat for MVP. |
-| Electron memory exceeds 200MB baseline | MEDIUM | HIGH | Accept ~250-300MB baseline. Implement tab suspension for background tabs. Document as known limitation. |
-| WebContentsView API instability | MEDIUM | LOW | Pin to Electron 34.x stable. WebContentsView is the designated replacement for BrowserView; it is stable. |
-| Lit version incompatibility or bugs | LOW | LOW | Lit 3.x is stable and widely used. Pin version. |
-| Performance: sidebar re-renders lag with 50+ tabs | MEDIUM | MEDIUM | Virtual scrolling for tab list. Only render visible tabs in DOM. |
+| Risk                                                           | Impact | Likelihood | Mitigation                                                                                                   |
+| -------------------------------------------------------------- | ------ | ---------- | ------------------------------------------------------------------------------------------------------------ |
+| electron-chrome-extensions does not support critical extension | HIGH   | MEDIUM     | Test uBlock Origin and 1Password in week 1. If broken, invoke escape hatch or accept reduced compat for MVP. |
+| Electron memory exceeds 200MB baseline                         | MEDIUM | HIGH       | Accept ~250-300MB baseline. Implement tab suspension for background tabs. Document as known limitation.      |
+| WebContentsView API instability                                | MEDIUM | LOW        | Pin to Electron 34.x stable. WebContentsView is the designated replacement for BrowserView; it is stable.    |
+| Lit version incompatibility or bugs                            | LOW    | LOW        | Lit 3.x is stable and widely used. Pin version.                                                              |
+| Performance: sidebar re-renders lag with 50+ tabs              | MEDIUM | MEDIUM     | Virtual scrolling for tab list. Only render visible tabs in DOM.                                             |
 
 ---
 
@@ -281,7 +290,7 @@ interface Tab {
   id: string;
   url: string;
   title: string;
-  favicon: string;        // data: URL or http: URL
+  favicon: string; // data: URL or http: URL
   workspaceId: string;
   isPinned: boolean;
   isMuted: boolean;
@@ -334,8 +343,8 @@ interface TabManager {
 interface Workspace {
   id: string;
   name: string;
-  color: string;        // hex color
-  icon: string;         // emoji or icon name
+  color: string; // hex color
+  icon: string; // emoji or icon name
   tabCount: number;
   isActive: boolean;
   order: number;
@@ -419,7 +428,11 @@ interface WindowManager {
   setContentBounds(tabId: string, bounds: Rect): Promise<void>;
   setSidebarWidth(width: number): Promise<void>;
   toggleSidebar(): Promise<void>;
-  enterSplitView(tabId1: string, tabId2: string, direction: 'horizontal' | 'vertical'): Promise<void>;
+  enterSplitView(
+    tabId1: string,
+    tabId2: string,
+    direction: 'horizontal' | 'vertical',
+  ): Promise<void>;
   exitSplitView(): Promise<void>;
 
   // Events
@@ -438,7 +451,7 @@ interface NavigationManager {
 // === src/kernel/interfaces/shared.ts ===
 
 interface KernelEvent<T> {
-  subscribe(callback: (data: T) => void): () => void;  // returns unsubscribe fn
+  subscribe(callback: (data: T) => void): () => void; // returns unsubscribe fn
 }
 
 interface Rect {
@@ -551,17 +564,20 @@ Every component follows these rules:
 ### Key Component Details
 
 **`<bb-tab-item>`** -- The most frequently rendered component.
+
 - Properties: `tab: Tab`, `isActive: boolean`, `isDragging: boolean`
 - Renders: favicon (16x16 img), title (truncated via CSS `text-overflow`), close button, audio indicator
 - Events: click (activate), close-button click (close), drag start/end (reorder)
 - Performance: Must handle 100+ instances. Uses `will-change: transform` for drag animations. Tab list uses virtual scrolling if >50 tabs.
 
 **`<bb-omnibar>`** -- The most interactive component.
+
 - Focus management: `⌘+L` focuses. Escape blurs. Enter navigates.
 - Debounced input: calls `kernel.navigation.getSuggestions()` after 150ms idle.
 - Suggestion rendering: `<bb-suggestions-popup>` positioned absolutely below omnibar.
 
 **`<bb-sidebar>`** -- The layout anchor.
+
 - Resizable: drag handle on right edge, persisted width in SessionManager.
 - Collapsible: toggles between full width and 48px icon-only mode.
 - Scrollable: `<bb-tab-list>` overflows with scrollbar; pinned tabs do not scroll.

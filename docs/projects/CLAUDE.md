@@ -24,13 +24,13 @@ docs/projects/<project-name>/
 
 ## Document Types
 
-| Type | When to write | Lifecycle | Example |
-|------|--------------|-----------|---------|
-| specs/ | Before starting a feature | Snapshot: write → implement → archive | `2026-04-09-add-dark-mode/PLAN.md` |
-| wiki/ | Anytime knowledge accumulates | Living: keep up-to-date as project evolves | `rag-pipeline.md`, `deployment-guide.md` |
-| adr/ | When making an architecture decision | Immutable: never delete, only supersede | `001-chose-electron-over-tauri.md` |
-| issues/ | When a bug is discovered | Tracked: pending → processing → completed | `001-tab-crash-on-close.md` |
-| CHANGELOG.md | When shipping a version | Append-only: newest entries at top | — |
+| Type         | When to write                        | Lifecycle                                  | Example                                  |
+| ------------ | ------------------------------------ | ------------------------------------------ | ---------------------------------------- |
+| specs/       | Before starting a feature            | Snapshot: write → implement → archive      | `2026-04-09-add-dark-mode/PLAN.md`       |
+| wiki/        | Anytime knowledge accumulates        | Living: keep up-to-date as project evolves | `rag-pipeline.md`, `deployment-guide.md` |
+| adr/         | When making an architecture decision | Immutable: never delete, only supersede    | `001-chose-electron-over-tauri.md`       |
+| issues/      | When a bug is discovered             | Tracked: pending → processing → completed  | `001-tab-crash-on-close.md`              |
+| CHANGELOG.md | When shipping a version              | Append-only: newest entries at top         | —                                        |
 
 ## Naming Conventions
 
@@ -117,13 +117,16 @@ Follow [Keep a Changelog](https://keepachangelog.com/):
 ## [0.2.0] - 2026-04-10
 
 ### Added
+
 - PDF ingestor with page-range support
 
 ### Fixed
+
 - Empty vault crash on startup
 
 ## [0.1.0] - 2026-04-07
 
 ### Added
+
 - Initial RAG core with local embeddings
 ```

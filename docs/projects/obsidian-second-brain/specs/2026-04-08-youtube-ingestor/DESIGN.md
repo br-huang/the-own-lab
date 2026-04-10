@@ -71,11 +71,11 @@ The requirements specify that YouTube URLs should show different phase text ("Fe
 
 ### Alternatives Considered
 
-| Approach | Pros | Cons |
-|----------|------|------|
-| A: YouTubeIngestor as standalone class, duplicate utilities | Zero changes to UrlIngestor internals | 40 lines of duplicated code |
-| B: YouTubeIngestor receives UrlIngestor, calls public utilities | No duplication, minimal UrlIngestor change | Couples YouTubeIngestor to UrlIngestor |
-| C: Extract utilities to shared module | Clean separation | Larger refactor of UrlIngestor, more files changed |
+| Approach                                                        | Pros                                       | Cons                                               |
+| --------------------------------------------------------------- | ------------------------------------------ | -------------------------------------------------- |
+| A: YouTubeIngestor as standalone class, duplicate utilities     | Zero changes to UrlIngestor internals      | 40 lines of duplicated code                        |
+| B: YouTubeIngestor receives UrlIngestor, calls public utilities | No duplication, minimal UrlIngestor change | Couples YouTubeIngestor to UrlIngestor             |
+| C: Extract utilities to shared module                           | Clean separation                           | Larger refactor of UrlIngestor, more files changed |
 
 **Selected: Approach A** — The utilities are small and stable. Duplication keeps `UrlIngestor` changes to the absolute minimum (only the routing logic, ~5 lines). `YouTubeIngestor` is fully self-contained and testable in isolation. If a third ingestor arrives, we refactor to approach C at that point.
 

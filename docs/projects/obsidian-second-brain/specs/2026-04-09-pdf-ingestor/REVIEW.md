@@ -1,6 +1,7 @@
 # Code Review: PDF Ingestor
 
 ## Summary
+
 - Files reviewed: 4 (`src/ingestor/pdf-ingestor.ts`, `src/ui/ingest-pdf-modal.ts`, `src/main.ts`, `esbuild.config.mjs`)
 - Issues found: 0 critical, 2 warning, 2 info
 - Verdict: **APPROVED**
@@ -46,28 +47,28 @@ None.
 
 ## Checklist Verification
 
-| Requirement | Status |
-|---|---|
-| Command `kb-ingest-pdf` registered | Pass |
-| `IngestPdfModal` shows PDF file list | Pass |
-| Real-time search filter (case-insensitive) | Pass |
-| Empty vault message | Pass |
-| Disable UI during ingestion | Pass |
-| Success message + auto-close 2s | Pass |
-| Error display + re-enable for retry | Pass |
-| `vault.readBinary()` for PDF reading | Pass |
-| Page-by-page text extraction | Pass |
-| Empty pages skipped | Pass |
-| Title from metadata or filename fallback | Pass |
-| Frontmatter fields in correct order | Pass |
-| `## Page N` headings in body | Pass |
-| `slugify` / `resolveFilePath` / `ensureFolder` match existing | Pass |
-| Progress callbacks (phase + per-page) | Pass |
-| All 5 error messages match spec | Pass |
-| `pdfjs-dist` external in esbuild | Pass |
-| Worker disabled (`workerSrc = ""`) | Pass |
-| No changes to existing ingestors or types | Pass |
-| Constructor pattern matches design (`vault`, `getIngestFolder`, `pluginDir`) | Pass |
+| Requirement                                                                  | Status |
+| ---------------------------------------------------------------------------- | ------ |
+| Command `kb-ingest-pdf` registered                                           | Pass   |
+| `IngestPdfModal` shows PDF file list                                         | Pass   |
+| Real-time search filter (case-insensitive)                                   | Pass   |
+| Empty vault message                                                          | Pass   |
+| Disable UI during ingestion                                                  | Pass   |
+| Success message + auto-close 2s                                              | Pass   |
+| Error display + re-enable for retry                                          | Pass   |
+| `vault.readBinary()` for PDF reading                                         | Pass   |
+| Page-by-page text extraction                                                 | Pass   |
+| Empty pages skipped                                                          | Pass   |
+| Title from metadata or filename fallback                                     | Pass   |
+| Frontmatter fields in correct order                                          | Pass   |
+| `## Page N` headings in body                                                 | Pass   |
+| `slugify` / `resolveFilePath` / `ensureFolder` match existing                | Pass   |
+| Progress callbacks (phase + per-page)                                        | Pass   |
+| All 5 error messages match spec                                              | Pass   |
+| `pdfjs-dist` external in esbuild                                             | Pass   |
+| Worker disabled (`workerSrc = ""`)                                           | Pass   |
+| No changes to existing ingestors or types                                    | Pass   |
+| Constructor pattern matches design (`vault`, `getIngestFolder`, `pluginDir`) | Pass   |
 
 ## Verdict
 

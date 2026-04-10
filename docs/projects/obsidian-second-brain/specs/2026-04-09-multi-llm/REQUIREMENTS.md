@@ -10,33 +10,39 @@ while keeping embedding local via Transformers.js (unchanged).
 ## User Stories
 
 ### US-1: Select a Chat Provider
+
 **As a** plugin user,
 **I want to** choose my chat LLM provider from a dropdown in Settings,
 **so that** I can use whichever provider I already have an account with.
 
 **Acceptance Criteria:**
+
 - A "Provider" dropdown appears in the Chat (LLM) settings section.
 - Options: OpenAI, Claude, Gemini, DeepSeek, Ollama.
 - Selecting a provider immediately updates the Model dropdown to show that provider's models.
 - The selected provider is persisted across plugin reloads.
 
 ### US-2: Enter a Provider-Specific API Key
+
 **As a** plugin user,
 **I want to** enter my API key for the selected provider,
 **so that** the plugin can authenticate with that provider's API.
 
 **Acceptance Criteria:**
+
 - An "API Key" password field is shown for OpenAI, Claude, Gemini, and DeepSeek.
 - The field placeholder changes to match the provider (e.g., "sk-ant-..." for Claude).
 - The API Key field is hidden when Ollama is selected.
 - Each provider stores its own API key independently (switching providers does not erase another provider's key).
 
 ### US-3: Select a Model
+
 **As a** plugin user,
 **I want to** choose from a list of models specific to my selected provider,
 **so that** I can pick the model that suits my needs.
 
 **Acceptance Criteria:**
+
 - The Model dropdown is populated based on the selected provider:
   - OpenAI: gpt-4o, gpt-4o-mini
   - Claude: claude-sonnet-4-5, claude-opus-4
@@ -46,32 +52,38 @@ while keeping embedding local via Transformers.js (unchanged).
 - Switching providers resets the model to the first option for that provider.
 
 ### US-4: Configure Ollama Connection
+
 **As a** user running Ollama locally,
 **I want to** specify the Ollama server URL,
 **so that** I can connect to a non-default host or port.
 
 **Acceptance Criteria:**
+
 - When Ollama is selected, an "Ollama URL" text field appears.
 - Default value: `http://localhost:11434`.
 - No API key field is shown for Ollama.
 - The model field is a free-text input (not a dropdown) since Ollama models vary per install.
 
 ### US-5: Stream Chat Responses from Any Provider
+
 **As a** plugin user,
 **I want** chat responses to stream token-by-token regardless of which provider I choose,
 **so that** I get the same responsive UX across all providers.
 
 **Acceptance Criteria:**
+
 - All five providers implement the existing `LLMProvider` interface with streaming `chat()`.
 - Tokens arrive incrementally in the chat view (no waiting for full response).
 - Existing RAG pipeline works unchanged with any provider.
 
 ### US-6: See Provider-Specific Error Messages
+
 **As a** plugin user,
 **I want** clear error messages when something goes wrong with my chosen provider,
 **so that** I can diagnose and fix the issue.
 
 **Acceptance Criteria:**
+
 - Invalid API key: "Invalid {Provider} API key. Please check your settings."
 - Rate limit: "{Provider} rate limit exceeded. Please wait a moment and try again."
 - Ollama connection refused: "Cannot connect to Ollama at {url}. Is Ollama running?"

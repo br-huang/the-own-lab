@@ -20,7 +20,7 @@
 
 ## 1. Project Structure
 
-```
+````
 open-typora/
 ├── src-tauri/                    # Rust / Tauri 2 backend
 │   ├── Cargo.toml
@@ -148,23 +148,23 @@ open-typora/
 │       └── ARCHITECTURE.md        # This document
 ├── LICENSE                        # Apache 2.0
 └── README.md
-```
+````
 
 ### Key Dependency Choices
 
-| Category | Package | Reason |
-|----------|---------|--------|
-| Editor | `@tiptap/core`, `@tiptap/react`, `@tiptap/pm` | ProseMirror wrapper with React integration |
-| Editor extensions | `@tiptap/starter-kit` | Base set (bold, italic, lists, etc.) |
-| Source editor | `@codemirror/view`, `codemirror` | Lightweight source mode with MD highlighting |
-| Math rendering | `katex` | Client-side LaTeX rendering |
-| Code highlighting | `@tiptap/extension-code-block-lowlight`, `lowlight` | Syntax highlighting in code blocks |
-| State | `zustand` | Minimal, TypeScript-friendly, no boilerplate |
-| Styling | `tailwindcss` | Utility-first, works with CSS variables |
-| Rust MD parser | `comrak` | GFM-compatible, mature, configurable |
-| File watcher | `notify` (Rust crate) | Cross-platform fs event watcher |
-| PDF export | `headless_chrome` or `wkhtmltopdf` via CLI | HTML-to-PDF conversion |
-| DOCX export | `docx-rs` (Rust crate) | Pure Rust Word generation |
+| Category          | Package                                             | Reason                                       |
+| ----------------- | --------------------------------------------------- | -------------------------------------------- |
+| Editor            | `@tiptap/core`, `@tiptap/react`, `@tiptap/pm`       | ProseMirror wrapper with React integration   |
+| Editor extensions | `@tiptap/starter-kit`                               | Base set (bold, italic, lists, etc.)         |
+| Source editor     | `@codemirror/view`, `codemirror`                    | Lightweight source mode with MD highlighting |
+| Math rendering    | `katex`                                             | Client-side LaTeX rendering                  |
+| Code highlighting | `@tiptap/extension-code-block-lowlight`, `lowlight` | Syntax highlighting in code blocks           |
+| State             | `zustand`                                           | Minimal, TypeScript-friendly, no boilerplate |
+| Styling           | `tailwindcss`                                       | Utility-first, works with CSS variables      |
+| Rust MD parser    | `comrak`                                            | GFM-compatible, mature, configurable         |
+| File watcher      | `notify` (Rust crate)                               | Cross-platform fs event watcher              |
+| PDF export        | `headless_chrome` or `wkhtmltopdf` via CLI          | HTML-to-PDF conversion                       |
+| DOCX export       | `docx-rs` (Rust crate)                              | Pure Rust Word generation                    |
 
 ---
 
@@ -279,19 +279,19 @@ We use TipTap's extension system. Each markdown construct gets a custom extensio
 ```typescript
 // src/editor/extensions/index.ts
 
-import { StarterKit } from '@tiptap/starter-kit'
-import { MarkdownHeading } from './markdown-heading'
-import { MarkdownCodeBlock } from './markdown-code-block'
-import { MarkdownMathBlock } from './markdown-math-block'
-import { MarkdownMathInline } from './markdown-math-inline'
-import { MarkdownImage } from './markdown-image'
-import { MarkdownTable } from './markdown-table'
-import { MarkdownTaskList } from './markdown-task-list'
-import { MarkdownBlockquote } from './markdown-blockquote'
-import { MarkdownHorizontalRule } from './markdown-horizontal-rule'
-import { MarkdownLink } from './markdown-link'
-import { MarkdownFrontmatter } from './markdown-frontmatter'
-import { MarkdownFootnote } from './markdown-footnote'
+import { StarterKit } from '@tiptap/starter-kit';
+import { MarkdownHeading } from './markdown-heading';
+import { MarkdownCodeBlock } from './markdown-code-block';
+import { MarkdownMathBlock } from './markdown-math-block';
+import { MarkdownMathInline } from './markdown-math-inline';
+import { MarkdownImage } from './markdown-image';
+import { MarkdownTable } from './markdown-table';
+import { MarkdownTaskList } from './markdown-task-list';
+import { MarkdownBlockquote } from './markdown-blockquote';
+import { MarkdownHorizontalRule } from './markdown-horizontal-rule';
+import { MarkdownLink } from './markdown-link';
+import { MarkdownFrontmatter } from './markdown-frontmatter';
+import { MarkdownFootnote } from './markdown-footnote';
 
 export function createExtensions() {
   return [
@@ -303,18 +303,18 @@ export function createExtensions() {
       horizontalRule: false,
     }),
     MarkdownHeading,
-    MarkdownCodeBlock,     // lowlight syntax highlighting
-    MarkdownMathBlock,     // KaTeX block rendering
-    MarkdownMathInline,    // KaTeX inline rendering
-    MarkdownImage,         // Local + remote image handling
-    MarkdownTable,         // GFM tables
-    MarkdownTaskList,      // - [x] style checkboxes
-    MarkdownBlockquote,    // Nested blockquotes
+    MarkdownCodeBlock, // lowlight syntax highlighting
+    MarkdownMathBlock, // KaTeX block rendering
+    MarkdownMathInline, // KaTeX inline rendering
+    MarkdownImage, // Local + remote image handling
+    MarkdownTable, // GFM tables
+    MarkdownTaskList, // - [x] style checkboxes
+    MarkdownBlockquote, // Nested blockquotes
     MarkdownHorizontalRule,
-    MarkdownLink,          // Click-to-follow, edit-on-select
-    MarkdownFrontmatter,   // YAML front matter (collapsed by default)
-    MarkdownFootnote,      // [^1] footnote references
-  ]
+    MarkdownLink, // Click-to-follow, edit-on-select
+    MarkdownFrontmatter, // YAML front matter (collapsed by default)
+    MarkdownFootnote, // [^1] footnote references
+  ];
 }
 ```
 
@@ -332,7 +332,7 @@ import { NodeViewWrapper, NodeViewContent } from '@tiptap/react'
 // React component for the node view
 function HeadingNodeView({ node, editor, getPos, selected }) {
   const isFocused = /* check if cursor is inside this node */
-  
+
   return (
     <NodeViewWrapper>
       {isFocused && (
@@ -374,34 +374,40 @@ The key CSS classes:
 #### 3.2.3 Specific Extension Details
 
 **Code Block** (`markdown-code-block.ts`):
+
 - Uses `lowlight` for syntax highlighting in rendered state.
 - When focused, shows ``` delimiters and language selector.
 - Stores `language` attribute on the node.
 - Tab key inserts spaces (not focus change).
 
 **Math Block** (`markdown-math-block.ts`):
+
 - Node type: `mathBlock` (block-level) with `content: "text*"`.
 - Rendered state: KaTeX renders the LaTeX string.
 - Focused state: Shows raw LaTeX in a monospace textarea.
 - Uses `katex.renderToString()` for the preview.
 
 **Math Inline** (`markdown-math-inline.ts`):
+
 - Node type: `mathInline` (inline, `inline: true, group: "inline"`).
 - Same KaTeX approach but inline.
 - Delimited by single `$...$` in markdown.
 
 **Image** (`markdown-image.ts`):
+
 - Stores: `src`, `alt`, `title` attributes.
 - Local images: `src` is relative path; resolved to absolute via Tauri asset protocol (`asset://localhost/...`).
 - Drag-and-drop / paste: Frontend sends binary to Rust which saves to `./assets/` relative to the document, returns the relative path.
 - Focused state: Shows a popover to edit alt text and path.
 
 **Table** (`markdown-table.ts`):
+
 - Extends `@tiptap/extension-table` + `table-row` + `table-cell` + `table-header`.
 - Adds GFM alignment support (`:---`, `:---:`, `---:`).
 - Toolbar buttons for add/remove row/column.
 
 **Frontmatter** (`markdown-frontmatter.ts`):
+
 - Custom node, `atom: true` (opaque to ProseMirror).
 - Always first node in document.
 - Rendered as collapsed gray bar; click to expand YAML editor.
@@ -409,7 +415,7 @@ The key CSS classes:
 
 #### 3.2.4 Input Rules (Markdown Shortcuts)
 
-```typescript
+````typescript
 // src/editor/input-rules/index.ts
 
 // These let users type markdown syntax and have it auto-convert:
@@ -424,7 +430,7 @@ The key CSS classes:
 // "$$"      -> Math block
 // "$...$"   -> Math inline (on closing $)
 // "| ... |" -> Table (on Enter after header row)
-```
+````
 
 These are implemented using TipTap's `addInputRules()` method on each extension.
 
@@ -444,11 +450,13 @@ Two completely separate editor instances, only one mounted at a time:
 ```
 
 **Toggle flow** (WYSIWYG -> Source):
+
 1. Serialize current ProseMirror doc to markdown (Rust IPC).
 2. Unmount TipTap.
 3. Mount CodeMirror with the markdown string.
 
 **Toggle flow** (Source -> WYSIWYG):
+
 1. Get raw markdown string from CodeMirror.
 2. Parse markdown to ProseMirror JSON (Rust IPC).
 3. Unmount CodeMirror.
@@ -573,7 +581,7 @@ pub fn prosemirror_to_mdnode(json: &serde_json::Value) -> MdNode {
 
 #### 3.3.4 Serialize Pipeline
 
-```rust
+````rust
 // src-tauri/src/markdown/serializer.rs
 
 /// Convert intermediate AST back to a markdown string.
@@ -606,7 +614,7 @@ fn serialize_node(node: &MdNode, out: &mut String, indent: usize) {
         // ... all other node types ...
     }
 }
-```
+````
 
 ### 3.4 Roundtrip Fidelity Strategy
 
@@ -629,30 +637,30 @@ A comprehensive roundtrip test suite (`src-tauri/tests/markdown_roundtrip.rs`) v
 // src/types/file.ts
 
 export interface FileNode {
-  id: string           // SHA-256 of absolute path (stable identifier)
-  name: string         // "README.md"
-  path: string         // Absolute path on disk
-  extension: string    // "md"
-  isDirectory: false
-  size: number         // bytes
-  modifiedAt: number   // Unix timestamp ms
+  id: string; // SHA-256 of absolute path (stable identifier)
+  name: string; // "README.md"
+  path: string; // Absolute path on disk
+  extension: string; // "md"
+  isDirectory: false;
+  size: number; // bytes
+  modifiedAt: number; // Unix timestamp ms
 }
 
 export interface FolderNode {
-  id: string
-  name: string
-  path: string
-  isDirectory: true
-  children: TreeNode[]
-  expanded: boolean    // UI state only (not persisted in Rust)
+  id: string;
+  name: string;
+  path: string;
+  isDirectory: true;
+  children: TreeNode[];
+  expanded: boolean; // UI state only (not persisted in Rust)
 }
 
-export type TreeNode = FileNode | FolderNode
+export type TreeNode = FileNode | FolderNode;
 
 export interface OpenFile {
-  path: string
-  isDirty: boolean
-  lastSavedContent: string   // markdown string at last save
+  path: string;
+  isDirty: boolean;
+  lastSavedContent: string; // markdown string at last save
 }
 ```
 
@@ -718,34 +726,36 @@ Frontend listens via `useFileWatcher` hook:
 
 ```typescript
 // src/hooks/useFileWatcher.ts
-import { listen } from '@tauri-apps/api/event'
+import { listen } from '@tauri-apps/api/event';
 
 export function useFileWatcher() {
   useEffect(() => {
     const unlisten = listen<string[]>('file-changed', (event) => {
-      const paths = event.payload
+      const paths = event.payload;
       // If the currently open file changed externally:
       //   -> Show "file changed on disk" banner
       //   -> Offer to reload
       // If a file in the tree was added/removed:
       //   -> Refresh the file tree
-    })
-    return () => { unlisten.then(fn => fn()) }
-  }, [])
+    });
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, []);
 }
 ```
 
 ### 4.4 File Operations
 
-| Operation | Frontend Action | Rust Command | Notes |
-|-----------|----------------|--------------|-------|
-| Open file | Click in sidebar | `read_file` | Returns raw markdown string |
-| Save file | Ctrl+S / auto-save | `write_file` | Atomic write (temp + rename) |
-| New file | Ctrl+N | `create_file` | Creates on disk immediately |
-| Delete file | Context menu | `delete_file` | Moves to OS trash (not permanent) |
-| Rename file | Context menu / F2 | `rename_file` | Also updates watcher |
-| New folder | Context menu | `create_folder` | |
-| Move file | Drag in sidebar | `move_file` | fs::rename |
+| Operation   | Frontend Action    | Rust Command    | Notes                             |
+| ----------- | ------------------ | --------------- | --------------------------------- |
+| Open file   | Click in sidebar   | `read_file`     | Returns raw markdown string       |
+| Save file   | Ctrl+S / auto-save | `write_file`    | Atomic write (temp + rename)      |
+| New file    | Ctrl+N             | `create_file`   | Creates on disk immediately       |
+| Delete file | Context menu       | `delete_file`   | Moves to OS trash (not permanent) |
+| Rename file | Context menu / F2  | `rename_file`   | Also updates watcher              |
+| New folder  | Context menu       | `create_folder` |                                   |
+| Move file   | Drag in sidebar    | `move_file`     | fs::rename                        |
 
 ### 4.5 Auto-Save
 
@@ -824,7 +834,7 @@ Theme loading:
   --editor-blockquote-border: #ced4da;
   --editor-blockquote-text: #495057;
   --editor-hr: #dee2e6;
-  --editor-syntax: #868e96;       /* markdown syntax tokens */
+  --editor-syntax: #868e96; /* markdown syntax tokens */
   --editor-selection: #d0ebff;
   --editor-cursor: #212529;
   --editor-line-height: 1.75;
@@ -838,7 +848,7 @@ Theme loading:
   /* -- Borders & Shadows -- */
   --border-color: #dee2e6;
   --border-radius: 6px;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 
   /* -- Sidebar -- */
   --sidebar-width: 260px;
@@ -858,7 +868,7 @@ Theme loading:
 /* Open Typora Theme: Dark */
 /* Version: 1.0 */
 
-:root[data-theme="dark"] {
+:root[data-theme='dark'] {
   --bg-primary: #1a1b1e;
   --bg-secondary: #25262b;
   --bg-tertiary: #2c2e33;
@@ -876,6 +886,7 @@ Theme loading:
 ### 5.4 Theme Discovery
 
 Themes are stored in a well-known directory:
+
 - macOS: `~/Library/Application Support/com.open-typora.app/themes/`
 - Linux: `~/.config/open-typora/themes/`
 - Windows: `%APPDATA%\open-typora\themes\`
@@ -892,63 +903,63 @@ The app respects the OS preference by default (`prefers-color-scheme` media quer
 
 ### 6.1 State Ownership Map
 
-| State | Owner | Persistence | Reason |
-|-------|-------|-------------|--------|
-| Document content (ProseMirror doc) | TipTap Editor instance | Auto-saved to disk as markdown | ProseMirror manages its own state; we do not duplicate it |
-| Editor mode (wysiwyg/source) | `editor-store` (Zustand) | Not persisted | Resets to WYSIWYG on file open |
-| Cursor position, selection | TipTap Editor instance | Not persisted | Ephemeral |
-| Undo/redo history | TipTap Editor instance | Not persisted | ProseMirror's built-in history |
-| File tree structure | `file-store` (Zustand) | Refreshed from disk | Source of truth is filesystem |
-| Open files list, active file | `file-store` (Zustand) | Persisted to local config | Restored on app relaunch |
-| Dirty flags per file | `file-store` (Zustand) | Not persisted | Computed from content comparison |
-| Current theme | `theme-store` (Zustand) | Persisted to local config | User preference |
-| Sidebar open/closed | `app-store` (Zustand) | Persisted to local config | UI preference |
-| Sidebar width | `app-store` (Zustand) | Persisted to local config | UI preference |
-| Window size/position | Tauri (Rust) | Tauri persists automatically | Built-in Tauri feature |
-| Recent files/folders | Rust `AppState` | Persisted to config file | Shown in welcome/menu |
+| State                              | Owner                    | Persistence                    | Reason                                                    |
+| ---------------------------------- | ------------------------ | ------------------------------ | --------------------------------------------------------- |
+| Document content (ProseMirror doc) | TipTap Editor instance   | Auto-saved to disk as markdown | ProseMirror manages its own state; we do not duplicate it |
+| Editor mode (wysiwyg/source)       | `editor-store` (Zustand) | Not persisted                  | Resets to WYSIWYG on file open                            |
+| Cursor position, selection         | TipTap Editor instance   | Not persisted                  | Ephemeral                                                 |
+| Undo/redo history                  | TipTap Editor instance   | Not persisted                  | ProseMirror's built-in history                            |
+| File tree structure                | `file-store` (Zustand)   | Refreshed from disk            | Source of truth is filesystem                             |
+| Open files list, active file       | `file-store` (Zustand)   | Persisted to local config      | Restored on app relaunch                                  |
+| Dirty flags per file               | `file-store` (Zustand)   | Not persisted                  | Computed from content comparison                          |
+| Current theme                      | `theme-store` (Zustand)  | Persisted to local config      | User preference                                           |
+| Sidebar open/closed                | `app-store` (Zustand)    | Persisted to local config      | UI preference                                             |
+| Sidebar width                      | `app-store` (Zustand)    | Persisted to local config      | UI preference                                             |
+| Window size/position               | Tauri (Rust)             | Tauri persists automatically   | Built-in Tauri feature                                    |
+| Recent files/folders               | Rust `AppState`          | Persisted to config file       | Shown in welcome/menu                                     |
 
 ### 6.2 Zustand Store Definitions
 
 ```typescript
 // src/stores/editor-store.ts
 interface EditorState {
-  mode: 'wysiwyg' | 'source'
-  setMode: (mode: 'wysiwyg' | 'source') => void
-  wordCount: number
-  charCount: number
-  updateCounts: (wc: number, cc: number) => void
+  mode: 'wysiwyg' | 'source';
+  setMode: (mode: 'wysiwyg' | 'source') => void;
+  wordCount: number;
+  charCount: number;
+  updateCounts: (wc: number, cc: number) => void;
 }
 
 // src/stores/file-store.ts
 interface FileState {
-  rootPath: string | null
-  tree: TreeNode[]
-  openFiles: Map<string, OpenFile>  // path -> OpenFile
-  activeFilePath: string | null
+  rootPath: string | null;
+  tree: TreeNode[];
+  openFiles: Map<string, OpenFile>; // path -> OpenFile
+  activeFilePath: string | null;
 
-  setRootPath: (path: string) => void
-  setTree: (tree: TreeNode[]) => void
-  openFile: (path: string) => void
-  closeFile: (path: string) => void
-  setActiveFile: (path: string) => void
-  markDirty: (path: string) => void
-  markClean: (path: string) => void
+  setRootPath: (path: string) => void;
+  setTree: (tree: TreeNode[]) => void;
+  openFile: (path: string) => void;
+  closeFile: (path: string) => void;
+  setActiveFile: (path: string) => void;
+  markDirty: (path: string) => void;
+  markClean: (path: string) => void;
 }
 
 // src/stores/theme-store.ts
 interface ThemeState {
-  currentTheme: string       // "light" | "dark" | "sepia" | custom name
-  availableThemes: string[]
-  setTheme: (name: string) => void
-  loadThemeList: () => Promise<void>
+  currentTheme: string; // "light" | "dark" | "sepia" | custom name
+  availableThemes: string[];
+  setTheme: (name: string) => void;
+  loadThemeList: () => Promise<void>;
 }
 
 // src/stores/app-store.ts
 interface AppState {
-  sidebarOpen: boolean
-  sidebarWidth: number
-  toggleSidebar: () => void
-  setSidebarWidth: (w: number) => void
+  sidebarOpen: boolean;
+  sidebarWidth: number;
+  toggleSidebar: () => void;
+  setSidebarWidth: (w: number) => void;
 }
 ```
 
@@ -1141,47 +1152,43 @@ pub async fn load_config() -> AppResult<AppConfig>
 
 ### 7.3 Event Catalog (Rust -> Frontend)
 
-| Event Name | Payload | Trigger |
-|------------|---------|---------|
-| `file-changed` | `string[]` (paths) | File modified on disk |
-| `file-created` | `string[]` (paths) | New file detected in watched folder |
-| `file-deleted` | `string[]` (paths) | File removed from watched folder |
-| `export-progress` | `{ percent: number, stage: string }` | During PDF/DOCX export |
-| `menu-action` | `string` (action name) | Native menu item clicked |
+| Event Name        | Payload                              | Trigger                             |
+| ----------------- | ------------------------------------ | ----------------------------------- |
+| `file-changed`    | `string[]` (paths)                   | File modified on disk               |
+| `file-created`    | `string[]` (paths)                   | New file detected in watched folder |
+| `file-deleted`    | `string[]` (paths)                   | File removed from watched folder    |
+| `export-progress` | `{ percent: number, stage: string }` | During PDF/DOCX export              |
+| `menu-action`     | `string` (action name)               | Native menu item clicked            |
 
 ### 7.4 Frontend Service Layer
 
 ```typescript
 // src/services/file-service.ts
-import { invoke } from '@tauri-apps/api/core'
+import { invoke } from '@tauri-apps/api/core';
 
 export const fileService = {
-  readFile: (path: string): Promise<string> =>
-    invoke('read_file', { path }),
+  readFile: (path: string): Promise<string> => invoke('read_file', { path }),
 
   writeFile: (path: string, content: string): Promise<void> =>
     invoke('write_file', { path, content }),
 
-  createFile: (path: string): Promise<void> =>
-    invoke('create_file', { path }),
+  createFile: (path: string): Promise<void> => invoke('create_file', { path }),
 
-  deleteFile: (path: string): Promise<void> =>
-    invoke('delete_file', { path }),
+  deleteFile: (path: string): Promise<void> => invoke('delete_file', { path }),
 
   renameFile: (oldPath: string, newPath: string): Promise<void> =>
     invoke('rename_file', { oldPath, newPath }),
-}
+};
 ```
 
 ```typescript
 // src/services/markdown-service.ts
 export const markdownService = {
-  parse: (markdown: string): Promise<ProseMirrorDoc> =>
-    invoke('parse_markdown', { markdown }),
+  parse: (markdown: string): Promise<ProseMirrorDoc> => invoke('parse_markdown', { markdown }),
 
   serialize: (docJson: ProseMirrorDoc): Promise<string> =>
     invoke('serialize_markdown', { docJson }),
-}
+};
 ```
 
 ---
@@ -1212,6 +1219,7 @@ export const markdownService = {
 **Milestone**: Open a `.md` file, edit it in WYSIWYG mode, save it.
 
 #### Phase 1a: Rust Markdown Pipeline
+
 - Add `comrak` dependency, implement `parser.rs` (markdown string -> MdNode AST)
 - Implement `prosemirror.rs` (MdNode -> ProseMirror JSON, and reverse)
 - Implement `serializer.rs` (MdNode -> markdown string)
@@ -1220,6 +1228,7 @@ export const markdownService = {
 - **Do NOT implement** math, footnotes, front matter, or tables yet
 
 #### Phase 1b: TipTap Editor Setup
+
 - Install TipTap packages, create `createEditor` factory
 - Configure StarterKit (paragraphs, bold, italic, lists, hard break)
 - Create custom `MarkdownHeading` extension with Typora-style reveal (show `#` on focus)
@@ -1232,6 +1241,7 @@ export const markdownService = {
 - Write `editor.css` with base ProseMirror styling
 
 #### Phase 1c: File Open/Save Integration
+
 - Implement `read_file` and `write_file` Rust commands (atomic write)
 - Implement frontend `file-service.ts` and `markdown-service.ts`
 - Wire up: menu "Open File" -> native dialog -> read file -> parse -> load into TipTap
@@ -1249,6 +1259,7 @@ export const markdownService = {
 **Milestone**: Toggle between WYSIWYG and source mode. Browse and manage files in sidebar.
 
 #### Phase 2a: Source Code Mode
+
 - Install CodeMirror 6 packages (`@codemirror/view`, `@codemirror/lang-markdown`)
 - Create `SourceEditor.tsx` component
 - Create `EditorSwitcher.tsx` with mode toggle button (Ctrl+/)
@@ -1256,6 +1267,7 @@ export const markdownService = {
 - Preserve approximate scroll position across toggle
 
 #### Phase 2b: File Tree Sidebar
+
 - Implement `open_folder` and `list_directory` Rust commands
 - Implement `select_folder_dialog` Rust command
 - Build `FileTree.tsx`, `FileTreeItem.tsx` recursive components
@@ -1266,11 +1278,13 @@ export const markdownService = {
 - Implement sidebar toggle (Ctrl+B)
 
 #### Phase 2c: File Watcher
+
 - Add `notify` crate, implement watcher module
 - Emit Tauri events on file changes
 - Frontend `useFileWatcher` hook: refresh tree on create/delete, show banner on external edit of open file
 
 #### Phase 2d: Multi-File Tab Bar (Stretch)
+
 - Tab bar component showing open files
 - Click tab to switch, middle-click to close
 - Dirty dot on unsaved tabs
@@ -1303,6 +1317,7 @@ export const markdownService = {
 **Milestone**: Paste/drag images into editor. Export to PDF, HTML, Word.
 
 #### Phase 4a: Image Management
+
 - Enhance `MarkdownImage` extension: drag-and-drop handler, paste handler
 - Rust command `save_image`: receives binary data, saves to `./assets/` relative to doc
 - Tauri asset protocol configuration for serving local images in webview
@@ -1310,6 +1325,7 @@ export const markdownService = {
 - Image popover on click: alt text, path display, open in system viewer
 
 #### Phase 4b: Export
+
 - Implement `export_html` Rust command: comrak render with theme CSS wrapping
 - Implement `export_pdf` Rust command: HTML -> PDF via headless chromium (`headless_chrome` crate) or print-to-PDF API
 - Implement `export_docx` Rust command via `docx-rs` crate
@@ -1325,6 +1341,7 @@ export const markdownService = {
 **Milestone**: LaTeX math rendering. Full syntax highlighting. Table editing.
 
 #### Phase 5a: Math Formulas
+
 - Install `katex` npm package
 - Implement `MarkdownMathBlock` extension: `$$...$$` blocks, KaTeX rendering when not focused, LaTeX textarea when focused
 - Implement `MarkdownMathInline` extension: `$...$` inline, KaTeX rendering
@@ -1332,23 +1349,27 @@ export const markdownService = {
 - Input rules: `$$` + Enter creates math block
 
 #### Phase 5b: Enhanced Code Blocks
+
 - Full language selector dropdown for code blocks
 - Copy button on code blocks
 - Line numbers (optional, CSS-based)
 - Expand lowlight language list
 
 #### Phase 5c: Table Editing
+
 - Implement `MarkdownTable` extension using `@tiptap/extension-table`
 - Add GFM alignment support
 - Table toolbar: add/remove row/column, alignment buttons
 - Tab key navigation between cells
 
 #### Phase 5d: Remaining Extensions
+
 - `MarkdownFrontmatter`: collapsible YAML block
 - `MarkdownFootnote`: footnote references and definitions
 - `MarkdownTaskList`: checkbox toggling
 
 #### Phase 5e: Polish
+
 - Status bar: word count, character count, line count, cursor position
 - Keyboard shortcuts help dialog
 - Welcome screen when no file is open
@@ -1363,43 +1384,49 @@ export const markdownService = {
 
 ### Phase Summary
 
-| Phase | Duration | Key Milestone |
-|-------|----------|---------------|
-| 0 - Scaffolding | 1 week | App launches with layout shell |
-| 1 - Editor + File I/O | 2 weeks | Open, edit, save markdown files in WYSIWYG mode |
-| 2 - Source Mode + Sidebar | 2 weeks | Full editing workflow with file management |
-| 3 - Themes | 1 week | Light/dark/custom themes |
-| 4 - Images + Export | 2 weeks | Image paste/drag, PDF/HTML/DOCX export |
-| 5 - Math + Polish | 2 weeks | Feature-complete MVP |
-| **Total** | **10 weeks** | |
+| Phase                     | Duration     | Key Milestone                                   |
+| ------------------------- | ------------ | ----------------------------------------------- |
+| 0 - Scaffolding           | 1 week       | App launches with layout shell                  |
+| 1 - Editor + File I/O     | 2 weeks      | Open, edit, save markdown files in WYSIWYG mode |
+| 2 - Source Mode + Sidebar | 2 weeks      | Full editing workflow with file management      |
+| 3 - Themes                | 1 week       | Light/dark/custom themes                        |
+| 4 - Images + Export       | 2 weeks      | Image paste/drag, PDF/HTML/DOCX export          |
+| 5 - Math + Polish         | 2 weeks      | Feature-complete MVP                            |
+| **Total**                 | **10 weeks** |                                                 |
 
 ---
 
 ## Appendix A: Key Design Decisions
 
 ### ADR-001: Rust-Side Markdown Processing
+
 - **Decision**: Markdown parsing and serialization happen in Rust (comrak), not JavaScript.
 - **Rationale**: Single source of truth for parsing rules. The same AST feeds both the editor (via ProseMirror JSON) and export (via HTML/PDF renderers). Avoids maintaining two parsers in two languages.
 - **Trade-off**: Each save/load requires an IPC round-trip. Benchmarks show <5ms for a 100KB document, which is acceptable.
 
 ### ADR-002: Two Separate Editor Instances for WYSIWYG/Source
+
 - **Decision**: WYSIWYG (TipTap) and source mode (CodeMirror 6) are separate components, only one mounted at a time.
 - **Alternative considered**: Single ProseMirror editor with a "raw text" decoration mode. Rejected because ProseMirror's schema enforcement makes raw text editing extremely awkward.
 - **Trade-off**: Cursor position is not preserved across toggles. Scroll position is approximately preserved.
 
 ### ADR-003: Zustand over Redux/Jotai/Context
+
 - **Decision**: Zustand for all frontend state management.
 - **Rationale**: Minimal boilerplate, excellent TypeScript support, no provider wrapping, works well with React 18+ concurrent features. TipTap editor state is NOT in Zustand (TipTap manages its own state); Zustand only holds UI state and file metadata.
 
 ### ADR-004: CSS Variables for Theming (No JS Theme Objects)
+
 - **Decision**: Themes are pure CSS files that override CSS custom properties.
 - **Rationale**: Zero runtime cost for theme switching (no re-render). Users can create themes with just CSS knowledge. Editor content inherits theme via CSS cascade naturally. Third-party theme ecosystem is easy (just drop a `.css` file).
 
 ### ADR-005: Atomic File Writes
+
 - **Decision**: All file saves use write-to-temp-then-rename.
 - **Rationale**: Prevents data loss from crashes or power failure during write. The rename operation is atomic on all target platforms.
 
 ### ADR-006: File Watcher with Debounce
+
 - **Decision**: Use `notify` crate with 200ms debounce.
 - **Rationale**: Detects external edits (e.g., git pull, other editors) without polling. Debounce prevents event flood during batch operations (e.g., git checkout).
 
@@ -1407,19 +1434,19 @@ export const markdownService = {
 
 ## Appendix B: Technology Version Targets
 
-| Technology | Version | Notes |
-|------------|---------|-------|
-| Tauri | 2.x (latest stable) | Tauri 2 for mobile readiness |
-| React | 19.x | Latest stable |
-| TypeScript | 5.x | Strict mode enabled |
-| TipTap | 2.x | ProseMirror wrapper |
-| CodeMirror | 6.x | Source mode editor |
-| Vite | 6.x | Build tool |
-| Tailwind CSS | 4.x | Utility CSS |
-| comrak | 0.x (latest) | GFM markdown parser |
-| notify | 7.x | File system watcher |
-| Rust | 1.8x+ (stable) | Latest stable toolchain |
-| Node.js | 22.x LTS | Build-time only |
+| Technology   | Version             | Notes                        |
+| ------------ | ------------------- | ---------------------------- |
+| Tauri        | 2.x (latest stable) | Tauri 2 for mobile readiness |
+| React        | 19.x                | Latest stable                |
+| TypeScript   | 5.x                 | Strict mode enabled          |
+| TipTap       | 2.x                 | ProseMirror wrapper          |
+| CodeMirror   | 6.x                 | Source mode editor           |
+| Vite         | 6.x                 | Build tool                   |
+| Tailwind CSS | 4.x                 | Utility CSS                  |
+| comrak       | 0.x (latest)        | GFM markdown parser          |
+| notify       | 7.x                 | File system watcher          |
+| Rust         | 1.8x+ (stable)      | Latest stable toolchain      |
+| Node.js      | 22.x LTS            | Build-time only              |
 
 ---
 

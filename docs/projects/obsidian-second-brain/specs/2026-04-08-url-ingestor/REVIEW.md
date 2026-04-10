@@ -1,6 +1,7 @@
 # Code Review: URL Ingestor (Phase 2)
 
 ## Summary
+
 - Files reviewed: 7 (3 new, 4 modified)
 - Issues found: 0 critical, 2 warning, 3 info
 - Verdict: **APPROVED**
@@ -9,15 +10,15 @@
 
 ## Files Reviewed
 
-| File | Type | Lines |
-|---|---|---|
-| `src/ingestor/url-ingestor.ts` | NEW | 191 |
-| `src/ingestor/video-detector.ts` | NEW | 24 |
-| `src/ui/ingest-url-modal.ts` | NEW | 89 |
-| `src/types.ts` | MOD | 90 |
-| `src/settings.ts` | MOD | 101 |
-| `src/ui/chat-view.ts` | MOD | 225 |
-| `src/main.ts` | MOD | 159 |
+| File                             | Type | Lines |
+| -------------------------------- | ---- | ----- |
+| `src/ingestor/url-ingestor.ts`   | NEW  | 191   |
+| `src/ingestor/video-detector.ts` | NEW  | 24    |
+| `src/ui/ingest-url-modal.ts`     | NEW  | 89    |
+| `src/types.ts`                   | MOD  | 90    |
+| `src/settings.ts`                | MOD  | 101   |
+| `src/ui/chat-view.ts`            | MOD  | 225   |
+| `src/main.ts`                    | MOD  | 159   |
 
 ---
 
@@ -30,7 +31,6 @@ None.
 ### Warning (should fix, not blocking)
 
 1. **`src/ingestor/url-ingestor.ts:185`** — `ensureFolder()` silently swallows all `createFolder` errors, not just "folder already exists."
-
    - **Why**: If folder creation fails for a reason other than a race condition (e.g., invalid characters in path on certain OSes, or a file exists with the same name as the desired folder), the error is silently swallowed. The subsequent `vault.create()` call will then fail with an opaque vault error rather than a clear "folder creation failed" message. This makes debugging harder for users who enter an invalid `ingestFolder` path in settings.
    - **Fix**: Check whether the path exists after the catch block, and throw if it still does not:
      ```typescript
@@ -45,7 +45,6 @@ None.
      ```
 
 2. **`src/ui/ingest-url-modal.ts:35-38`** — No URL validation before triggering ingestion.
-
    - **Why**: The modal accepts any non-empty string. If the user types `hello` (not a URL), the ingestor will attempt `requestUrl({ url: "hello" })`, which will fail with a network error. While the error is caught and displayed, the user experience would be better with an immediate "Please enter a valid URL" message rather than waiting for a network timeout.
    - **Fix**: Add a basic URL format check in `doIngest()` before calling `this.ingestor.ingest()`:
      ```typescript
@@ -60,15 +59,12 @@ None.
 ### Info (suggestions for improvement)
 
 1. **`src/ingestor/url-ingestor.ts:117`** — `TurndownService` is instantiated on every call to `htmlToMarkdown()`.
-
    - The service has no mutable state between conversions. It could be created once as a class field to avoid repeated instantiation. This is a negligible performance concern but would be slightly cleaner.
 
 2. **`src/ui/chat-view.ts:111-115`** — `phaseText` map is duplicated between `IngestUrlModal` and `ChatView`.
-
    - Both define identical `Record<IngestPhase, string>` mappings. Consider exporting the map from `url-ingestor.ts` (alongside the `IngestPhase` type) to keep the display strings in one place. Not a correctness issue since both maps are identical.
 
 3. **`src/ingestor/url-ingestor.ts:131`** — YAML frontmatter values containing backslashes are not escaped.
-
    - The `buildFrontmatter()` method escapes double-quote characters in `url`, `title`, and `author` fields, which handles the most common case. However, YAML double-quoted strings also treat backslash as an escape character. A title like `C:\Users\docs` would produce `title: "C:\Users\docs"` which a strict YAML parser would interpret `\U` and `\d` as escape sequences. Real-world likelihood is very low for web article titles, but for completeness, backslashes should also be escaped: `.replace(/\\/g, "\\\\")`.
 
 ---

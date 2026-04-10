@@ -3,6 +3,7 @@
 ## Codebase Analysis
 
 ### Current Architecture
+
 - **`src/llm/provider.ts`** — defines `LLMProvider` interface with `name`, `maxTokens`, and
   `chat(messages, options): AsyncIterable<string>`. Also defines `EmbeddingProvider` (not affected).
 - **`src/llm/openai.ts`** — `OpenAIProvider` implements `LLMProvider`. Uses `openai` SDK with
@@ -18,6 +19,7 @@
   `RagEngine` accepts `LLMProvider` interface (not concrete class) — good.
 
 ### Key Observations
+
 1. `RagEngine` already depends on the `LLMProvider` interface, not the concrete class.
    Swapping providers requires no changes to the RAG pipeline.
 2. `main.ts` types `llmProvider` as `OpenAIProvider` — needs to change to `LLMProvider`.
@@ -54,7 +56,7 @@ optional `apiKey` parameters. This single class serves OpenAI (default base URL)
 A pure function in `src/llm/provider-factory.ts`:
 
 ```typescript
-function createProvider(settings: PluginSettings): LLMProvider
+function createProvider(settings: PluginSettings): LLMProvider;
 ```
 
 Reads `settings.chatProvider` and returns the appropriate instance. Called from
@@ -65,14 +67,14 @@ Reads `settings.chatProvider` and returns the appropriate instance. Called from
 New fields in `PluginSettings`:
 
 ```typescript
-chatProvider: ChatProviderType;  // "openai" | "claude" | "gemini" | "deepseek" | "ollama"
-chatModel: string;               // already exists, reused
+chatProvider: ChatProviderType; // "openai" | "claude" | "gemini" | "deepseek" | "ollama"
+chatModel: string; // already exists, reused
 // Per-provider API keys (independent storage)
-openaiApiKey: string;            // already exists
-anthropicApiKey: string;         // new
-geminiApiKey: string;            // new
-deepseekApiKey: string;          // new
-ollamaUrl: string;               // new, default "http://localhost:11434"
+openaiApiKey: string; // already exists
+anthropicApiKey: string; // new
+geminiApiKey: string; // new
+deepseekApiKey: string; // new
+ollamaUrl: string; // new, default "http://localhost:11434"
 ```
 
 The `chatModel` field is shared — its value changes when the provider changes.
@@ -92,11 +94,11 @@ standard Obsidian pattern — call `this.display()` to rebuild the entire settin
 
 ### Alternatives Considered
 
-| Approach | Pros | Cons |
-|----------|------|------|
-| A: Three classes (OpenAICompatible, Anthropic, Gemini) | Minimal code, reuses openai SDK for 3 providers | Less explicit per-provider customization |
-| B: Five separate classes (one per provider) | Each provider fully independent | Duplicated code for OpenAI/DeepSeek/Ollama |
-| C: Single adapter with strategy pattern | Maximum DRY | Over-abstraction, harder to debug |
+| Approach                                               | Pros                                            | Cons                                       |
+| ------------------------------------------------------ | ----------------------------------------------- | ------------------------------------------ |
+| A: Three classes (OpenAICompatible, Anthropic, Gemini) | Minimal code, reuses openai SDK for 3 providers | Less explicit per-provider customization   |
+| B: Five separate classes (one per provider)            | Each provider fully independent                 | Duplicated code for OpenAI/DeepSeek/Ollama |
+| C: Single adapter with strategy pattern                | Maximum DRY                                     | Over-abstraction, harder to debug          |
 
 **Chosen: Approach A.** DeepSeek and Ollama are documented as OpenAI-compatible APIs.
 Using the same SDK with different baseURL is the intended integration path. This avoids

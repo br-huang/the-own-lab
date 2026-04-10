@@ -152,11 +152,11 @@ rm ~/pg_full_dump.sql
 
 ## 常見問題
 
-| 問題 | 原因 | 解法 |
-|------|------|------|
-| `connection refused` | host/port 設定錯誤 | 確認 Docker port binding |
-| `password authentication failed` | 密碼不一致 | 確認 `.env` 與 `docker compose` 密碼 |
-| `database does not exist` | DB 名稱不對 | 用 `psql -l` 確認實際名稱 |
-| `must be owner of table` | dump 匯入後 owner 是 postgres | 執行上方權限修正步驟 |
-| `Dirty database version N` | migration 失敗中斷 | 清除 dirty flag 後重跑 |
-| `address already in use` | port 被佔用 | 換一個 port (如 5434) |
+| 問題                             | 原因                          | 解法                                 |
+| -------------------------------- | ----------------------------- | ------------------------------------ |
+| `connection refused`             | host/port 設定錯誤            | 確認 Docker port binding             |
+| `password authentication failed` | 密碼不一致                    | 確認 `.env` 與 `docker compose` 密碼 |
+| `database does not exist`        | DB 名稱不對                   | 用 `psql -l` 確認實際名稱            |
+| `must be owner of table`         | dump 匯入後 owner 是 postgres | 執行上方權限修正步驟                 |
+| `Dirty database version N`       | migration 失敗中斷            | 清除 dirty flag 後重跑               |
+| `address already in use`         | port 被佔用                   | 換一個 port (如 5434)                |

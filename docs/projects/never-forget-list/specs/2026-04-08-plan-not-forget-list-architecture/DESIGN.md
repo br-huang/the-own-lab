@@ -53,14 +53,14 @@
 
 ### Data Flow (React Analogy)
 
-| Concept | React | SwiftUI (Our App) |
-|---------|-------|--------------------|
-| Component | `function TaskRow()` | `struct TaskRow: View` |
-| State | `useState` / Redux store | `@Observable` ViewModel |
-| Side effects | `useEffect` | `.task { }` / `.onChange { }` |
-| Props | component props | View init parameters |
-| Context | `useContext` | `@Environment` |
-| API call | `fetch()` / React Query | Repository → `supabase-swift` |
+| Concept           | React                    | SwiftUI (Our App)                             |
+| ----------------- | ------------------------ | --------------------------------------------- |
+| Component         | `function TaskRow()`     | `struct TaskRow: View`                        |
+| State             | `useState` / Redux store | `@Observable` ViewModel                       |
+| Side effects      | `useEffect`              | `.task { }` / `.onChange { }`                 |
+| Props             | component props          | View init parameters                          |
+| Context           | `useContext`             | `@Environment`                                |
+| API call          | `fetch()` / React Query  | Repository → `supabase-swift`                 |
 | Optimistic update | `mutate()` with rollback | Update `@Observable` first, then await server |
 
 ### Client-Server Relationship
@@ -86,12 +86,14 @@ View → ViewModel → Repository → Supabase
 ```
 
 **Pros:**
+
 - Simplest mental model; abundant tutorials and community support
 - Low ceremony — no framework dependency
 - `@Observable` (iOS 17+) eliminates `@Published` boilerplate
 - Easy to test ViewModels in isolation with mock repositories
 
 **Cons:**
+
 - No enforced unidirectional data flow — easy to create spaghetti state if undisciplined
 - Navigation coordination requires a separate Router or Coordinator pattern
 - No built-in side-effect management (developer must establish conventions)
@@ -112,6 +114,7 @@ View → Store.send(Action) → Reducer → Effect → Dependency → Supabase
 ```
 
 **Pros:**
+
 - Very familiar to a React/Redux developer — actions, reducers, selectors, middleware
 - Strict unidirectional data flow prevents state bugs
 - Built-in dependency injection (`@Dependency`) and testing support (`TestStore`)
@@ -119,6 +122,7 @@ View → Store.send(Action) → Reducer → Effect → Dependency → Supabase
 - Active community, well-maintained, frequent updates
 
 **Cons:**
+
 - Steep learning curve for Swift beginners — requires understanding generics, key paths, macros
 - Heavy boilerplate: every feature needs State + Action + Reducer + dependency registration
 - Debugging requires TCA-specific knowledge (e.g., `_printChanges()`)
@@ -142,12 +146,14 @@ Coordinator (navigation)
 ```
 
 **Pros:**
+
 - All MVVM benefits, plus explicit navigation management
 - No external dependency — patterns are conventions in your own code
 - Coordinator pattern maps well to React Router mental model
 - Easy to adopt incrementally; can start simple and add structure as needed
 
 **Cons:**
+
 - Conventions require discipline — no compiler enforcement
 - Coordinator pattern in SwiftUI is less elegant than in UIKit (NavigationPath helps but is limited)
 - More code than bare MVVM, less structure than TCA
@@ -318,6 +324,7 @@ NotForgetList/
 ### Why Local Swift Packages?
 
 Swift Package Manager (SPM) modules provide:
+
 - **Build isolation**: Changes to `NFLCore` models don't recompile UI code
 - **Enforced boundaries**: Views cannot accidentally import Supabase SDK directly
 - **Testability**: Packages have their own test targets, runnable independently
@@ -1229,13 +1236,13 @@ final class TaskListViewModel {
 
 ### In-Memory Caching Strategy
 
-| What | Where | Lifetime | Invalidation |
-|------|-------|----------|-------------|
-| Current list's tasks | `TaskListViewModel.tasks` | While view is mounted | Reload on appear, Realtime updates |
-| Sidebar lists + groups | `SidebarViewModel.lists` | App session | Realtime updates |
-| Tags | `TagViewModel.tags` | App session | Realtime updates |
-| Search results | `SearchViewModel.results` | While search is active | Each new query replaces |
-| Smart list data | `SmartListViewModel.tasks` | While view is mounted | Reload on appear |
+| What                   | Where                      | Lifetime               | Invalidation                       |
+| ---------------------- | -------------------------- | ---------------------- | ---------------------------------- |
+| Current list's tasks   | `TaskListViewModel.tasks`  | While view is mounted  | Reload on appear, Realtime updates |
+| Sidebar lists + groups | `SidebarViewModel.lists`   | App session            | Realtime updates                   |
+| Tags                   | `TagViewModel.tags`        | App session            | Realtime updates                   |
+| Search results         | `SearchViewModel.results`  | While search is active | Each new query replaces            |
+| Smart list data        | `SmartListViewModel.tasks` | While view is mounted  | Reload on appear                   |
 
 There is no shared global cache in Phase 1. Each ViewModel owns its data. If two ViewModels need the same data (e.g., sidebar badge count + list view), a shared `@Observable` service can be introduced.
 
@@ -1297,6 +1304,7 @@ let session = try await SupabaseClientProvider.shared.client.auth.signInAnonymou
 ### macOS
 
 **Navigation Structure:**
+
 ```swift
 // Platform/macOS/MacNavigationView.swift
 NavigationSplitView(columnVisibility: $columnVisibility) {
@@ -1312,6 +1320,7 @@ NavigationSplitView(columnVisibility: $columnVisibility) {
 ```
 
 **macOS-specific features:**
+
 - **Menu bar commands**: File > New Task (Cmd+N), Edit > Find (Cmd+F)
 - **Keyboard shortcuts**: Cmd+1..5 for smart lists, Cmd+Enter to complete task, Delete to soft-delete
 - **Toolbar**: Compact toolbar with search field, view mode picker, new task button
@@ -1321,6 +1330,7 @@ NavigationSplitView(columnVisibility: $columnVisibility) {
 ### iOS
 
 **Navigation Structure:**
+
 ```swift
 // Platform/iOS/iOSNavigationView.swift
 // On iPhone: single column with push navigation
@@ -1339,6 +1349,7 @@ NavigationSplitView {
 ```
 
 **iOS-specific features (by phase):**
+
 - **Phase 1**: Swipe actions on task rows (complete, delete), pull-to-refresh
 - **Phase 2**: Push notifications, deep link handling via `UNUserNotificationCenter`
 - **Phase 4**: Live Activity (ActivityKit), Home Screen Widget (WidgetKit)
@@ -1348,20 +1359,20 @@ NavigationSplitView {
 
 ## 9. Key Technical Decisions
 
-| # | Decision | Choice | Rationale |
-|---|----------|--------|-----------|
-| D-1 | Client architecture | MVVM + Repository | Lowest learning curve for Swift beginner; familiar to React developers (ViewModel = custom hook); no framework dependency; see Section 2 |
-| D-2 | Rich text storage format | Markdown (plain text) | Portable, human-readable, easy to parse. Avoids proprietary JSON document model. The editor renders Markdown live but stores raw Markdown string in the `description` column |
-| D-3 | Rich text editor approach | Bridged `UITextView`/`NSTextView` with `NSAttributedString` | No mature pure-SwiftUI rich text editor exists (Risk R-1). Bridging native text views is well-documented and gives full control over formatting. `MarkdownParser` converts Markdown <-> `NSAttributedString` |
-| D-4 | Sort order implementation | LexoRank (fractional index strings) | Avoids re-indexing all items on every reorder. A single item's `sort_order` is updated. LexoRank strings sort lexicographically: `"a" < "an" < "b"`. Occasional rebalancing needed if space exhausts (rare) |
-| D-5 | Sync strategy | Cloud-first + Supabase Realtime | Supabase Realtime pushes changes via WebSocket. No polling. Phase 5 adds pending-ops queue for offline. LWW conflict resolution (single-user app, acceptable) |
-| D-6 | Local persistence | None (Phases 1-4) | In-memory `@Observable` state only. Simplifies architecture dramatically. Acceptable because the app is cloud-first and the developer is learning Swift — no need to learn CoreData/SwiftData yet |
-| D-7 | Swift concurrency model | `async/await` + `@MainActor` | Modern, maps well to React's `async/await`. All ViewModels are `@MainActor`. Repositories are `Sendable`. No Combine unless needed for debouncing (search) |
-| D-8 | Search implementation | PostgreSQL full-text search via Supabase | GIN index on `title || description`. No local search index needed. Fast enough for < 10K tasks. Debounced at 300ms on client |
-| D-9 | Auth strategy (Phase 1) | Supabase Anonymous Sign-In | Real JWT from day one. RLS works immediately. Account links to Apple ID in Phase 5 without data migration |
-| D-10 | Package manager | Swift Package Manager (SPM) | Only option for local packages in Xcode. CocoaPods/Carthage not needed. External dep: `supabase-swift` via SPM |
-| D-11 | Localization | `.xcstrings` String Catalogs | Native Xcode format (iOS 17+). Supports zh-Hant + en. Compiler warns on missing translations |
-| D-12 | CI/CD | GitHub Actions + xcodebuild | Build and test on every push to main. Xcode Cloud or Fastlane for TestFlight (configured in Phase 1 but not critical path) |
+| #    | Decision                  | Choice                                                      | Rationale                                                                                                                                                                                                    |
+| ---- | ------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --- | ----------------------------------------------------------------------------------------------------- |
+| D-1  | Client architecture       | MVVM + Repository                                           | Lowest learning curve for Swift beginner; familiar to React developers (ViewModel = custom hook); no framework dependency; see Section 2                                                                     |
+| D-2  | Rich text storage format  | Markdown (plain text)                                       | Portable, human-readable, easy to parse. Avoids proprietary JSON document model. The editor renders Markdown live but stores raw Markdown string in the `description` column                                 |
+| D-3  | Rich text editor approach | Bridged `UITextView`/`NSTextView` with `NSAttributedString` | No mature pure-SwiftUI rich text editor exists (Risk R-1). Bridging native text views is well-documented and gives full control over formatting. `MarkdownParser` converts Markdown <-> `NSAttributedString` |
+| D-4  | Sort order implementation | LexoRank (fractional index strings)                         | Avoids re-indexing all items on every reorder. A single item's `sort_order` is updated. LexoRank strings sort lexicographically: `"a" < "an" < "b"`. Occasional rebalancing needed if space exhausts (rare)  |
+| D-5  | Sync strategy             | Cloud-first + Supabase Realtime                             | Supabase Realtime pushes changes via WebSocket. No polling. Phase 5 adds pending-ops queue for offline. LWW conflict resolution (single-user app, acceptable)                                                |
+| D-6  | Local persistence         | None (Phases 1-4)                                           | In-memory `@Observable` state only. Simplifies architecture dramatically. Acceptable because the app is cloud-first and the developer is learning Swift — no need to learn CoreData/SwiftData yet            |
+| D-7  | Swift concurrency model   | `async/await` + `@MainActor`                                | Modern, maps well to React's `async/await`. All ViewModels are `@MainActor`. Repositories are `Sendable`. No Combine unless needed for debouncing (search)                                                   |
+| D-8  | Search implementation     | PostgreSQL full-text search via Supabase                    | GIN index on `title                                                                                                                                                                                          |     | description`. No local search index needed. Fast enough for < 10K tasks. Debounced at 300ms on client |
+| D-9  | Auth strategy (Phase 1)   | Supabase Anonymous Sign-In                                  | Real JWT from day one. RLS works immediately. Account links to Apple ID in Phase 5 without data migration                                                                                                    |
+| D-10 | Package manager           | Swift Package Manager (SPM)                                 | Only option for local packages in Xcode. CocoaPods/Carthage not needed. External dep: `supabase-swift` via SPM                                                                                               |
+| D-11 | Localization              | `.xcstrings` String Catalogs                                | Native Xcode format (iOS 17+). Supports zh-Hant + en. Compiler warns on missing translations                                                                                                                 |
+| D-12 | CI/CD                     | GitHub Actions + xcodebuild                                 | Build and test on every push to main. Xcode Cloud or Fastlane for TestFlight (configured in Phase 1 but not critical path)                                                                                   |
 
 ---
 
@@ -1373,25 +1384,25 @@ Phase 1 delivers a fully functional CRUD task manager with lists, groups, tags, 
 
 ### Modules to Build
 
-| Module | Package | Description |
-|--------|---------|-------------|
-| Models | `NFLCore` | `NFLTask`, `TaskList`, `ListGroup`, `Tag`, `RepeatRule`, `Priority`, `LexoRank` |
+| Module  | Package      | Description                                                                                                                             |
+| ------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Models  | `NFLCore`    | `NFLTask`, `TaskList`, `ListGroup`, `Tag`, `RepeatRule`, `Priority`, `LexoRank`                                                         |
 | Network | `NFLNetwork` | `SupabaseClientProvider`, `TaskRepository`, `ListRepository`, `TagRepository`, `GroupRepository`, `SearchRepository`, `RealtimeManager` |
-| Editor | `NFLEditor` | `MarkdownEditor` (bridged), `MarkdownParser` |
+| Editor  | `NFLEditor`  | `MarkdownEditor` (bridged), `MarkdownParser`                                                                                            |
 
 ### Screens
 
-| # | Screen | Platform | Description |
-|---|--------|----------|-------------|
-| S-1 | Root Navigation Shell | Both | `NavigationSplitView` — sidebar + content + detail (macOS 3-col, iOS 2-col) |
-| S-2 | Sidebar | Both | Lists grouped by group, smart lists (Today/Tomorrow/Upcoming/All/Completed), Tags section |
-| S-3 | Task List | Both | Scrollable list of tasks for selected list/smart list. Supports drag reorder, swipe actions |
-| S-4 | Task Detail | Both | Title, description editor, priority picker, due date picker, tag picker, repeat rule picker |
-| S-5 | New Task Quick Entry | Both | Inline text field at top of task list (like Apple Reminders) + optional popover for details |
-| S-6 | List/Group Management | Both | Create/edit/delete lists and groups. Color picker for list color |
-| S-7 | Tag Management | Both | Create/edit/delete tags. Shown in sidebar and in task detail tag picker |
-| S-8 | Search | Both | Search bar with debounced full-text search. Results as a task list |
-| S-9 | Settings | Both | Locale picker, daily summary toggle (Phase 2 placeholder), about section |
+| #   | Screen                | Platform | Description                                                                                 |
+| --- | --------------------- | -------- | ------------------------------------------------------------------------------------------- |
+| S-1 | Root Navigation Shell | Both     | `NavigationSplitView` — sidebar + content + detail (macOS 3-col, iOS 2-col)                 |
+| S-2 | Sidebar               | Both     | Lists grouped by group, smart lists (Today/Tomorrow/Upcoming/All/Completed), Tags section   |
+| S-3 | Task List             | Both     | Scrollable list of tasks for selected list/smart list. Supports drag reorder, swipe actions |
+| S-4 | Task Detail           | Both     | Title, description editor, priority picker, due date picker, tag picker, repeat rule picker |
+| S-5 | New Task Quick Entry  | Both     | Inline text field at top of task list (like Apple Reminders) + optional popover for details |
+| S-6 | List/Group Management | Both     | Create/edit/delete lists and groups. Color picker for list color                            |
+| S-7 | Tag Management        | Both     | Create/edit/delete tags. Shown in sidebar and in task detail tag picker                     |
+| S-8 | Search                | Both     | Search bar with debounced full-text search. Results as a task list                          |
+| S-9 | Settings              | Both     | Locale picker, daily summary toggle (Phase 2 placeholder), about section                    |
 
 **Total: 9 screens** (some are shared components, not full-screen destinations)
 
@@ -1418,9 +1429,9 @@ Tables created but unused in Phase 1: `reminders`, `kanban_statuses`, `pomodoro_
 
 ### External Dependencies (SPM)
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `supabase-swift` | 2.x | Supabase client (Auth, PostgREST, Realtime, Storage) |
+| Package          | Version | Purpose                                              |
+| ---------------- | ------- | ---------------------------------------------------- |
+| `supabase-swift` | 2.x     | Supabase client (Auth, PostgREST, Realtime, Storage) |
 
 No other external packages. All UI is native SwiftUI.
 
@@ -1451,13 +1462,13 @@ Mapped from REQUIREMENTS.md Section 7:
 
 ## Dependencies and Risks (Phase 1 Specific)
 
-| Risk | Severity | Mitigation |
-|------|----------|------------|
-| Rich text editor spike (R-1) | High | Build `NFLEditor` package first as a standalone spike. If bridging `UITextView`/`NSTextView` proves too complex for a first Swift project, fall back to plain Markdown editing (render on view, edit as raw text). This is ugly but unblocks Phase 1 |
-| LexoRank implementation | Low | Port an existing JS/TS LexoRank library to Swift. Alternatively, use simple midpoint string calculation (`"a"` + `"b"` → `"an"`). Rebalance (reassign all ranks in a list) is a background operation triggered when rank string exceeds 10 characters |
-| Supabase anonymous auth + RLS | Low | Test immediately in Phase 1 setup. If anonymous auth creates friction, fall back to a hardcoded dev-only user UUID with RLS disabled (dev mode only, re-enable before Phase 5) |
-| Swift 6 strict concurrency | Medium | Mark all ViewModels `@MainActor`. Mark all model structs `Sendable`. Repository methods are `async` and non-isolated. If compiler errors become overwhelming, temporarily use `@preconcurrency` import and fix incrementally |
+| Risk                          | Severity | Mitigation                                                                                                                                                                                                                                            |
+| ----------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Rich text editor spike (R-1)  | High     | Build `NFLEditor` package first as a standalone spike. If bridging `UITextView`/`NSTextView` proves too complex for a first Swift project, fall back to plain Markdown editing (render on view, edit as raw text). This is ugly but unblocks Phase 1  |
+| LexoRank implementation       | Low      | Port an existing JS/TS LexoRank library to Swift. Alternatively, use simple midpoint string calculation (`"a"` + `"b"` → `"an"`). Rebalance (reassign all ranks in a list) is a background operation triggered when rank string exceeds 10 characters |
+| Supabase anonymous auth + RLS | Low      | Test immediately in Phase 1 setup. If anonymous auth creates friction, fall back to a hardcoded dev-only user UUID with RLS disabled (dev mode only, re-enable before Phase 5)                                                                        |
+| Swift 6 strict concurrency    | Medium   | Mark all ViewModels `@MainActor`. Mark all model structs `Sendable`. Repository methods are `async` and non-isolated. If compiler errors become overwhelming, temporarily use `@preconcurrency` import and fix incrementally                          |
 
 ---
 
-*End of Design Document*
+_End of Design Document_

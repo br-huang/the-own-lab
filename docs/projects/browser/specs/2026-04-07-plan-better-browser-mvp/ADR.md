@@ -1,6 +1,7 @@
 # ADR-001: Better Browser MVP Architecture — Electron + Web Components with UI Kernel Abstraction
 
 ## Status
+
 Proposed
 
 ## Context
@@ -10,6 +11,7 @@ We are building an open-source browser with Arc-inspired UX (vertical sidebar, w
 The central tension: the user requires >90% Chrome Extension compatibility, but wants rapid MVP delivery. These pull in opposite directions — full extension support requires Chromium-level integration (months of work), while fast delivery favors Electron (weeks).
 
 Industry research shows browser UI can be built with:
+
 1. Native C++/Swift (Arc, Brave, Safari) — best perf, slowest dev
 2. React SPA (Vivaldi, Edge v1) — fastest dev, proven but Edge abandoned it for Web Components
 3. Web Components (Edge v2, Opera One) — Edge proved 42-76% faster than React
@@ -20,6 +22,7 @@ Industry research shows browser UI can be built with:
 **Use Electron with Web Components (Lit) for the MVP, with a UI Kernel abstraction layer that enables future migration to a Chromium fork.**
 
 Specifically:
+
 - **Runtime**: Electron 34+ (Chromium 134+)
 - **UI framework**: Web Components via Lit 3.x (not React)
 - **Extension support**: electron-chrome-extensions library (~70-80% compat)
@@ -32,6 +35,7 @@ The UI Kernel is the key architectural bet: by defining engine-agnostic interfac
 ## Consequences
 
 ### Positive
+
 - Working browser in 6-8 weeks to validate UX hypothesis
 - Web Components + Lit gives modern DX with near-native performance (5KB runtime)
 - UI Kernel abstraction future-proofs the UI investment — no throwaway code
@@ -41,6 +45,7 @@ The UI Kernel is the key architectural bet: by defining engine-agnostic interfac
 - Solo developer can maintain and iterate without C++/Mojo expertise
 
 ### Negative
+
 - Extension compatibility capped at ~70-80% (vs 100% with Chromium fork)
 - Memory baseline ~250-300MB (vs ~100-150MB for native Chromium browser)
 - Electron's process model means each tab is a full renderer process with overhead
@@ -48,6 +53,7 @@ The UI Kernel is the key architectural bet: by defining engine-agnostic interfac
 - electron-chrome-extensions library may be unmaintained or have critical gaps
 
 ### Risks
+
 - **Extension compatibility gap**: uBlock Origin or password managers may not work. **Mitigation**: Test critical extensions in week 1. Define "escape hatch" — headless Chrome for extension execution only, controlled via CDP.
 - **Electron memory with many tabs**: 30+ tabs may consume >3GB. **Mitigation**: Implement tab suspension for background tabs. Set MVP target at 20 active tabs.
 - **WebContentsView instability**: API is newer than deprecated BrowserView. **Mitigation**: Pin Electron version. WebContentsView is the official replacement with stable API surface.
@@ -56,13 +62,13 @@ The UI Kernel is the key architectural bet: by defining engine-agnostic interfac
 
 ## Alternatives Considered
 
-| Option | Pros | Cons | Rejected Because |
-|--------|------|------|------------------|
-| **Chromium fork + Web Components** | 100% extension compat, best perf, cleanest kernel boundary (Mojo) | 16-24 week timeline, C++ expertise required, 50GB+ build, complex rebase on updates | Too slow for solo MVP; UX hypothesis untested for months |
-| **Electron + Chrome via CDP** | 100% extension compat, Electron DX for UI | Two processes (Electron + Chrome), display integration unsolved, double memory, CDP latency | No viable solution for showing Chrome-rendered pages inside Electron window |
-| **Electron + React** | Fastest UI development, largest ecosystem | Edge proved React 42-76% slower than Web Components for browser UI; framework overhead unnecessary | Edge's lesson: React is wrong choice for browser UI |
-| **Tauri v2 + WebView2/WebKit** | Lighter than Electron (~10MB vs ~150MB), Rust backend | No Chrome extension support at all, webview API too limited for browser building, Tauri maintainers explicitly warn against it | Extension support is non-negotiable; webview API insufficient |
-| **Firefox/Gecko fork (like Zen)** | Firefox extension ecosystem, proven by Zen | Different extension ecosystem (not Chrome), XUL/CSS approach limits UI innovation, smaller community | User specifically wants Chrome Web Store compatibility |
+| Option                             | Pros                                                              | Cons                                                                                                                           | Rejected Because                                                            |
+| ---------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
+| **Chromium fork + Web Components** | 100% extension compat, best perf, cleanest kernel boundary (Mojo) | 16-24 week timeline, C++ expertise required, 50GB+ build, complex rebase on updates                                            | Too slow for solo MVP; UX hypothesis untested for months                    |
+| **Electron + Chrome via CDP**      | 100% extension compat, Electron DX for UI                         | Two processes (Electron + Chrome), display integration unsolved, double memory, CDP latency                                    | No viable solution for showing Chrome-rendered pages inside Electron window |
+| **Electron + React**               | Fastest UI development, largest ecosystem                         | Edge proved React 42-76% slower than Web Components for browser UI; framework overhead unnecessary                             | Edge's lesson: React is wrong choice for browser UI                         |
+| **Tauri v2 + WebView2/WebKit**     | Lighter than Electron (~10MB vs ~150MB), Rust backend             | No Chrome extension support at all, webview API too limited for browser building, Tauri maintainers explicitly warn against it | Extension support is non-negotiable; webview API insufficient               |
+| **Firefox/Gecko fork (like Zen)**  | Firefox extension ecosystem, proven by Zen                        | Different extension ecosystem (not Chrome), XUL/CSS approach limits UI innovation, smaller community                           | User specifically wants Chrome Web Store compatibility                      |
 
 ## Implementation Roadmap
 

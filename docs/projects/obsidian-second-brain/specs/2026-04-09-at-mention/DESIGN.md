@@ -3,6 +3,7 @@
 ## Codebase Analysis
 
 ### Existing Patterns and Conventions
+
 - **DOM construction**: All UI uses Obsidian's `createDiv()`, `createEl()` helpers -- no frameworks, no JSX. The `ChatView` class extends `ItemView` and builds its entire DOM tree imperatively in `onOpen()`.
 - **Streaming pattern**: `RagEngine.query()` is an `AsyncGenerator<RagResponse>` yielding `token`, `sources`, and `error` events. The chat view consumes this with `for await...of`. This generator signature must be preserved.
 - **Data storage**: The plugin uses `this.loadData()` / `this.saveData()` on the Plugin class. Currently `loadSettings()` does `Object.assign({}, DEFAULT_SETTINGS, await this.loadData())`, which means the entire data.json IS the settings object. This is important for the chat history storage strategy.
@@ -12,13 +13,14 @@
 - **File access**: The plugin has `this.app.vault` available via `ItemView`. Files are read with `vault.read()` or `vault.cachedRead()`. File listing via `vault.getMarkdownFiles()`.
 
 ### Key Files
-| File | Role | Lines |
-|------|------|-------|
-| `src/ui/chat-view.ts` | Chat UI, message rendering, submit handling | ~235 |
-| `src/core/rag-engine.ts` | Vector search + LLM streaming | ~79 |
-| `src/types.ts` | All shared interfaces | ~88 |
-| `src/main.ts` | Plugin wiring, view registration | ~180 |
-| `styles.css` | All CSS | ~150 |
+
+| File                     | Role                                        | Lines |
+| ------------------------ | ------------------------------------------- | ----- |
+| `src/ui/chat-view.ts`    | Chat UI, message rendering, submit handling | ~235  |
+| `src/core/rag-engine.ts` | Vector search + LLM streaming               | ~79   |
+| `src/types.ts`           | All shared interfaces                       | ~88   |
+| `src/main.ts`            | Plugin wiring, view registration            | ~180  |
+| `styles.css`             | All CSS                                     | ~150  |
 
 ---
 
@@ -31,6 +33,7 @@
 **Input area refactor**: The current `<textarea>` stays. Chips are rendered as inline `<span>` elements inside a wrapper `<div>` that sits above the textarea (a "chip tray" pattern). This avoids the complexity of contentEditable while keeping chips visually associated with the input.
 
 Layout:
+
 ```
 ┌─ .kb-chat-input-area ──────────────────────┐
 │ ┌─ .kb-chat-input-wrapper (relative) ────┐ │
@@ -70,6 +73,7 @@ interface PluginData {
 `loadSettings()` and `saveSettings()` on the Plugin are updated to read/write from `data.settings`. A new pair of methods `loadChatHistory()` / `saveChatHistory()` operate on `data.chatHistory`. On first load after upgrade, if `data.settings` is undefined but `data.openaiApiKey` exists, migrate: treat the entire loaded object as legacy settings.
 
 **ChatView data access**: The Plugin passes two callbacks to ChatView's constructor:
+
 - `loadChatHistory: () => Promise<ChatMessage[]>`
 - `saveChatHistory: (messages: ChatMessage[]) => Promise<void>`
 
@@ -83,13 +87,13 @@ This avoids giving ChatView a reference to the Plugin itself and keeps the depen
 
 ### Alternatives Considered
 
-| Approach | Pros | Cons |
-|----------|------|------|
-| **contentEditable div** for chips inline with text | Chips visually inline with text, feels like Slack | Complex cursor management, cross-browser issues, breaks existing textarea patterns |
-| **Chip tray above textarea** (chosen) | Simple DOM, textarea behavior unchanged, chips clearly separated | Chips not inline with text -- slightly less polished feel |
-| **Separate file for autocomplete** (e.g., `src/ui/autocomplete.ts`) | Better separation of concerns | Over-engineering for ~100 lines of logic; inconsistent with existing single-file pattern |
-| **Separate data.json file** for chat history (via `adapter.write`) | Zero risk to settings | Non-standard in Obsidian plugin ecosystem; requires manual path construction |
-| **Plugin loadData/saveData with wrapper** (chosen) | Standard Obsidian pattern; atomic writes | Requires migration logic for existing settings |
+| Approach                                                            | Pros                                                             | Cons                                                                                     |
+| ------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **contentEditable div** for chips inline with text                  | Chips visually inline with text, feels like Slack                | Complex cursor management, cross-browser issues, breaks existing textarea patterns       |
+| **Chip tray above textarea** (chosen)                               | Simple DOM, textarea behavior unchanged, chips clearly separated | Chips not inline with text -- slightly less polished feel                                |
+| **Separate file for autocomplete** (e.g., `src/ui/autocomplete.ts`) | Better separation of concerns                                    | Over-engineering for ~100 lines of logic; inconsistent with existing single-file pattern |
+| **Separate data.json file** for chat history (via `adapter.write`)  | Zero risk to settings                                            | Non-standard in Obsidian plugin ecosystem; requires manual path construction             |
+| **Plugin loadData/saveData with wrapper** (chosen)                  | Standard Obsidian pattern; atomic writes                         | Requires migration logic for existing settings                                           |
 
 ---
 

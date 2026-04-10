@@ -1,11 +1,13 @@
 # Test Report: Bilibili Ingestor
 
 ## Summary
+
 - Automated tests: none
 - Static/build verification: pass
 - Runtime verification against a live Bilibili URL: not run in this environment
 
 ## Verified
+
 - `npm run build` succeeds after integrating `BilibiliIngestor`.
 - Settings now expose `yt-dlp` command and optional `cookies.txt` path.
 - `UrlIngestor` now routes Bilibili URLs to `BilibiliIngestor`.
@@ -14,6 +16,7 @@
 - Subtitle parsing supports JSON, VTT, and SRT code paths.
 
 ## Not Verified
+
 - A real anonymous Bilibili subtitle extraction flow, because `yt-dlp` is not installed in this
   environment.
 - A real cookies fallback flow against a login-required Bilibili video.

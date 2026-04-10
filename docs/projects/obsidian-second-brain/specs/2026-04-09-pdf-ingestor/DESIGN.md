@@ -14,8 +14,11 @@ Both ingestors duplicate `slugify`, `resolveFilePath`, `ensureFolder`, and `buil
 ### Shared Types (exported from `url-ingestor.ts`)
 
 ```typescript
-type IngestPhase = "fetching" | "extracting" | "saving";
-interface IngestResult { title: string; filePath: string; }
+type IngestPhase = 'fetching' | 'extracting' | 'saving';
+interface IngestResult {
+  title: string;
+  filePath: string;
+}
 type OnProgress = (phase: IngestPhase) => void;
 ```
 
@@ -34,7 +37,7 @@ type OnProgress = (phase: IngestPhase) => void;
 For modules marked external in esbuild, the project uses `require()` with an absolute path:
 
 ```typescript
-const modulePath = path.join(this.pluginDir, "node_modules", "@xenova", "transformers");
+const modulePath = path.join(this.pluginDir, 'node_modules', '@xenova', 'transformers');
 const { pipeline } = require(modulePath);
 ```
 
@@ -84,9 +87,16 @@ User clicks "KB: Ingest PDF"
 `pdfjs-dist` is loaded at runtime via `require()` with an absolute path, identical to the `@xenova/transformers` pattern:
 
 ```typescript
-const pdfjsPath = path.join(this.pluginDir, "node_modules", "pdfjs-dist", "legacy", "build", "pdf.mjs");
+const pdfjsPath = path.join(
+  this.pluginDir,
+  'node_modules',
+  'pdfjs-dist',
+  'legacy',
+  'build',
+  'pdf.mjs',
+);
 const pdfjsLib = require(pdfjsPath);
-pdfjsLib.GlobalWorkerOptions.workerSrc = "";
+pdfjsLib.GlobalWorkerOptions.workerSrc = '';
 ```
 
 We use the `legacy` build because it targets older JS and avoids ESM-only issues in Electron's CJS context. The worker is disabled because Obsidian plugins run in the renderer process and cannot spawn dedicated Web Workers for bundled code.
@@ -105,11 +115,11 @@ The modal uses this to display `"Extracting page X / Y..."`.
 
 ### Alternatives Considered
 
-| Approach | Pros | Cons |
-|----------|------|------|
-| A. Standalone PdfIngestor (chosen) | Follows existing pattern exactly; no refactoring risk; isolated changes | Duplicates slugify/resolveFilePath/ensureFolder again |
-| B. Extract shared base class first | Removes duplication; cleaner long-term | Scope creep; touches UrlIngestor and YouTubeIngestor; increases risk for a feature PR |
-| C. Bundle pdfjs-dist into main.js | No runtime require complexity | Significantly increases bundle size (~1.5 MB); slower plugin load |
+| Approach                           | Pros                                                                    | Cons                                                                                  |
+| ---------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| A. Standalone PdfIngestor (chosen) | Follows existing pattern exactly; no refactoring risk; isolated changes | Duplicates slugify/resolveFilePath/ensureFolder again                                 |
+| B. Extract shared base class first | Removes duplication; cleaner long-term                                  | Scope creep; touches UrlIngestor and YouTubeIngestor; increases risk for a feature PR |
+| C. Bundle pdfjs-dist into main.js  | No runtime require complexity                                           | Significantly increases bundle size (~1.5 MB); slower plugin load                     |
 
 **Decision:** Approach A. Duplication is explicitly accepted by the requirements. Shared utility extraction is a separate follow-up.
 

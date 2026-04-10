@@ -75,18 +75,18 @@ All shared TypeScript interfaces live in a single file. This keeps imports clean
 
 export interface PluginSettings {
   openaiApiKey: string;
-  chatModel: string;           // default: "gpt-4o"
-  embeddingModel: string;      // default: "text-embedding-3-small"
-  topK: number;                // default: 5
-  embeddingBatchSize: number;  // default: 20
-  chunkSize: number;           // default: 500 (in tokens)
-  chunkOverlap: number;        // default: 50 (in tokens)
+  chatModel: string; // default: "gpt-4o"
+  embeddingModel: string; // default: "text-embedding-3-small"
+  topK: number; // default: 5
+  embeddingBatchSize: number; // default: 20
+  chunkSize: number; // default: 500 (in tokens)
+  chunkOverlap: number; // default: 50 (in tokens)
 }
 
 export const DEFAULT_SETTINGS: PluginSettings = {
-  openaiApiKey: "",
-  chatModel: "gpt-4o",
-  embeddingModel: "text-embedding-3-small",
+  openaiApiKey: '',
+  chatModel: 'gpt-4o',
+  embeddingModel: 'text-embedding-3-small',
   topK: 5,
   embeddingBatchSize: 20,
   chunkSize: 500,
@@ -110,7 +110,7 @@ export interface Chunk {
 // ─── Vector Store ───
 
 export interface VectorChunk {
-  id: string;              // deterministic: `${filePath}::${chunkIndex}`
+  id: string; // deterministic: `${filePath}::${chunkIndex}`
   text: string;
   filePath: string;
   fileTitle: string;
@@ -121,13 +121,13 @@ export interface VectorChunk {
 // ─── LLM ───
 
 export interface Message {
-  role: "system" | "user" | "assistant";
+  role: 'system' | 'user' | 'assistant';
   content: string;
 }
 
 export interface ChatOptions {
-  temperature?: number;    // default: 0.3
-  maxTokens?: number;      // default: 1024
+  temperature?: number; // default: 0.3
+  maxTokens?: number; // default: 1024
 }
 
 // ─── RAG ───
@@ -135,21 +135,21 @@ export interface ChatOptions {
 export interface SourceReference {
   filePath: string;
   fileTitle: string;
-  chunkText: string;       // first 200 chars for preview
+  chunkText: string; // first 200 chars for preview
 }
 
 export interface RagResponseToken {
-  type: "token";
+  type: 'token';
   token: string;
 }
 
 export interface RagResponseSources {
-  type: "sources";
+  type: 'sources';
   sources: SourceReference[];
 }
 
 export interface RagResponseError {
-  type: "error";
+  type: 'error';
   message: string;
 }
 
@@ -158,7 +158,7 @@ export type RagResponse = RagResponseToken | RagResponseSources | RagResponseErr
 // ─── Indexer ───
 
 export interface FileHashManifest {
-  [filePath: string]: string;  // filePath → MD5 hash of content
+  [filePath: string]: string; // filePath → MD5 hash of content
 }
 ```
 
@@ -178,7 +178,7 @@ export default class ObsidianKBPlugin extends Plugin {
   vaultIndexer: VaultIndexer;
   ragEngine: RagEngine;
 
-  async onload(): Promise<void>;   // init everything
+  async onload(): Promise<void>; // init everything
   async onunload(): Promise<void>; // cleanup
   async loadSettings(): Promise<void>;
   async saveSettings(): Promise<void>;
@@ -186,6 +186,7 @@ export default class ObsidianKBPlugin extends Plugin {
 ```
 
 **Responsibilities**:
+
 - Load settings, instantiate `OpenAIProvider`, `VectorStore`, `VaultIndexer`, `RagEngine`
 - Register the `ChatView` view type
 - Register ribbon icon and command to open chat
@@ -196,6 +197,7 @@ export default class ObsidianKBPlugin extends Plugin {
 **Dependencies**: All other modules (this is the composition root).
 
 **Design decisions**:
+
 - Module instantiation order: settings -> LLMProvider -> VectorStore -> VaultIndexer -> RagEngine -> ChatView
 - All modules receive their dependencies via constructor injection (no global singletons)
 - The `Plugin` instance is passed to modules that need Obsidian API access (vault, workspace)
@@ -243,14 +245,10 @@ export interface LLMProvider {
 
 ```typescript
 export class OpenAIProvider implements LLMProvider {
-  readonly name = "openai";
+  readonly name = 'openai';
   readonly maxTokens: number;
 
-  constructor(
-    apiKey: string,
-    chatModel: string,
-    embeddingModel: string,
-  );
+  constructor(apiKey: string, chatModel: string, embeddingModel: string);
 
   async *chat(messages: Message[], options?: ChatOptions): AsyncIterable<string>;
   async embed(texts: string[]): Promise<number[][]>;
@@ -258,6 +256,7 @@ export class OpenAIProvider implements LLMProvider {
 ```
 
 **Internal design**:
+
 - Uses the official `openai` npm package (`new OpenAI({ apiKey, dangerouslyAllowBrowser: true })`)
 - `chat()` calls `openai.chat.completions.create({ stream: true })` and yields delta tokens
 - `embed()` calls `openai.embeddings.create({ input: texts, model })` and returns the vector array
@@ -277,8 +276,8 @@ export class OpenAIProvider implements LLMProvider {
 ```typescript
 export function chunk(
   content: string,
-  metadata: Omit<ChunkMetadata, "chunkIndex">,
-  options?: { chunkSize?: number; chunkOverlap?: number }
+  metadata: Omit<ChunkMetadata, 'chunkIndex'>,
+  options?: { chunkSize?: number; chunkOverlap?: number },
 ): Chunk[];
 
 // Internal helper, exported for testing
@@ -330,6 +329,7 @@ export class VectorStore {
 **LanceDB table creation strategy**: On first call to `initialize()`, if the table does not exist, we create it by inserting a single dummy record and immediately deleting it. This is necessary because LanceDB requires at least one record to infer the schema (including the vector dimension). The alternative — specifying the schema via Apache Arrow — adds complexity. Instead, we will use LanceDB's `createTable(name, data)` overload which infers the schema from the first record. We create a proper first record during the first real `upsert()` call. To handle the "table does not exist yet" case, `initialize()` will simply connect to the DB, and `upsert()` will create the table on first use if it does not exist.
 
 **Revised approach for table creation**:
+
 - `initialize()` connects to the DB and attempts to open table `"chunks"`. If it does not exist, it sets an internal flag `tableReady = false`.
 - `upsert()` checks `tableReady`. If false and data is available, it calls `db.createTable("chunks", data)` which creates the table and inserts the first batch. Subsequent calls use `table.add(data)`.
 - `query()` and `delete()` return empty results / no-op if `tableReady` is false.
@@ -345,7 +345,7 @@ export class VectorStore {
 ```typescript
 export class VaultIndexer {
   constructor(
-    vault: Vault,             // Obsidian Vault API
+    vault: Vault, // Obsidian Vault API
     vectorStore: VectorStore,
     llmProvider: LLMProvider,
     settings: PluginSettings,
@@ -361,6 +361,7 @@ export class VaultIndexer {
 **Internal design**:
 
 **File hash manifest**:
+
 - Stored as JSON at `{vaultPath}/.obsidian-kb/manifest.json`
 - Structure: `{ [filePath: string]: string }` where the value is an MD5 hex hash of the file content
 - On `initialIndex()`, for each `.md` file: compute hash, compare with manifest. Skip if unchanged.
@@ -371,6 +372,7 @@ export class VaultIndexer {
 **Hashing**: Use Node.js `crypto.createHash('md5').update(content).digest('hex')`. MD5 is fine here — it is used for change detection, not security.
 
 **`initialIndex()` flow**:
+
 1. Load manifest from disk (or create empty `{}`).
 2. List all `.md` files via `vault.getMarkdownFiles()`.
 3. Filter out files in `.obsidian/` and `.obsidian-kb/` directories.
@@ -389,6 +391,7 @@ export class VaultIndexer {
 8. Update status bar: `"KB: X notes indexed"`.
 
 **`watchForChanges()` flow**:
+
 - Register `vault.on('modify', callback)`, `vault.on('create', callback)`, `vault.on('delete', callback)`.
 - Store the event references for cleanup in `destroy()`.
 - On modify/create: debounce by 2 seconds (avoid re-indexing on every keystroke), then re-index the single file (read, hash, chunk, embed, upsert, update manifest).
@@ -407,11 +410,7 @@ export class VaultIndexer {
 
 ```typescript
 export class RagEngine {
-  constructor(
-    vectorStore: VectorStore,
-    llmProvider: LLMProvider,
-    settings: PluginSettings,
-  );
+  constructor(vectorStore: VectorStore, llmProvider: LLMProvider, settings: PluginSettings);
 
   async *query(userQuestion: string): AsyncGenerator<RagResponse>;
 }
@@ -424,6 +423,7 @@ export class RagEngine {
 3. **Embed question**: `const [embedding] = await llmProvider.embed([userQuestion])`.
 4. **Vector search**: `const results = await vectorStore.query(embedding, settings.topK)`.
 5. **Assemble context**: Build a context string from results:
+
    ```
    [Source: Note Title (path/to/note.md)]
    chunk text here...
@@ -431,6 +431,7 @@ export class RagEngine {
    [Source: Another Note (path/to/other.md)]
    chunk text here...
    ```
+
 6. **Build messages**: Construct the message array:
    - System message: instructs the LLM to answer based only on provided context, cite sources by note title, and say "I don't have enough information" if the context is insufficient.
    - User message: `"Context:\n{context}\n\nQuestion: {userQuestion}"`
@@ -456,14 +457,14 @@ say "I don't have enough information in your notes to answer this question."
 **Public API**:
 
 ```typescript
-export const CHAT_VIEW_TYPE = "obsidian-kb-chat";
+export const CHAT_VIEW_TYPE = 'obsidian-kb-chat';
 
 export class ChatView extends ItemView {
   constructor(leaf: WorkspaceLeaf, ragEngine: RagEngine, app: App);
 
-  getViewType(): string;       // returns CHAT_VIEW_TYPE
-  getDisplayText(): string;    // returns "KB Chat"
-  getIcon(): string;           // returns "message-square"
+  getViewType(): string; // returns CHAT_VIEW_TYPE
+  getDisplayText(): string; // returns "KB Chat"
+  getIcon(): string; // returns "message-square"
   async onOpen(): Promise<void>;
   async onClose(): Promise<void>;
 }
@@ -474,11 +475,10 @@ export class ChatView extends ItemView {
 The UI is built using plain DOM manipulation (not React/Svelte). This keeps the dependency tree small and aligns with how most Obsidian community plugins work.
 
 **DOM structure**:
+
 ```html
 <div class="kb-chat-container">
-  <div class="kb-chat-messages">
-    <\!-- message bubbles rendered here -->
-  </div>
+  <div class="kb-chat-messages"><\!-- message bubbles rendered here --></div>
   <div class="kb-chat-input-area">
     <textarea class="kb-chat-input" placeholder="Ask about your notes..."></textarea>
     <button class="kb-chat-send">Send</button>
@@ -487,6 +487,7 @@ The UI is built using plain DOM manipulation (not React/Svelte). This keeps the 
 ```
 
 **Message rendering**:
+
 - User messages: plain text in a styled bubble.
 - Assistant messages: rendered as Markdown using `MarkdownRenderer.render()` from the Obsidian API. This handles bold, italic, lists, code blocks, etc.
 - Source references: rendered as clickable `<a>` elements below the assistant message. Clicking opens the file via `app.workspace.openLinkText(filePath, "")`.
@@ -494,12 +495,14 @@ The UI is built using plain DOM manipulation (not React/Svelte). This keeps the 
 - Loading state: an animated ellipsis (`...`) shown while waiting for the first token.
 
 **Event handling**:
+
 - Enter (without Shift) submits the message.
 - Shift+Enter inserts a newline.
 - During streaming: input and send button are disabled.
 - After streaming completes: re-enable input, scroll to bottom, focus input.
 
 **Streaming integration**:
+
 ```typescript
 private async handleSubmit(question: string): Promise<void> {
   this.setInputEnabled(false);
@@ -584,6 +587,7 @@ private async handleSubmit(question: string): Promise<void> {
 **Risk**: If the native binary fails to load (ABI mismatch), the plugin will not work.
 
 **Mitigation**:
+
 - Test the plugin against Obsidian's exact Electron version during development.
 - LanceDB uses N-API (version-agnostic), which reduces ABI breakage risk.
 - Document the minimum Obsidian version requirement.
@@ -645,21 +649,21 @@ private async handleSubmit(question: string): Promise<void> {
 
 ### Production Dependencies
 
-| Package | Version | Purpose |
-|---------|---------|---------|
+| Package            | Version   | Purpose                                    |
+| ------------------ | --------- | ------------------------------------------ |
 | `@lancedb/lancedb` | `^0.27.0` | Local vector database with native bindings |
-| `apache-arrow` | `^18.0.0` | Required peer dependency of LanceDB |
-| `openai` | `^4.80.0` | OpenAI API SDK for chat and embedding |
+| `apache-arrow`     | `^18.0.0` | Required peer dependency of LanceDB        |
+| `openai`           | `^4.80.0` | OpenAI API SDK for chat and embedding      |
 
 ### Dev Dependencies
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `obsidian` | `^1.7.0` | Obsidian API type definitions (not bundled) |
-| `typescript` | `^5.5.0` | TypeScript compiler |
-| `esbuild` | `^0.24.0` | JavaScript bundler |
-| `@types/node` | `^20.0.0` | Node.js type definitions |
-| `tslib` | `^2.8.0` | TypeScript runtime helpers |
+| Package       | Version   | Purpose                                     |
+| ------------- | --------- | ------------------------------------------- |
+| `obsidian`    | `^1.7.0`  | Obsidian API type definitions (not bundled) |
+| `typescript`  | `^5.5.0`  | TypeScript compiler                         |
+| `esbuild`     | `^0.24.0` | JavaScript bundler                          |
+| `@types/node` | `^20.0.0` | Node.js type definitions                    |
+| `tslib`       | `^2.8.0`  | TypeScript runtime helpers                  |
 
 ### Notes on Bundling
 
@@ -720,6 +724,7 @@ private async handleSubmit(question: string): Promise<void> {
 **Severity**: High (plugin will not load at all).
 
 **Mitigation**:
+
 - LanceDB uses N-API (Node-API), which provides ABI stability across Node.js versions. This means the same binary works across Node 18, 20, 22, etc.
 - Test early: the first implementation step should be a "hello world" that imports LanceDB and creates a table inside Obsidian.
 - Fallback plan: if LanceDB native bindings fail, evaluate `vectordb` (the older LanceDB package) or fall back to a pure-JS vector store using `hnswlib-node` or even a brute-force in-memory search for MVP (acceptable for vaults under 1000 notes).
@@ -729,6 +734,7 @@ private async handleSubmit(question: string): Promise<void> {
 **Severity**: Medium (plugin may load slowly or hit Obsidian's timeout).
 
 **Mitigation**:
+
 - Keep `@lancedb/lancedb` and `apache-arrow` external (not bundled).
 - The OpenAI SDK bundles to ~200KB after tree-shaking, which is acceptable.
 - Measure `main.js` size after each implementation step. Target: under 500KB for the bundled JS.
@@ -738,6 +744,7 @@ private async handleSubmit(question: string): Promise<void> {
 **Severity**: Medium (user pays per token).
 
 **Mitigation**:
+
 - File hash manifest ensures files are only re-embedded when their content changes.
 - Status bar shows indexing progress so users know what is happening.
 - Batch size and delay are configurable so users can tune for their API tier.
@@ -747,6 +754,7 @@ private async handleSubmit(question: string): Promise<void> {
 **Severity**: Medium (UI freezes).
 
 **Mitigation**:
+
 - All I/O is async (file reading, API calls, LanceDB operations).
 - Batching with inter-batch delays (`await sleep(200)`) yields control back to the event loop between batches.
 - The chunker is synchronous but operates on single files (fast — sub-millisecond for a typical note).
@@ -762,6 +770,7 @@ private async handleSubmit(question: string): Promise<void> {
 **Severity**: Low (data inconsistency in vector store).
 
 **Mitigation**:
+
 - Debounce modify events by 2 seconds per file path.
 - Use a processing queue (simple `Promise` chain) to ensure file indexing operations do not run concurrently for the same file.
 - Delete events are processed immediately (no debounce needed).
@@ -772,28 +781,28 @@ private async handleSubmit(question: string): Promise<void> {
 
 ### Vector Database Choice
 
-| Approach | Pros | Cons |
-|----------|------|------|
-| **LanceDB (chosen)** | Local, embedded, good search performance, columnar storage, active development | Native binary dependency, Electron compatibility risk |
-| `hnswlib-node` | Proven HNSW implementation, lighter | Also native binary, less feature-rich, manual persistence |
-| Pure JS (brute force) | Zero native deps, guaranteed compatibility | O(n) search, impractical beyond ~5000 chunks |
-| SQLite + pgvector-style extension | Well-understood, battle-tested | No good vector extension for embedded SQLite in Node.js |
+| Approach                          | Pros                                                                           | Cons                                                      |
+| --------------------------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------- |
+| **LanceDB (chosen)**              | Local, embedded, good search performance, columnar storage, active development | Native binary dependency, Electron compatibility risk     |
+| `hnswlib-node`                    | Proven HNSW implementation, lighter                                            | Also native binary, less feature-rich, manual persistence |
+| Pure JS (brute force)             | Zero native deps, guaranteed compatibility                                     | O(n) search, impractical beyond ~5000 chunks              |
+| SQLite + pgvector-style extension | Well-understood, battle-tested                                                 | No good vector extension for embedded SQLite in Node.js   |
 
 ### UI Framework
 
-| Approach | Pros | Cons |
-|----------|------|------|
-| **Plain DOM (chosen)** | Small bundle, no conflicts, standard Obsidian approach | More verbose code for complex UIs |
-| React | Component model, ecosystem | Large bundle, potential conflicts with Obsidian DOM |
-| Svelte | Small bundle, reactive | Build complexity, less common in Obsidian plugins |
+| Approach               | Pros                                                   | Cons                                                |
+| ---------------------- | ------------------------------------------------------ | --------------------------------------------------- |
+| **Plain DOM (chosen)** | Small bundle, no conflicts, standard Obsidian approach | More verbose code for complex UIs                   |
+| React                  | Component model, ecosystem                             | Large bundle, potential conflicts with Obsidian DOM |
+| Svelte                 | Small bundle, reactive                                 | Build complexity, less common in Obsidian plugins   |
 
 ### Token Counting
 
-| Approach | Pros | Cons |
-|----------|------|------|
+| Approach                        | Pros                            | Cons                                          |
+| ------------------------------- | ------------------------------- | --------------------------------------------- |
 | **Char approximation (chosen)** | Zero dependencies, fast, simple | ~10-15% inaccuracy for English, worse for CJK |
-| `tiktoken` WASM | Exact counts | +2MB bundle, WASM loading issues in Electron |
-| `gpt-tokenizer` | Pure JS, exact | +500KB bundle, slower than approximation |
+| `tiktoken` WASM                 | Exact counts                    | +2MB bundle, WASM loading issues in Electron  |
+| `gpt-tokenizer`                 | Pure JS, exact                  | +500KB bundle, slower than approximation      |
 
 ---
 

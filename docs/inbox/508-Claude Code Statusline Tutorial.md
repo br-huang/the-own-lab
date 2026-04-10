@@ -40,12 +40,12 @@ echo "$input" | jq .
 
 實務上最常用的資訊通常有：
 
-| 資訊 | 用途 |
-|------|------|
-| `model.display_name` | 顯示目前使用的模型 |
-| `session_id` | 標記當前 session |
-| `workspace.current_dir` | 顯示目前專案路徑 |
-| `transcript_path` | 讀取對話紀錄，做 context 分析或抓最後 prompt |
+| 資訊                    | 用途                                         |
+| ----------------------- | -------------------------------------------- |
+| `model.display_name`    | 顯示目前使用的模型                           |
+| `session_id`            | 標記當前 session                             |
+| `workspace.current_dir` | 顯示目前專案路徑                             |
+| `transcript_path`       | 讀取對話紀錄，做 context 分析或抓最後 prompt |
 
 不同版本欄位可能略有差異，所以最穩的做法是先把整份輸入存下來觀察。
 

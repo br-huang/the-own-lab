@@ -110,10 +110,10 @@ All types live in `src/types/docs.ts`.
 ### Content Collection Schema (`src/content/config.ts`)
 
 ```typescript
-import { defineCollection, z } from "astro:content";
+import { defineCollection, z } from 'astro:content';
 
 const docsCollection = defineCollection({
-  type: "content",
+  type: 'content',
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
@@ -161,13 +161,13 @@ export interface MetaConfig {
 Example `_meta.ts`:
 
 ```typescript
-import type { MetaConfig } from "@/types/docs";
+import type { MetaConfig } from '@/types/docs';
 
 export default {
-  label: "Algorithms",
+  label: 'Algorithms',
   items: {
-    "binary-search": { title: "Binary Search", order: 1 },
-    "merge-sort": { title: "Merge Sort", order: 2 },
+    'binary-search': { title: 'Binary Search', order: 1 },
+    'merge-sort': { title: 'Merge Sort', order: 2 },
   },
 } satisfies MetaConfig;
 ```
@@ -180,7 +180,7 @@ export default {
 // src/types/docs.ts
 
 export interface SidebarLink {
-  kind: "link";
+  kind: 'link';
   title: string;
   href: string;
   order: number;
@@ -189,7 +189,7 @@ export interface SidebarLink {
 }
 
 export interface SidebarSection {
-  kind: "section";
+  kind: 'section';
   title: string;
   order: number;
   children: SidebarNode[];
@@ -208,14 +208,14 @@ export interface CodePlaygroundProps {
   /** Sandpack file map. Key is filename (e.g., "/App.tsx"), value is code string. */
   files: Record<string, string>;
   /** Sandpack template. Default: "react-ts" */
-  template?: "react-ts" | "react" | "vanilla-ts" | "vanilla";
+  template?: 'react-ts' | 'react' | 'vanilla-ts' | 'vanilla';
   /** Show preview pane. Default: true */
   showPreview?: boolean;
 }
 
 // ParamDemo
 export interface ParamDef {
-  type: "number" | "boolean" | "select";
+  type: 'number' | 'boolean' | 'select';
   default: number | boolean | string;
   /** For number type */
   min?: number;
@@ -305,11 +305,13 @@ export interface AlgoVisualizerProps {
 ```
 
 **Title resolution priority** (highest to lowest):
+
 1. `_meta.ts` items[slug].title
 2. Frontmatter `title`
 3. Filename converted from kebab-case to Title Case
 
 **Order resolution priority** (highest to lowest):
+
 1. `_meta.ts` items[slug].order
 2. Frontmatter `order`
 3. `Infinity` (sorts to end; then alphabetical as tiebreaker)
@@ -338,23 +340,23 @@ export interface AlgoVisualizerProps {
 
 ### Astro Components (server-rendered, zero JS)
 
-| Component | Responsibility | Why Astro |
-|---|---|---|
-| `DocsLayout.astro` | Three-column page shell (sidebar, content, TOC) | Pure layout — no interactivity needed |
-| `Sidebar.astro` | Renders the full sidebar tree | Static at build time — active state is known per-page |
-| `SidebarSection.astro` | Recursive section renderer with nesting | Composition pattern for tree structure |
-| `Pagination.astro` | Previous/Next links | Static links — no JS needed |
+| Component              | Responsibility                                  | Why Astro                                             |
+| ---------------------- | ----------------------------------------------- | ----------------------------------------------------- |
+| `DocsLayout.astro`     | Three-column page shell (sidebar, content, TOC) | Pure layout — no interactivity needed                 |
+| `Sidebar.astro`        | Renders the full sidebar tree                   | Static at build time — active state is known per-page |
+| `SidebarSection.astro` | Recursive section renderer with nesting         | Composition pattern for tree structure                |
+| `Pagination.astro`     | Previous/Next links                             | Static links — no JS needed                           |
 
 ### React Components (hydrated islands)
 
-| Component | Hydration | Why React |
-|---|---|---|
+| Component             | Hydration        | Why React                                                |
+| --------------------- | ---------------- | -------------------------------------------------------- |
 | `TableOfContents.tsx` | `client:visible` | Needs IntersectionObserver for scroll-spy active heading |
-| `Search.tsx` | `client:visible` | Pagefind UI is JS-only; must not block initial render |
-| `MobileNav.tsx` | `client:visible` | Toggle visibility of sidebar/TOC on mobile viewports |
-| `CodePlayground.tsx` | `client:visible` | Sandpack is a React-only library |
-| `ParamDemo.tsx` | `client:visible` | Real-time state updates for parameter controls |
-| `AlgoVisualizer.tsx` | `client:visible` | Stateful step navigation with play/pause |
+| `Search.tsx`          | `client:visible` | Pagefind UI is JS-only; must not block initial render    |
+| `MobileNav.tsx`       | `client:visible` | Toggle visibility of sidebar/TOC on mobile viewports     |
+| `CodePlayground.tsx`  | `client:visible` | Sandpack is a React-only library                         |
+| `ParamDemo.tsx`       | `client:visible` | Real-time state updates for parameter controls           |
+| `AlgoVisualizer.tsx`  | `client:visible` | Stateful step navigation with play/pause                 |
 
 **Decision**: `client:visible` everywhere. No component in this system requires `client:load` because none are above the fold in a way that demands immediate hydration. Pagefind search is in the sidebar/header which may be above the fold, but the search input can be a static HTML element that triggers Pagefind lazy-load on focus/click — this is handled inside `Search.tsx`.
 
@@ -363,7 +365,7 @@ export interface AlgoVisualizerProps {
 Both `ParamDemo` and `AlgoVisualizer` use a render prop (children-as-function) pattern. In MDX, this looks like:
 
 ```mdx
-<ParamDemo params={{ n: { type: "number", default: 5, min: 1, max: 20 } }} client:visible>
+<ParamDemo params={{ n: { type: 'number', default: 5, min: 1, max: 20 } }} client:visible>
   {(values) => <MyVisualization n={values.n} />}
 </ParamDemo>
 ```
@@ -372,7 +374,9 @@ Both `ParamDemo` and `AlgoVisualizer` use a render prop (children-as-function) p
 
 ```mdx
 export const BinarySearchViz = ({ data, index }) => (
-  <div>Step {index}: comparing {data.target} with {data.current}</div>
+  <div>
+    Step {index}: comparing {data.target} with {data.current}
+  </div>
 );
 
 <AlgoVisualizer steps={binarySearchSteps} client:visible>
@@ -452,15 +456,15 @@ If testing reveals that inline function children do not work in MDX, the fallbac
 
 ### Alternatives Considered
 
-| Decision | Alternative | Why Not |
-|----------|------------|---------|
-| `_meta.ts` per folder | Single `sidebar.config.ts` at root | Per-folder keeps config co-located with content; easier for authors to maintain |
-| `_meta.ts` per folder | YAML/JSON frontmatter only | Cannot configure folder labels or ordering without a separate config |
-| Render prop for ParamDemo/AlgoVisualizer | Fixed internal canvas | Render prop lets each page define its own visualization; more flexible, no wasted abstraction |
-| `steps` array for AlgoVisualizer | Generator function | Generators add complexity (iterator protocol, reset semantics); arrays are simpler and cover all planned use cases |
-| Pagefind | Algolia DocSearch | Pagefind is fully static, zero-cost, no external service dependency; Algolia requires an account and network calls |
-| Sandpack | StackBlitz WebContainers | Sandpack is lighter weight and React-native; WebContainers are more powerful but heavier and not needed for TS/JS demos |
-| Tailwind CSS | Vanilla CSS / CSS Modules | Tailwind accelerates Phase 1 development; it is explicitly temporary and will be replaced in Phase 3 |
+| Decision                                 | Alternative                        | Why Not                                                                                                                 |
+| ---------------------------------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `_meta.ts` per folder                    | Single `sidebar.config.ts` at root | Per-folder keeps config co-located with content; easier for authors to maintain                                         |
+| `_meta.ts` per folder                    | YAML/JSON frontmatter only         | Cannot configure folder labels or ordering without a separate config                                                    |
+| Render prop for ParamDemo/AlgoVisualizer | Fixed internal canvas              | Render prop lets each page define its own visualization; more flexible, no wasted abstraction                           |
+| `steps` array for AlgoVisualizer         | Generator function                 | Generators add complexity (iterator protocol, reset semantics); arrays are simpler and cover all planned use cases      |
+| Pagefind                                 | Algolia DocSearch                  | Pagefind is fully static, zero-cost, no external service dependency; Algolia requires an account and network calls      |
+| Sandpack                                 | StackBlitz WebContainers           | Sandpack is lighter weight and React-native; WebContainers are more powerful but heavier and not needed for TS/JS demos |
+| Tailwind CSS                             | Vanilla CSS / CSS Modules          | Tailwind accelerates Phase 1 development; it is explicitly temporary and will be replaced in Phase 3                    |
 
 ---
 
@@ -468,24 +472,24 @@ If testing reveals that inline function children do not work in MDX, the fallbac
 
 ### Runtime Dependencies
 
-| Package | Version Constraint | Purpose |
-|---|---|---|
-| `astro` | `^5.0` | Core framework |
-| `@astrojs/mdx` | `^4.0` | MDX integration for Astro |
-| `@astrojs/react` | `^4.0` | React integration for islands |
-| `@astrojs/tailwind` | `^6.0` | Tailwind integration |
-| `react` | `^19.0` | React runtime for islands |
-| `react-dom` | `^19.0` | React DOM renderer |
-| `@codesandbox/sandpack-react` | `^2.0` | Code playground component |
-| `tailwindcss` | `^4.0` | Utility-first CSS |
+| Package                       | Version Constraint | Purpose                       |
+| ----------------------------- | ------------------ | ----------------------------- |
+| `astro`                       | `^5.0`             | Core framework                |
+| `@astrojs/mdx`                | `^4.0`             | MDX integration for Astro     |
+| `@astrojs/react`              | `^4.0`             | React integration for islands |
+| `@astrojs/tailwind`           | `^6.0`             | Tailwind integration          |
+| `react`                       | `^19.0`            | React runtime for islands     |
+| `react-dom`                   | `^19.0`            | React DOM renderer            |
+| `@codesandbox/sandpack-react` | `^2.0`             | Code playground component     |
+| `tailwindcss`                 | `^4.0`             | Utility-first CSS             |
 
 ### Dev Dependencies
 
-| Package | Version Constraint | Purpose |
-|---|---|---|
-| `typescript` | `^5.5` | Type checking |
-| `pagefind` | `^1.0` | Static search indexing (runs post-build) |
-| `@tailwindcss/typography` | `^0.5` | Prose styling for MDX content |
+| Package                   | Version Constraint | Purpose                                  |
+| ------------------------- | ------------------ | ---------------------------------------- |
+| `typescript`              | `^5.5`             | Type checking                            |
+| `pagefind`                | `^1.0`             | Static search indexing (runs post-build) |
+| `@tailwindcss/typography` | `^0.5`             | Prose styling for MDX content            |
 
 ### No Adapter Needed (Tentative)
 
@@ -504,10 +508,12 @@ All constraints use `^` (compatible) ranges pinned to the current major version.
 **Severity**: Medium
 **Description**: The render prop pattern (`children` as a function) may not work in all MDX configurations. Some MDX compilers treat JSX children as static content, not as JavaScript expressions.
 **Mitigation**: During implementation Step 1, test a minimal MDX file with a function-as-children pattern. If it fails, switch to a named prop pattern:
+
 ```tsx
 // Instead of: <ParamDemo>{(values) => <Viz {...values} />}</ParamDemo>
 // Use:        <ParamDemo render={(values) => <Viz {...values} />} />
 ```
+
 This is a one-line change in the component interface. The design accommodates both approaches.
 
 ### Risk 2: `_meta.ts` Files Processed by Content Collections
@@ -554,9 +560,9 @@ This design is scoped to Phase 1. The following decisions are explicitly deferre
 
 ## Summary of Resolved Open Questions
 
-| Question | Resolution | Impact on Design |
-|----------|-----------|-----------------|
-| `_meta.ts` supports `label` for folder display name | Yes — `label` key at top level of MetaConfig | MetaConfig interface has both `label` and `items` |
-| AlgoVisualizer: `steps` array vs generator | `steps` array | AlgoVisualizerProps.steps is `AlgoStep[]`, not a generator |
-| ParamDemo output rendering | Children/render prop pattern | ParamDemoProps.children is a function receiving current values |
-| Pagefind build integration | Single combined `build` script | package.json `build` = `astro build && pagefind --site dist` |
+| Question                                            | Resolution                                   | Impact on Design                                               |
+| --------------------------------------------------- | -------------------------------------------- | -------------------------------------------------------------- |
+| `_meta.ts` supports `label` for folder display name | Yes — `label` key at top level of MetaConfig | MetaConfig interface has both `label` and `items`              |
+| AlgoVisualizer: `steps` array vs generator          | `steps` array                                | AlgoVisualizerProps.steps is `AlgoStep[]`, not a generator     |
+| ParamDemo output rendering                          | Children/render prop pattern                 | ParamDemoProps.children is a function receiving current values |
+| Pagefind build integration                          | Single combined `build` script               | package.json `build` = `astro build && pagefind --site dist`   |

@@ -16,13 +16,15 @@
 #### 1a. Imports and constants
 
 ```typescript
-import { Vault, requestUrl } from "obsidian";
-import { IngestPhase, IngestResult, OnProgress } from "./url-ingestor";
+import { Vault, requestUrl } from 'obsidian';
+import { IngestPhase, IngestResult, OnProgress } from './url-ingestor';
 ```
 
 Define a constant for the User-Agent string:
+
 ```typescript
-const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+const USER_AGENT =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 ```
 
 #### 1b. Class structure and constructor
@@ -253,8 +255,9 @@ async ingest(url: string, onProgress?: OnProgress): Promise<IngestResult> {
 #### 2a. Add import at the top of the file
 
 After the existing imports (line 4), add:
+
 ```typescript
-import { YouTubeIngestor } from "./youtube-ingestor";
+import { YouTubeIngestor } from './youtube-ingestor';
 ```
 
 #### 2b. Replace the video provider block
@@ -262,16 +265,16 @@ import { YouTubeIngestor } from "./youtube-ingestor";
 Replace lines 26-31 (the `if (videoProvider)` block) with:
 
 ```typescript
-    const videoProvider = detectVideoProvider(url);
-    if (videoProvider === "youtube") {
-      const ytIngestor = new YouTubeIngestor(this.vault, this.getIngestFolder);
-      return ytIngestor.ingest(url, onProgress);
-    }
-    if (videoProvider === "bilibili") {
-      throw new Error(
-        "Bilibili ingestion is not yet supported. This will be available in a future update."
-      );
-    }
+const videoProvider = detectVideoProvider(url);
+if (videoProvider === 'youtube') {
+  const ytIngestor = new YouTubeIngestor(this.vault, this.getIngestFolder);
+  return ytIngestor.ingest(url, onProgress);
+}
+if (videoProvider === 'bilibili') {
+  throw new Error(
+    'Bilibili ingestion is not yet supported. This will be available in a future update.',
+  );
+}
 ```
 
 - **Do NOT**: Change anything else in this file. Do not modify `fetchHtml`, `extractArticle`, `buildFrontmatter`, `slugify`, `resolveFilePath`, `ensureFolder`, or any other method.
@@ -287,19 +290,20 @@ Replace lines 26-31 (the `if (videoProvider)` block) with:
 #### 3a. Modify `src/ui/chat-view.ts`
 
 Add import at the top (after existing imports):
+
 ```typescript
-import { detectVideoProvider } from "../ingestor/video-detector";
+import { detectVideoProvider } from '../ingestor/video-detector';
 ```
 
 In the `handleUrlIngest` method (around line 111), replace the `phaseText` constant with:
 
 ```typescript
-    const isYouTube = detectVideoProvider(url) === "youtube";
-    const phaseText: Record<IngestPhase, string> = {
-      fetching: isYouTube ? "Fetching video info..." : "Fetching page...",
-      extracting: isYouTube ? "Extracting transcript..." : "Extracting content...",
-      saving: "Saving note...",
-    };
+const isYouTube = detectVideoProvider(url) === 'youtube';
+const phaseText: Record<IngestPhase, string> = {
+  fetching: isYouTube ? 'Fetching video info...' : 'Fetching page...',
+  extracting: isYouTube ? 'Extracting transcript...' : 'Extracting content...',
+  saving: 'Saving note...',
+};
 ```
 
 - **Do NOT**: Change anything else in this file.
@@ -307,19 +311,20 @@ In the `handleUrlIngest` method (around line 111), replace the `phaseText` const
 #### 3b. Modify `src/ui/ingest-url-modal.ts`
 
 Add import at the top (after existing imports):
+
 ```typescript
-import { detectVideoProvider } from "../ingestor/video-detector";
+import { detectVideoProvider } from '../ingestor/video-detector';
 ```
 
 The module-level `PHASE_TEXT` constant (lines 4-8) is used inside `doIngest`. Change the `doIngest` method to compute phase text locally instead. Inside `doIngest`, after the URL validation block and before the `try` block (around line 73), add:
 
 ```typescript
-    const isYouTube = detectVideoProvider(trimmed) === "youtube";
-    const phaseText: Record<IngestPhase, string> = {
-      fetching: isYouTube ? "Fetching video info..." : "Fetching page...",
-      extracting: isYouTube ? "Extracting transcript..." : "Extracting content...",
-      saving: "Saving note...",
-    };
+const isYouTube = detectVideoProvider(trimmed) === 'youtube';
+const phaseText: Record<IngestPhase, string> = {
+  fetching: isYouTube ? 'Fetching video info...' : 'Fetching page...',
+  extracting: isYouTube ? 'Extracting transcript...' : 'Extracting content...',
+  saving: 'Saving note...',
+};
 ```
 
 Then change the `onProgress` callback (line 79) from `PHASE_TEXT[phase]` to `phaseText[phase]`.

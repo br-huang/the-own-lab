@@ -30,9 +30,9 @@
 **Imports:**
 
 ```typescript
-import { Vault, TFile } from "obsidian";
-import * as path from "path";
-import { IngestPhase, IngestResult, OnProgress } from "./url-ingestor";
+import { Vault, TFile } from 'obsidian';
+import * as path from 'path';
+import { IngestPhase, IngestResult, OnProgress } from './url-ingestor';
 ```
 
 **Class signature:**
@@ -56,8 +56,9 @@ export class PdfIngestor {
 **`ingest()` method — implement in this exact order:**
 
 1. **Read PDF binary:**
+
    ```typescript
-   onProgress?.("fetching");
+   onProgress?.('fetching');
    let arrayBuffer: ArrayBuffer;
    try {
      arrayBuffer = await this.vault.readBinary(file);
@@ -67,8 +68,9 @@ export class PdfIngestor {
    ```
 
 2. **Load pdfjs-dist and parse document:**
+
    ```typescript
-   onProgress?.("extracting");
+   onProgress?.('extracting');
    const pdfjsLib = this.loadPdfjs();
 
    let pdfDocument: any;
@@ -76,27 +78,32 @@ export class PdfIngestor {
      const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
      pdfDocument = await loadingTask.promise;
    } catch (err: any) {
-     if (err?.name === "PasswordException") {
-       throw new Error("This PDF is password-protected and cannot be ingested.");
+     if (err?.name === 'PasswordException') {
+       throw new Error('This PDF is password-protected and cannot be ingested.');
      }
      throw new Error(`Failed to parse PDF: ${(err as Error).message}`);
    }
    ```
 
 3. **Resolve title:**
+
    ```typescript
    let title: string;
    try {
      const metadata = await pdfDocument.getMetadata();
-     title = metadata?.info?.Title && typeof metadata.info.Title === "string" && metadata.info.Title.trim()
-       ? metadata.info.Title.trim()
-       : file.basename;  // TFile.basename is filename without extension
+     title =
+       metadata?.info?.Title &&
+       typeof metadata.info.Title === 'string' &&
+       metadata.info.Title.trim()
+         ? metadata.info.Title.trim()
+         : file.basename; // TFile.basename is filename without extension
    } catch {
      title = file.basename;
    }
    ```
 
 4. **Extract text page by page:**
+
    ```typescript
    const totalPages: number = pdfDocument.numPages;
    const pages: Array<{ pageNum: number; text: string }> = [];
@@ -107,7 +114,7 @@ export class PdfIngestor {
      const content = await page.getTextContent();
      const text = content.items
        .map((item: any) => item.str)
-       .join(" ")
+       .join(' ')
        .trim();
      if (text.length > 0) {
        pages.push({ pageNum: i, text });
@@ -116,32 +123,32 @@ export class PdfIngestor {
 
    if (pages.length === 0) {
      throw new Error(
-       "No text content found. This PDF may be a scanned image and cannot be ingested without OCR."
+       'No text content found. This PDF may be a scanned image and cannot be ingested without OCR.',
      );
    }
    ```
 
 5. **Build markdown content:**
+
    ```typescript
    const frontmatter = this.buildFrontmatter({
-     url: file.path,   // vault-relative path
+     url: file.path, // vault-relative path
      title,
-     sourceType: "pdf",
+     sourceType: 'pdf',
      pages: totalPages,
      ingestedAt: new Date().toISOString(),
    });
 
-   const body = pages
-     .map((p) => `## Page ${p.pageNum}\n\n${p.text}`)
-     .join("\n\n");
+   const body = pages.map((p) => `## Page ${p.pageNum}\n\n${p.text}`).join('\n\n');
 
-   const fullContent = frontmatter + "\n" + body;
+   const fullContent = frontmatter + '\n' + body;
    ```
 
 6. **Save note:**
+
    ```typescript
-   onProgress?.("saving");
-   const folder = this.getIngestFolder() || "Ingested";
+   onProgress?.('saving');
+   const folder = this.getIngestFolder() || 'Ingested';
    await this.ensureFolder(folder);
    const slug = this.slugify(title);
    const filePath = await this.resolveFilePath(folder, slug);
@@ -212,9 +219,9 @@ Note: field order matches requirements: `url`, `title`, `source_type`, `pages`, 
 **Imports:**
 
 ```typescript
-import { App, Modal, TFile } from "obsidian";
-import { PdfIngestor } from "../ingestor/pdf-ingestor";
-import { IngestPhase } from "../ingestor/url-ingestor";
+import { App, Modal, TFile } from 'obsidian';
+import { PdfIngestor } from '../ingestor/pdf-ingestor';
+import { IngestPhase } from '../ingestor/url-ingestor';
 ```
 
 **Class signature:**
@@ -238,41 +245,39 @@ export class IngestPdfModal extends Modal {
 2. Add heading: `contentEl.createEl("h3", { text: "Ingest PDF" })`.
 3. Get all PDF files:
    ```typescript
-   this.pdfFiles = this.app.vault.getFiles().filter(
-     (f) => f.extension === "pdf"
-   );
+   this.pdfFiles = this.app.vault.getFiles().filter((f) => f.extension === 'pdf');
    ```
 4. If no PDFs found, show message and return early:
    ```typescript
    if (this.pdfFiles.length === 0) {
-     contentEl.createEl("p", { text: "No PDF files found in your Vault." });
+     contentEl.createEl('p', { text: 'No PDF files found in your Vault.' });
      return;
    }
    ```
 5. Create search input:
    ```typescript
-   this.searchInput = contentEl.createEl("input", {
-     type: "text",
-     placeholder: "Search PDF files...",
-     cls: "kb-ingest-pdf-search",
+   this.searchInput = contentEl.createEl('input', {
+     type: 'text',
+     placeholder: 'Search PDF files...',
+     cls: 'kb-ingest-pdf-search',
    });
-   this.searchInput.style.width = "100%";
-   this.searchInput.style.marginBottom = "8px";
-   this.searchInput.addEventListener("input", () => this.renderList());
+   this.searchInput.style.width = '100%';
+   this.searchInput.style.marginBottom = '8px';
+   this.searchInput.addEventListener('input', () => this.renderList());
    this.searchInput.focus();
    ```
 6. Create scrollable list container:
    ```typescript
-   this.listEl = contentEl.createDiv({ cls: "kb-ingest-pdf-list" });
-   this.listEl.style.maxHeight = "300px";
-   this.listEl.style.overflowY = "auto";
-   this.listEl.style.border = "1px solid var(--background-modifier-border)";
-   this.listEl.style.borderRadius = "4px";
+   this.listEl = contentEl.createDiv({ cls: 'kb-ingest-pdf-list' });
+   this.listEl.style.maxHeight = '300px';
+   this.listEl.style.overflowY = 'auto';
+   this.listEl.style.border = '1px solid var(--background-modifier-border)';
+   this.listEl.style.borderRadius = '4px';
    ```
 7. Create status element (hidden initially):
    ```typescript
-   this.statusEl = contentEl.createDiv({ cls: "kb-ingest-status" });
-   this.statusEl.style.marginTop = "12px";
+   this.statusEl = contentEl.createDiv({ cls: 'kb-ingest-status' });
+   this.statusEl.style.marginTop = '12px';
    this.statusEl.hide();
    ```
 8. Call `this.renderList()` to populate initially.
@@ -374,31 +379,31 @@ private async doIngest(file: TFile): Promise<void> {
 - **Action**: Add imports, field, instantiation, and command registration.
 
 1. **Add imports** (after line 12, the `IngestUrlModal` import):
+
    ```typescript
-   import { PdfIngestor } from "./ingestor/pdf-ingestor";
-   import { IngestPdfModal } from "./ui/ingest-pdf-modal";
+   import { PdfIngestor } from './ingestor/pdf-ingestor';
+   import { IngestPdfModal } from './ui/ingest-pdf-modal';
    ```
 
 2. **Add private field** (after line 22, the `private urlIngestor\!: UrlIngestor;` line):
+
    ```typescript
    private pdfIngestor\!: PdfIngestor;
    ```
 
 3. **Instantiate PdfIngestor** in `onload()` (after the `this.urlIngestor = new UrlIngestor(...)` block, around line 73):
+
    ```typescript
-   this.pdfIngestor = new PdfIngestor(
-     this.app.vault,
-     () => this.settings.ingestFolder,
-     pluginDir,
-   );
+   this.pdfIngestor = new PdfIngestor(this.app.vault, () => this.settings.ingestFolder, pluginDir);
    ```
+
    Note: `pluginDir` is already computed on lines 44-46. The new instantiation must come after that line.
 
 4. **Register command** (after the `kb-ingest-url` command block, around line 97):
    ```typescript
    this.addCommand({
-     id: "kb-ingest-pdf",
-     name: "KB: Ingest PDF",
+     id: 'kb-ingest-pdf',
+     name: 'KB: Ingest PDF',
      callback: () => {
        new IngestPdfModal(this.app, this.pdfIngestor).open();
      },

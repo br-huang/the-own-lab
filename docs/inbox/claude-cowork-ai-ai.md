@@ -1,9 +1,9 @@
 ---
-url: "https://www.youtube.com/watch?v=_cVTzXvb7xs"
-title: "Claude Cowork 最友善的手把手教學！你還在叫 AI 幫你想答案？但高手們都已經在用 AI 交成品了 ~"
-channel: "PAPAYA 電腦教室"
-source_type: "youtube"
-ingested_at: "2026-04-08T16:16:19.960Z"
+url: 'https://www.youtube.com/watch?v=_cVTzXvb7xs'
+title: 'Claude Cowork 最友善的手把手教學！你還在叫 AI 幫你想答案？但高手們都已經在用 AI 交成品了 ~'
+channel: 'PAPAYA 電腦教室'
+source_type: 'youtube'
+ingested_at: '2026-04-08T16:16:19.960Z'
 ---
 
 # Claude Cowork 最友善的手把手教學！你還在叫 AI 幫你想答案？但高手們都已經在用 AI 交成品了 ~

@@ -108,11 +108,11 @@ As a developer, I want the ingestor to detect YouTube and Bilibili URLs and disp
 
 The following new source files are expected (implementation decisions left to the architect, but the module boundaries are required by these specs):
 
-| File | Responsibility |
-|---|---|
-| `src/ingestor/url-ingestor.ts` | Core ingestion logic: fetch, extract, convert, save |
-| `src/ingestor/video-detector.ts` | `detectVideoProvider()` function |
-| `src/ui/ingest-url-modal.ts` | `IngestUrlModal` — command palette modal UI |
+| File                             | Responsibility                                      |
+| -------------------------------- | --------------------------------------------------- |
+| `src/ingestor/url-ingestor.ts`   | Core ingestion logic: fetch, extract, convert, save |
+| `src/ingestor/video-detector.ts` | `detectVideoProvider()` function                    |
+| `src/ui/ingest-url-modal.ts`     | `IngestUrlModal` — command palette modal UI         |
 
 `ChatView` is modified (not replaced) to add URL detection logic.
 `PluginSettings` / `DEFAULT_SETTINGS` in `src/types.ts` gains `ingestFolder`.

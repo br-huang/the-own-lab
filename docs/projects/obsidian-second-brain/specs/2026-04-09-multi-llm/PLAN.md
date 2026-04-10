@@ -34,30 +34,30 @@
 ```typescript
 // ─── LLM Provider Config ───
 
-export type ChatProviderType = "openai" | "claude" | "gemini" | "deepseek" | "ollama";
+export type ChatProviderType = 'openai' | 'claude' | 'gemini' | 'deepseek' | 'ollama';
 
 export const CHAT_PROVIDER_LABELS: Record<ChatProviderType, string> = {
-  openai: "OpenAI",
-  claude: "Claude (Anthropic)",
-  gemini: "Gemini (Google)",
-  deepseek: "DeepSeek",
-  ollama: "Ollama (Local)",
+  openai: 'OpenAI',
+  claude: 'Claude (Anthropic)',
+  gemini: 'Gemini (Google)',
+  deepseek: 'DeepSeek',
+  ollama: 'Ollama (Local)',
 };
 
 export const CHAT_PROVIDER_MODELS: Record<ChatProviderType, string[]> = {
-  openai: ["gpt-4o", "gpt-4o-mini"],
-  claude: ["claude-sonnet-4-5", "claude-opus-4"],
-  gemini: ["gemini-2.0-flash", "gemini-2.5-pro"],
-  deepseek: ["deepseek-chat", "deepseek-reasoner"],
-  ollama: [],  // free-text input, no predefined list
+  openai: ['gpt-4o', 'gpt-4o-mini'],
+  claude: ['claude-sonnet-4-5', 'claude-opus-4'],
+  gemini: ['gemini-2.0-flash', 'gemini-2.5-pro'],
+  deepseek: ['deepseek-chat', 'deepseek-reasoner'],
+  ollama: [], // free-text input, no predefined list
 };
 
 export const CHAT_PROVIDER_PLACEHOLDERS: Record<ChatProviderType, string> = {
-  openai: "sk-...",
-  claude: "sk-ant-...",
-  gemini: "AIza...",
-  deepseek: "sk-...",
-  ollama: "",
+  openai: 'sk-...',
+  claude: 'sk-ant-...',
+  gemini: 'AIza...',
+  deepseek: 'sk-...',
+  ollama: '',
 };
 ```
 
@@ -86,20 +86,20 @@ export interface PluginSettings {
 
 ```typescript
 export const DEFAULT_SETTINGS: PluginSettings = {
-  chatProvider: "openai",
-  chatModel: "gpt-4o",
-  openaiApiKey: "",
-  anthropicApiKey: "",
-  geminiApiKey: "",
-  deepseekApiKey: "",
-  ollamaUrl: "http://localhost:11434",
+  chatProvider: 'openai',
+  chatModel: 'gpt-4o',
+  openaiApiKey: '',
+  anthropicApiKey: '',
+  geminiApiKey: '',
+  deepseekApiKey: '',
+  ollamaUrl: 'http://localhost:11434',
   topK: 5,
   embeddingBatchSize: 20,
   chunkSize: 500,
   chunkOverlap: 50,
-  ingestFolder: "Ingested",
-  ytDlpCommand: "yt-dlp",
-  bilibiliCookiesPath: "",
+  ingestFolder: 'Ingested',
+  ytDlpCommand: 'yt-dlp',
+  bilibiliCookiesPath: '',
 };
 ```
 
@@ -119,16 +119,16 @@ export const DEFAULT_SETTINGS: PluginSettings = {
   2. Replace the entire file contents with:
 
 ```typescript
-import OpenAI from "openai";
-import { Message, ChatOptions } from "../types";
-import { LLMProvider } from "./provider";
+import OpenAI from 'openai';
+import { Message, ChatOptions } from '../types';
+import { LLMProvider } from './provider';
 
 export interface OpenAICompatibleConfig {
-  providerName: string;  // e.g. "OpenAI", "DeepSeek", "Ollama"
-  apiKey: string;        // empty string for Ollama
-  baseURL?: string;      // undefined = OpenAI default
+  providerName: string; // e.g. "OpenAI", "DeepSeek", "Ollama"
+  apiKey: string; // empty string for Ollama
+  baseURL?: string; // undefined = OpenAI default
   chatModel: string;
-  maxTokens?: number;    // context window size, default 128000
+  maxTokens?: number; // context window size, default 128000
 }
 
 export class OpenAICompatibleProvider implements LLMProvider {
@@ -144,7 +144,7 @@ export class OpenAICompatibleProvider implements LLMProvider {
     this.chatModel = config.chatModel;
     this.maxTokens = config.maxTokens ?? 128_000;
     this.client = new OpenAI({
-      apiKey: config.apiKey || "ollama",  // Ollama doesn't need a key but SDK requires non-empty
+      apiKey: config.apiKey || 'ollama', // Ollama doesn't need a key but SDK requires non-empty
       baseURL: config.baseURL,
       dangerouslyAllowBrowser: true,
     });
@@ -172,11 +172,16 @@ export class OpenAICompatibleProvider implements LLMProvider {
         throw new Error(`Invalid ${this.providerName} API key. Please check your settings.`);
       }
       if (status === 429) {
-        throw new Error(`${this.providerName} rate limit exceeded. Please wait a moment and try again.`);
+        throw new Error(
+          `${this.providerName} rate limit exceeded. Please wait a moment and try again.`,
+        );
       }
       // Ollama connection refused
-      if ((error as any).code === "ECONNREFUSED" || (error as Error).message?.includes("ECONNREFUSED")) {
-        const url = this.client.baseURL || "http://localhost:11434";
+      if (
+        (error as any).code === 'ECONNREFUSED' ||
+        (error as Error).message?.includes('ECONNREFUSED')
+      ) {
+        const url = this.client.baseURL || 'http://localhost:11434';
         throw new Error(`Cannot connect to Ollama at ${url}. Is Ollama running?`);
       }
       throw new Error(`${this.providerName} API error: ${(error as Error).message}`);
@@ -199,12 +204,12 @@ export class OpenAICompatibleProvider implements LLMProvider {
 - **Action**: Create a new file with:
 
 ```typescript
-import Anthropic from "@anthropic-ai/sdk";
-import { Message, ChatOptions } from "../types";
-import { LLMProvider } from "./provider";
+import Anthropic from '@anthropic-ai/sdk';
+import { Message, ChatOptions } from '../types';
+import { LLMProvider } from './provider';
 
 export class AnthropicProvider implements LLMProvider {
-  readonly name = "claude";
+  readonly name = 'claude';
   readonly maxTokens = 200_000;
   private client: Anthropic;
   private chatModel: string;
@@ -220,10 +225,10 @@ export class AnthropicProvider implements LLMProvider {
   async *chat(messages: Message[], options?: ChatOptions): AsyncIterable<string> {
     // Anthropic requires system message as a separate parameter
     let systemPrompt: string | undefined;
-    const chatMessages: Array<{ role: "user" | "assistant"; content: string }> = [];
+    const chatMessages: Array<{ role: 'user' | 'assistant'; content: string }> = [];
 
     for (const msg of messages) {
-      if (msg.role === "system") {
+      if (msg.role === 'system') {
         systemPrompt = msg.content;
       } else {
         chatMessages.push({ role: msg.role, content: msg.content });
@@ -240,22 +245,19 @@ export class AnthropicProvider implements LLMProvider {
       });
 
       for await (const event of stream) {
-        if (
-          event.type === "content_block_delta" &&
-          event.delta.type === "text_delta"
-        ) {
+        if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
           yield event.delta.text;
         }
       }
     } catch (error) {
       const status = (error as any).status;
       if (status === 401) {
-        throw new Error("Invalid Anthropic API key. Please check your settings.");
+        throw new Error('Invalid Anthropic API key. Please check your settings.');
       }
       if (status === 429) {
-        throw new Error("Anthropic rate limit exceeded. Please wait a moment and try again.");
+        throw new Error('Anthropic rate limit exceeded. Please wait a moment and try again.');
       }
-      throw new Error("Anthropic API error: " + (error as Error).message);
+      throw new Error('Anthropic API error: ' + (error as Error).message);
     }
   }
 }
@@ -273,13 +275,13 @@ export class AnthropicProvider implements LLMProvider {
 - **Action**: Create a new file with:
 
 ```typescript
-import { GoogleGenerativeAI, Content } from "@google/generative-ai";
-import { Message, ChatOptions } from "../types";
-import { LLMProvider } from "./provider";
+import { GoogleGenerativeAI, Content } from '@google/generative-ai';
+import { Message, ChatOptions } from '../types';
+import { LLMProvider } from './provider';
 
 export class GeminiProvider implements LLMProvider {
-  readonly name = "gemini";
-  readonly maxTokens = 1_000_000;  // Gemini 2.0 supports up to 1M tokens
+  readonly name = 'gemini';
+  readonly maxTokens = 1_000_000; // Gemini 2.0 supports up to 1M tokens
   private genAI: GoogleGenerativeAI;
   private chatModel: string;
 
@@ -294,11 +296,11 @@ export class GeminiProvider implements LLMProvider {
     const contents: Content[] = [];
 
     for (const msg of messages) {
-      if (msg.role === "system") {
+      if (msg.role === 'system') {
         systemInstruction = msg.content;
       } else {
         contents.push({
-          role: msg.role === "assistant" ? "model" : "user",
+          role: msg.role === 'assistant' ? 'model' : 'user',
           parts: [{ text: msg.content }],
         });
       }
@@ -324,13 +326,13 @@ export class GeminiProvider implements LLMProvider {
       }
     } catch (error) {
       const message = (error as Error).message || String(error);
-      if (message.includes("API_KEY_INVALID") || message.includes("401")) {
-        throw new Error("Invalid Gemini API key. Please check your settings.");
+      if (message.includes('API_KEY_INVALID') || message.includes('401')) {
+        throw new Error('Invalid Gemini API key. Please check your settings.');
       }
-      if (message.includes("429") || message.includes("RATE_LIMIT")) {
-        throw new Error("Gemini rate limit exceeded. Please wait a moment and try again.");
+      if (message.includes('429') || message.includes('RATE_LIMIT')) {
+        throw new Error('Gemini rate limit exceeded. Please wait a moment and try again.');
       }
-      throw new Error("Gemini API error: " + message);
+      throw new Error('Gemini API error: ' + message);
     }
   }
 }
@@ -348,11 +350,11 @@ export class GeminiProvider implements LLMProvider {
 - **Action**: Create a new file with:
 
 ```typescript
-import { PluginSettings } from "../types";
-import { LLMProvider } from "./provider";
-import { OpenAICompatibleProvider } from "./openai-compatible";
-import { AnthropicProvider } from "./anthropic";
-import { GeminiProvider } from "./gemini";
+import { PluginSettings } from '../types';
+import { LLMProvider } from './provider';
+import { OpenAICompatibleProvider } from './openai-compatible';
+import { AnthropicProvider } from './anthropic';
+import { GeminiProvider } from './gemini';
 
 /**
  * Create an LLMProvider based on current plugin settings.
@@ -360,43 +362,37 @@ import { GeminiProvider } from "./gemini";
  */
 export function createProvider(settings: PluginSettings): LLMProvider {
   switch (settings.chatProvider) {
-    case "openai":
+    case 'openai':
       return new OpenAICompatibleProvider({
-        providerName: "OpenAI",
+        providerName: 'OpenAI',
         apiKey: settings.openaiApiKey,
         chatModel: settings.chatModel,
         maxTokens: 128_000,
       });
 
-    case "deepseek":
+    case 'deepseek':
       return new OpenAICompatibleProvider({
-        providerName: "DeepSeek",
+        providerName: 'DeepSeek',
         apiKey: settings.deepseekApiKey,
-        baseURL: "https://api.deepseek.com",
+        baseURL: 'https://api.deepseek.com',
         chatModel: settings.chatModel,
         maxTokens: 64_000,
       });
 
-    case "ollama":
+    case 'ollama':
       return new OpenAICompatibleProvider({
-        providerName: "Ollama",
-        apiKey: "",
+        providerName: 'Ollama',
+        apiKey: '',
         baseURL: `${settings.ollamaUrl}/v1`,
         chatModel: settings.chatModel,
         maxTokens: 128_000,
       });
 
-    case "claude":
-      return new AnthropicProvider(
-        settings.anthropicApiKey,
-        settings.chatModel,
-      );
+    case 'claude':
+      return new AnthropicProvider(settings.anthropicApiKey, settings.chatModel);
 
-    case "gemini":
-      return new GeminiProvider(
-        settings.geminiApiKey,
-        settings.chatModel,
-      );
+    case 'gemini':
+      return new GeminiProvider(settings.geminiApiKey, settings.chatModel);
 
     default: {
       // Exhaustiveness check — if a new provider is added to the union type
@@ -419,32 +415,38 @@ export function createProvider(settings: PluginSettings): LLMProvider {
 - **Action**: Make these specific changes:
 
 1. **Replace import** (line 5): Change
+
    ```typescript
-   import { OpenAIProvider } from "./llm/openai";
+   import { OpenAIProvider } from './llm/openai';
    ```
+
    to:
+
    ```typescript
-   import { LLMProvider } from "./llm/provider";
-   import { createProvider } from "./llm/provider-factory";
+   import { LLMProvider } from './llm/provider';
+   import { createProvider } from './llm/provider-factory';
    ```
 
 2. **Change field type** (line 35): Change
+
    ```typescript
    private llmProvider\!: OpenAIProvider;
    ```
+
    to:
+
    ```typescript
    private llmProvider\!: LLMProvider;
    ```
 
 3. **Replace constructor call in `onload()`** (lines 54-57): Change
+
    ```typescript
-   this.llmProvider = new OpenAIProvider(
-     this.settings.openaiApiKey,
-     this.settings.chatModel,
-   );
+   this.llmProvider = new OpenAIProvider(this.settings.openaiApiKey, this.settings.chatModel);
    ```
+
    to:
+
    ```typescript
    this.llmProvider = createProvider(this.settings);
    ```
@@ -493,14 +495,14 @@ export function createProvider(settings: PluginSettings): LLMProvider {
   `display()` method body for the Chat section should be:
 
 ```typescript
-import { App, PluginSettingTab, Setting } from "obsidian";
-import type ObsidianKBPlugin from "./main";
+import { App, PluginSettingTab, Setting } from 'obsidian';
+import type ObsidianKBPlugin from './main';
 import {
   ChatProviderType,
   CHAT_PROVIDER_LABELS,
   CHAT_PROVIDER_MODELS,
   CHAT_PROVIDER_PLACEHOLDERS,
-} from "./types";
+} from './types';
 ```
 
 Replace the Chat (LLM) section (between the `containerEl.createEl("h3", { text: "Chat (LLM)" })` line and the URL Ingestor section) with:
@@ -646,16 +648,16 @@ Replace the Chat (LLM) section (between the `containerEl.createEl("h3", { text: 
 
 ## File Summary
 
-| File | Action |
-|------|--------|
-| `package.json` | Add 2 dependencies |
-| `src/types.ts` | Add provider types, model lists, new settings fields |
-| `src/llm/openai.ts` → `src/llm/openai-compatible.ts` | Rename + generalize |
-| `src/llm/anthropic.ts` | New file |
-| `src/llm/gemini.ts` | New file |
-| `src/llm/provider-factory.ts` | New file |
-| `src/main.ts` | 4 targeted edits (import, type, onload, refreshProvider) |
-| `src/settings.ts` | Replace Chat section + add imports |
+| File                                                 | Action                                                   |
+| ---------------------------------------------------- | -------------------------------------------------------- |
+| `package.json`                                       | Add 2 dependencies                                       |
+| `src/types.ts`                                       | Add provider types, model lists, new settings fields     |
+| `src/llm/openai.ts` → `src/llm/openai-compatible.ts` | Rename + generalize                                      |
+| `src/llm/anthropic.ts`                               | New file                                                 |
+| `src/llm/gemini.ts`                                  | New file                                                 |
+| `src/llm/provider-factory.ts`                        | New file                                                 |
+| `src/main.ts`                                        | 4 targeted edits (import, type, onload, refreshProvider) |
+| `src/settings.ts`                                    | Replace Chat section + add imports                       |
 
 **Total new/modified files: 8**
 **Estimated implementation time: 30-45 minutes**

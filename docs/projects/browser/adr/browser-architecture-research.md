@@ -45,6 +45,7 @@ WebUI is Chromium's system for building **internal pages** (like `chrome://setti
 ### How Forks Use These Systems
 
 Chromium forks can:
+
 1. **Modify Views C++ code** to change native UI (toolbar, tabs, etc.)
 2. **Add new WebUI pages** for custom settings or features
 3. **Replace the entire UI layer** (as Vivaldi does) with their own HTML/CSS/JS
@@ -57,6 +58,7 @@ Chromium forks can:
 > **Status**: Maintenance mode since May 2025. The Browser Company was acquired by Atlassian for $610M in September 2025.
 
 ### Base Engine
+
 - **Chromium** (standard Chromium engine for web rendering)
 
 ### UI Technology: Native Swift/SwiftUI (NOT HTML/CSS)
@@ -84,6 +86,7 @@ Arc is notable for **completely replacing Chromium's native C++ UI** with a cust
 ## 3. Vivaldi {#3-vivaldi}
 
 ### Base Engine
+
 - **Chromium** (rendering engine only; UI is entirely custom)
 
 ### UI Technology: React.js (HTML/CSS/JS)
@@ -124,6 +127,7 @@ This is Vivaldi's most significant architectural innovation:
 ## 4. Brave {#4-brave}
 
 ### Base Engine
+
 - **Chromium** (keeps the full Chromium UI; patches on top)
 
 ### UI Technology: Chromium's Native Views (C++) + Patching
@@ -159,6 +163,7 @@ Brave takes the most conservative approach of all Chromium forks -- it **keeps C
 ## 5. Opera (Opera One) {#5-opera}
 
 ### Base Engine
+
 - **Chromium**
 
 ### UI Technology: Hybrid (Chromium native + custom compositor + web components)
@@ -195,6 +200,7 @@ Opera One is the **first major Chromium-based browser to implement a multi-threa
 ## 6. Microsoft Edge {#6-microsoft-edge}
 
 ### Base Engine
+
 - **Chromium**
 
 ### UI Technology: WebUI 2.0 (HTML-first Web Components, replacing React)
@@ -202,9 +208,11 @@ Opera One is the **first major Chromium-based browser to implement a multi-threa
 Edge has undergone a fascinating UI architecture evolution:
 
 ### Phase 1: React-based differentiation
+
 When Microsoft ported Edge to Chromium, the team decided to differentiate from Chrome by converting internal UI pages to **React**. This added UI polish but introduced significant JavaScript overhead.
 
 ### Phase 2: WebUI 2.0 (Current)
+
 Microsoft built an entirely new **markup-first architecture** called WebUI 2.0:
 
 - **Core principle**: Minimize JavaScript bundle sizes and the amount of JS that runs during UI initialization. Prioritize HTML markup that renders immediately.
@@ -236,6 +244,7 @@ Microsoft built an entirely new **markup-first architecture** called WebUI 2.0:
 ## 7. Zen Browser {#7-zen-browser}
 
 ### Base Engine
+
 - **Firefox/Gecko** (the only major non-Chromium entry besides Safari/SigmaOS)
 
 ### UI Technology: CSS/XUL Modifications on Firefox
@@ -247,6 +256,7 @@ Zen takes a **"minimal patching, maximum extension"** approach to modifying Fire
 Rather than forking the entire Firefox codebase, Zen applies targeted unified diff patches to essential Firefox components:
 
 **Patched Firefox files:**
+
 - `tabbrowser.js` and `tabs.js` -- Tab lifecycle and metadata
 - `SessionStore.sys.mjs` and `TabState.sys.mjs` -- State persistence
 - `CustomizableUI.sys.mjs` -- Toolbar widget management
@@ -257,6 +267,7 @@ These patches inject behavior hooks without replacing entire modules.
 ### XUL Document Restructuring
 
 Zen injects custom container elements into Firefox's XUL layout:
+
 - `#zen-main-app-wrapper` -- Root horizontal box wrapping the entire interface
 - `#zen-appcontent-wrapper` -- Main content area container
 - `#zen-tabs-wrapper` -- Workspace tabs container
@@ -266,29 +277,34 @@ Zen injects custom container elements into Firefox's XUL layout:
 ### How Features Are Implemented
 
 **Vertical Tabs:**
+
 - CSS `flex-direction: column` applied to `#tabbrowser-tabs` transforms the horizontal tab strip to vertical
 - Standard Firefox tab markup remains largely unchanged; rendering is transformed through CSS
 - Custom drag-and-drop handlers for vertical orientation
 - Workspace-aware tab positioning through patched `insertTabAtIndex()`
 
 **Workspaces:**
+
 - Each tab receives a `zen-workspace-id` attribute during creation
 - Workspace switching filters visible tabs via CSS and a parallel data model -- tabs are hidden, not destroyed
 - Optional mapping to Firefox containers (`zen.workspaces.force-container-workspace`) for cookie/session isolation
 - User containers can map to workspaces for separate login sessions
 
 **Split View:**
+
 - `gZenViewSplitter` manager controls pane lifecycle
 - Leverages Firefox's existing multi-tab-box capability with custom layout logic
 - Session store integration persists split configuration
 
 **Zen Mods (Theming Engine):**
+
 - Built on Firefox's `userChrome.css` mechanism
 - `ZenThemeModifier` applies accent colors via `--zen-primary-color` CSS variable
 - Marketplace for community themes via `gZenMarketplaceManager`
 - Layers additional CSS variable management on top of Firefox's standard theme engine
 
 **Compact Mode:**
+
 - Pure CSS implementation using `:root[zen-compact-mode="true"]` selectors
 - Auto-hides sidebar to icons, reduces toolbar elements
 
@@ -300,6 +316,7 @@ Zen injects custom container elements into Firefox's XUL layout:
 - Platform-specific conditional activation
 
 ### Startup Sequence
+
 1. Pre-loaded scripts (`zen-sets.js`, `ZenSpace.mjs`)
 2. CSS and core modules loaded
 3. `ZenStartup.init()` on `MozBeforeInitialXULLayout`
@@ -319,6 +336,7 @@ Zen injects custom container elements into Firefox's XUL layout:
 ## 8. Dia Browser {#8-dia-browser}
 
 ### Base Engine
+
 - **Chromium**
 
 ### UI Technology: Native (Post-SwiftUI, likely AppKit/UIKit)
@@ -356,6 +374,7 @@ Dia represents a **deliberate architectural pivot** from Arc:
 ## 9. SigmaOS {#9-sigmaos}
 
 ### Base Engine
+
 - **WebKit** (via Apple's WKWebView)
 
 ### UI Technology: Native SwiftUI
@@ -369,16 +388,19 @@ SigmaOS is a **macOS-only browser** built entirely in Apple's native stack:
 ### How Features Are Built
 
 **Workspaces:**
+
 - Each workspace is a completely separate browsing context
 - "Separate profiles" option gives each workspace its own cookie jar/session -- different workspaces can be logged into different accounts on the same service
 - Workspace state is preserved exactly when switching (tabs, scroll positions, etc.)
 
 **Tab Management:**
+
 - Locked tabs can be pinned to workspaces with auto-renaming
 - Pages unused for a while are **automatically unloaded** to preserve RAM
 - Temporary data is cached for quick restoration
 
 **Privacy:**
+
 - Per-workspace private browsing toggle
 - Per-workspace separate cookie settings
 
@@ -395,6 +417,7 @@ SigmaOS is a **macOS-only browser** built entirely in Apple's native stack:
 ## 10. Safari {#10-safari}
 
 ### Base Engine
+
 - **WebKit** (Apple develops both Safari and WebKit)
 
 ### UI Technology: Fully Native (AppKit/UIKit + Objective-C/C++)
@@ -431,6 +454,7 @@ Safari's UI is entirely native platform code:
 ## 11. Min Browser {#11-min-browser}
 
 ### Base Engine
+
 - **Electron** (which embeds Chromium + Node.js)
 
 ### UI Technology: HTML/CSS/JS (Electron renderer)
@@ -440,23 +464,27 @@ Min demonstrates how a browser can be built entirely with web technologies using
 ### Process Architecture
 
 **Main Process:**
+
 - Opens windows, creates app menu, handles IPC routing
 - Filters network requests (content blocking)
 - Forwards notifications for downloads and permission prompts
 - Has Node.js API access but displays no UI
 
 **UI Process (per window):**
+
 - A renderer process displaying `index.html` from the repository root
 - Runs code from the `js/` directory
 - Full Node.js access (privileged, does not display untrusted content)
 - Renders the tab bar, task overlay, download manager, and all browser chrome
 
 **Places Window:**
+
 - A hidden renderer process managing the places database (history + bookmarks)
 - Performs search operations and bookmark suggestions
 - Communicates via IPC with UI processes
 
 **Tab Processes:**
+
 - Each tab runs in its own **BrowserView** (sandboxed, no Node.js access)
 - BrowserView instances are held in the main process
 
@@ -491,53 +519,58 @@ Min demonstrates how a browser can be built entirely with web technologies using
 
 ### UI Technology Spectrum
 
-| Browser | Engine | UI Technology | UI Rendering |
-|---------|--------|--------------|-------------|
-| **Arc** | Chromium | Swift/SwiftUI (native) | Native GPU-accelerated |
-| **Vivaldi** | Chromium | React.js (HTML/CSS/JS) | Web renderer (Blink) |
-| **Brave** | Chromium | Chromium Views (C++) | Native Views framework |
-| **Opera** | Chromium | Hybrid (native + web components + custom compositor) | Multi-threaded compositor |
-| **Edge** | Chromium | WebUI 2.0 (Web Components, was React) | Web renderer (Blink) |
-| **Zen** | Gecko | CSS/XUL modifications | Gecko (CSS transforms) |
-| **Dia** | Chromium | Native (post-SwiftUI, likely AppKit) | Native GPU-accelerated |
-| **SigmaOS** | WebKit | SwiftUI (native) | Native GPU-accelerated |
-| **Safari** | WebKit | AppKit/UIKit (native) | Native GPU-accelerated |
-| **Min** | Electron/Chromium | HTML/CSS/JS | Web renderer (Blink) |
+| Browser     | Engine            | UI Technology                                        | UI Rendering              |
+| ----------- | ----------------- | ---------------------------------------------------- | ------------------------- |
+| **Arc**     | Chromium          | Swift/SwiftUI (native)                               | Native GPU-accelerated    |
+| **Vivaldi** | Chromium          | React.js (HTML/CSS/JS)                               | Web renderer (Blink)      |
+| **Brave**   | Chromium          | Chromium Views (C++)                                 | Native Views framework    |
+| **Opera**   | Chromium          | Hybrid (native + web components + custom compositor) | Multi-threaded compositor |
+| **Edge**    | Chromium          | WebUI 2.0 (Web Components, was React)                | Web renderer (Blink)      |
+| **Zen**     | Gecko             | CSS/XUL modifications                                | Gecko (CSS transforms)    |
+| **Dia**     | Chromium          | Native (post-SwiftUI, likely AppKit)                 | Native GPU-accelerated    |
+| **SigmaOS** | WebKit            | SwiftUI (native)                                     | Native GPU-accelerated    |
+| **Safari**  | WebKit            | AppKit/UIKit (native)                                | Native GPU-accelerated    |
+| **Min**     | Electron/Chromium | HTML/CSS/JS                                          | Web renderer (Blink)      |
 
 ### Performance Overhead (Estimated, Relative)
 
-| Approach | UI Rendering Overhead | Memory Per Window | Development Speed |
-|----------|----------------------|-------------------|-------------------|
-| Native C++/Views | Lowest | Lowest | Slowest |
-| Native Swift/AppKit | Very Low | Very Low | Medium |
-| SwiftUI | Low | Low | Fast |
-| Web Components (Edge WebUI 2.0) | Medium-Low | Medium | Fast |
-| React (Vivaldi/old Edge) | Medium | Medium-High | Very Fast |
-| Electron (Min) | High | High | Very Fast |
+| Approach                        | UI Rendering Overhead | Memory Per Window | Development Speed |
+| ------------------------------- | --------------------- | ----------------- | ----------------- |
+| Native C++/Views                | Lowest                | Lowest            | Slowest           |
+| Native Swift/AppKit             | Very Low              | Very Low          | Medium            |
+| SwiftUI                         | Low                   | Low               | Fast              |
+| Web Components (Edge WebUI 2.0) | Medium-Low            | Medium            | Fast              |
+| React (Vivaldi/old Edge)        | Medium                | Medium-High       | Very Fast         |
+| Electron (Min)                  | High                  | High              | Very Fast         |
 
 ### Key Architectural Patterns
 
 **1. "Keep the Chrome, Patch It" (Brave)**
+
 - Lowest risk, easiest to rebase on new Chromium versions
 - Limited UI differentiation
 - Best for privacy/security-focused browsers that want Chromium's UI
 
 **2. "Replace the Chrome with Web Tech" (Vivaldi, Edge)**
+
 - Maximum UI flexibility and rapid feature development
 - Performance overhead from web rendering of browser chrome
 - Vivaldi's Portal Windows and Edge's WebUI 2.0 show how to optimize this approach
 
 **3. "Replace the Chrome with Native Code" (Arc, SigmaOS, Safari)**
+
 - Best performance for browser chrome
 - Most expensive to develop and maintain
 - Platform-specific (or requires bridges like Arc's Swift-to-Windows)
 
 **4. "Transform Existing UI via CSS/XUL" (Zen)**
+
 - Clever low-overhead approach for Firefox forks
 - Maintains upstream compatibility with minimal patches
 - Limited by what CSS transformation can achieve
 
 **5. "Custom Compositor" (Opera)**
+
 - Addresses animation performance specifically
 - Requires deep engine knowledge
 - Unique differentiator for smooth UI feel
@@ -545,12 +578,14 @@ Min demonstrates how a browser can be built entirely with web technologies using
 ### HTML/CSS UI vs Native UI: The Real-World Tradeoff
 
 **Where web-based UI suffers:**
+
 - Initial render/startup time (parsing HTML, loading JS, React hydration)
 - Memory footprint per window (each window needs a renderer)
 - Animation smoothness under load (single-threaded without Opera's compositor approach)
 - Low-end hardware performance (Edge saw 76% improvement moving from React to Web Components)
 
 **Where web-based UI excels:**
+
 - Development velocity (HTML/CSS/JS skills are common)
 - Customizability (users can modify UI with CSS)
 - Cross-platform consistency (same React code renders identically)
@@ -567,12 +602,14 @@ Min demonstrates how a browser can be built entirely with web technologies using
 ## Sources
 
 ### Arc Browser
-- [Arc (web browser) - Wikipedia](https://en.wikipedia.org/wiki/Arc_(web_browser))
+
+- [Arc (web browser) - Wikipedia](<https://en.wikipedia.org/wiki/Arc_(web_browser)>)
 - [Arc, Dia, TCA and SwiftUI -- Fatbobman's Swift Weekly #86](https://fatbobman.com/en/weekly/issue-086/)
 - [Letter to Arc members 2025](https://browsercompany.substack.com/p/letter-to-arc-members-2025)
 - [Arc Browser: A Compelling But Controversial Newcomer - DEV Community](https://dev.to/therabbithole/arc-browser-a-compelling-but-controversial-newcomer-59oa)
 
 ### Vivaldi
+
 - [Built using Chromium, but different from Chrome | Vivaldi](https://vivaldi.com/blog/vivaldi-different-from-chrome/)
 - [Massive code refactoring brings speed to Vivaldi browser](https://vivaldi.com/blog/vivaldi-on-desktop-6-2/)
 - [How we made Vivaldi faster independent of Chromium](https://vivaldi.com/blog/how-we-made-vivaldi-faster-independent-of-chromium/)
@@ -580,45 +617,54 @@ Min demonstrates how a browser can be built entirely with web technologies using
 - [Technologies behind Vivaldi browser | Vivaldi Forum](https://forum.vivaldi.net/topic/5347/technologies-behind-vivaldi-browser)
 
 ### Brave
+
 - [Patching Chromium - brave/brave-browser Wiki](https://github.com/brave/brave-browser/wiki/Patching-Chromium)
 - [brave-core patching_and_chromium_src.md](https://github.com/brave/brave-core/blob/master/docs/patching_and_chromium_src.md)
-- [Deviations from Chromium - brave/brave-browser Wiki](https://github.com/brave/brave-browser/wiki/Deviations-from-Chromium-(features-we-disable-or-remove))
+- [Deviations from Chromium - brave/brave-browser Wiki](<https://github.com/brave/brave-browser/wiki/Deviations-from-Chromium-(features-we-disable-or-remove)>)
 
 ### Opera
+
 - [Opera One Multithreaded Compositor Blog](https://blogs.opera.com/desktop/2023/04/opera-one-multithreaded-compositor/)
 - [Opera One Developer Preview](https://blogs.opera.com/news/2023/04/opera-one-developer/)
 - [Opera Web UI Toolkit](https://github.com/operasoftware/toolkit)
 
 ### Microsoft Edge
+
 - [How Microsoft Edge Is Replacing React With Web Components - The New Stack](https://thenewstack.io/how-microsoft-edge-is-replacing-react-with-web-components/)
 - [From React to HTML-First: Microsoft Edge Debuts 'WebUI 2.0' - The New Stack](https://thenewstack.io/from-react-to-html-first-microsoft-edge-debuts-webui-2-0/)
 - [Microsoft Edge WebUI 2.0 Performance - NotebookCheck](https://www.notebookcheck.net/Microsoft-tackles-poor-Edge-browser-user-interface-performance-by-replacing-React-UI-with-WebUI-2-0.842391.0.html)
 
 ### Zen Browser
+
 - [Zen Browser - Wikipedia](https://en.wikipedia.org/wiki/Zen_Browser)
 - [Zen Browser Preferences System - DeepWiki](https://deepwiki.com/zen-browser/desktop/5.1-preferences-system)
 - [Zen Browser Theme Components - DeepWiki](https://deepwiki.com/zen-browser/theme-components)
 
 ### Dia Browser
-- [Dia (web browser) - Wikipedia](https://en.wikipedia.org/wiki/Dia_(web_browser))
+
+- [Dia (web browser) - Wikipedia](<https://en.wikipedia.org/wiki/Dia_(web_browser)>)
 - [The Browser Company Discusses the Future - Thurrott.com](https://www.thurrott.com/cloud/web-browsers/321435/the-browser-company-discusses-the-future-of-arc-dia-and-the-web)
 - [Dia AI browser inherits Arc's features - TechBuzz](https://www.techbuzz.ai/articles/dia-ai-browser-inherits-arc-s-winning-features-after-610m-buyout)
 
 ### SigmaOS
+
 - [SigmaOS](https://sigmaos.com/)
 - [SigmaOS Common Questions](https://docs.sigmaos.com/common-questions)
 - [SigmaOS raises $4M - TechCrunch](https://techcrunch.com/2022/11/16/sigmaos-raises-4-million-to-build-a-browser-for-productivity-nerds/)
 
 ### Safari / WebKit
+
 - [Architecture of Apple Safari Browser - GeeksforGeeks](https://www.geeksforgeeks.org/computer-networks/architecture-of-apple-safari-browser/)
 - [Introduction to WebKit - WebKit Documentation](https://docs.webkit.org/Getting%20Started/Introduction.html)
 - [WebKit GitHub](https://github.com/WebKit/WebKit)
 
 ### Min Browser
+
 - [Min Browser Architecture Wiki](https://github.com/minbrowser/min/wiki/Architecture)
 - [Min Browser DeepWiki](https://deepwiki.com/minbrowser/min)
 
 ### Chromium Internals
+
 - [Chromium WebUI Explainer](https://chromium.googlesource.com/chromium/src/+/main/docs/webui/webui_explainer.md)
 - [Views (Chromium UI Framework)](https://www.chromium.org/chromium-os/developer-library/guides/views/intro/)
 - [ChromeViews Design Documents](https://www.chromium.org/developers/design-documents/chromeviews/)

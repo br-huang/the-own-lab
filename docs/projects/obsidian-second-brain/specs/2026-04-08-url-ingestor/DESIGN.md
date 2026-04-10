@@ -16,6 +16,7 @@ main.ts (Plugin entry, DI wiring, command registration)
 ```
 
 **Key patterns observed:**
+
 - Constructor dependency injection everywhere (no service locator, no singletons)
 - `main.ts` is the composition root — instantiates all services, registers commands and views
 - UI uses plain Obsidian DOM APIs (`createEl`, `createDiv`, `addClass`) — no React or framework
@@ -27,20 +28,20 @@ main.ts (Plugin entry, DI wiring, command registration)
 
 ### Files That Will Change
 
-| File | Nature of Change |
-|---|---|
-| `src/types.ts` | Add `ingestFolder` field to `PluginSettings` and `DEFAULT_SETTINGS` |
-| `src/settings.ts` | Add "URL Ingestor" section with folder text input |
-| `src/main.ts` | Register `kb-ingest-url` command, lazy-instantiate `UrlIngestor` |
+| File                  | Nature of Change                                                         |
+| --------------------- | ------------------------------------------------------------------------ |
+| `src/types.ts`        | Add `ingestFolder` field to `PluginSettings` and `DEFAULT_SETTINGS`      |
+| `src/settings.ts`     | Add "URL Ingestor" section with folder text input                        |
+| `src/main.ts`         | Register `kb-ingest-url` command, lazy-instantiate `UrlIngestor`         |
 | `src/ui/chat-view.ts` | Add URL detection in `handleSubmit`, call ingestor for URL-only messages |
 
 ### New Files
 
-| File | Responsibility |
-|---|---|
-| `src/ingestor/url-ingestor.ts` | Core pipeline: fetch, extract, convert, save |
+| File                             | Responsibility                                   |
+| -------------------------------- | ------------------------------------------------ |
+| `src/ingestor/url-ingestor.ts`   | Core pipeline: fetch, extract, convert, save     |
 | `src/ingestor/video-detector.ts` | `detectVideoProvider()` — YouTube/Bilibili guard |
-| `src/ui/ingest-url-modal.ts` | `IngestUrlModal` — command palette modal |
+| `src/ui/ingest-url-modal.ts`     | `IngestUrlModal` — command palette modal         |
 
 ---
 
@@ -79,7 +80,7 @@ VaultIndexer (existing) picks up vault:create event → auto-indexes
  *
  * @returns "youtube" | "bilibili" | null
  */
-export function detectVideoProvider(url: string): "youtube" | "bilibili" | null;
+export function detectVideoProvider(url: string): 'youtube' | 'bilibili' | null;
 ```
 
 Implementation: parse the URL hostname against a set of known domains (`youtube.com`, `youtu.be`, `www.youtube.com`, `bilibili.com`, `www.bilibili.com`, `b23.tv`). Use the `URL` constructor for reliable hostname extraction — no regex on the raw string.
@@ -87,15 +88,15 @@ Implementation: parse the URL hostname against a set of known domains (`youtube.
 #### `src/ingestor/url-ingestor.ts`
 
 ```typescript
-import { Vault, requestUrl } from "obsidian";
+import { Vault, requestUrl } from 'obsidian';
 
 /** Progress phases reported to the caller */
-export type IngestPhase = "fetching" | "extracting" | "saving";
+export type IngestPhase = 'fetching' | 'extracting' | 'saving';
 
 /** Successful ingestion result */
 export interface IngestResult {
-  title: string;       // Article title used in frontmatter
-  filePath: string;    // Vault-relative path of saved note
+  title: string; // Article title used in frontmatter
+  filePath: string; // Vault-relative path of saved note
 }
 
 /** Callback for progress updates */
@@ -104,7 +105,7 @@ export type OnProgress = (phase: IngestPhase) => void;
 export class UrlIngestor {
   constructor(
     private vault: Vault,
-    private ingestFolder: () => string,  // getter for current setting value
+    private ingestFolder: () => string, // getter for current setting value
   ) {}
 
   /**
@@ -117,13 +118,21 @@ export class UrlIngestor {
   private async fetchHtml(url: string): Promise<string>;
 
   /** Parse HTML and extract article content using Readability */
-  private extractArticle(html: string, url: string): { title: string; content: string; byline: string | null };
+  private extractArticle(
+    html: string,
+    url: string,
+  ): { title: string; content: string; byline: string | null };
 
   /** Convert HTML fragment to Markdown via Turndown */
   private htmlToMarkdown(html: string): string;
 
   /** Build YAML frontmatter string */
-  private buildFrontmatter(meta: { url: string; title: string; author: string | null; ingestedAt: string }): string;
+  private buildFrontmatter(meta: {
+    url: string;
+    title: string;
+    author: string | null;
+    ingestedAt: string;
+  }): string;
 
   /** Derive a safe filename from the article title */
   private slugify(title: string): string;
@@ -141,17 +150,20 @@ The `ingestFolder` parameter is a getter function `() => string` rather than a s
 #### `src/ui/ingest-url-modal.ts`
 
 ```typescript
-import { App, Modal } from "obsidian";
-import { UrlIngestor } from "../ingestor/url-ingestor";
+import { App, Modal } from 'obsidian';
+import { UrlIngestor } from '../ingestor/url-ingestor';
 
 export class IngestUrlModal extends Modal {
-  constructor(app: App, private ingestor: UrlIngestor) {
+  constructor(
+    app: App,
+    private ingestor: UrlIngestor,
+  ) {
     super(app);
   }
 
-  onOpen(): void;   // Build input field, Ingest button, status area
-  onClose(): void;  // Cleanup
-  private async doIngest(url: string): Promise<void>;  // Drive the pipeline with progress UI
+  onOpen(): void; // Build input field, Ingest button, status area
+  onClose(): void; // Cleanup
+  private async doIngest(url: string): Promise<void>; // Drive the pipeline with progress UI
 }
 ```
 
@@ -191,6 +203,7 @@ In `ChatView.handleSubmit()`:
 **Choice**: Use the global `DOMParser` available in Electron's renderer process.
 
 **Rationale**:
+
 - jsdom is approximately 3MB+ bundled and brings its own DOM implementation. It would significantly bloat the plugin bundle.
 - Obsidian runs in Electron's renderer process, which provides a fully compliant `DOMParser` and `Document` API natively — the same one browsers use.
 - `@mozilla/readability` requires a `Document` object. `DOMParser.parseFromString(html, "text/html")` produces exactly that.
@@ -204,6 +217,7 @@ In `ChatView.handleSubmit()`:
 **Choice**: Use the `turndown` npm package, bundled by esbuild.
 
 **Rationale**:
+
 - Turndown is the de facto standard for HTML-to-Markdown in JavaScript. It is small (~30KB minified), well-maintained, and has no native dependencies.
 - It accepts HTML strings directly, no Document object needed.
 - It integrates cleanly with esbuild bundling (pure JS, no wasm, no native modules).
@@ -225,6 +239,7 @@ In `ChatView.handleSubmit()`:
 **Pattern**: `^https?:\/\/\S+$` — the entire trimmed message must be a single URL with no other content.
 
 **Rationale**:
+
 - Simple and precise. Only triggers on messages that are purely a URL.
 - Messages containing a URL mixed with question text pass through to normal RAG — no false positives.
 - The check is a 3-line guard at the top of `handleSubmit`, minimally invasive.
@@ -246,6 +261,7 @@ In `ChatView.handleSubmit()`:
 **Choice**: Extend `obsidian.Modal` for `IngestUrlModal`.
 
 **UI structure**:
+
 - `onOpen()` builds: heading, text input (auto-focused), "Ingest" button, status div (initially hidden).
 - Enter key on the input triggers ingest (same as button click).
 - Escape closes modal (built-in Modal behavior).
@@ -263,13 +279,13 @@ In `ChatView.handleSubmit()`:
 
 ## Alternatives Considered
 
-| Approach | Pros | Cons |
-|----------|------|------|
-| **jsdom for HTML parsing** | Works identically on all platforms; battle-tested | 3MB+ bundle size increase; duplicates what Electron already provides; complex to bundle with esbuild |
-| **DOMParser (Electron native)** [CHOSEN] | Zero bundle cost; native browser-grade parser; already available | Desktop-only assumption (already true for this plugin) |
-| **linkedom as jsdom alternative** | Lighter than jsdom (~100KB) | Still an unnecessary dependency when DOMParser is available; less battle-tested than jsdom |
-| **Event emitter for progress** | More extensible pattern | Over-engineered for 3 progress phases; callback is simpler |
-| **Ingestor as static functions** | No instantiation needed | Loses DI pattern used everywhere else; harder to test; clutters call sites with vault/settings params |
+| Approach                                 | Pros                                                             | Cons                                                                                                  |
+| ---------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **jsdom for HTML parsing**               | Works identically on all platforms; battle-tested                | 3MB+ bundle size increase; duplicates what Electron already provides; complex to bundle with esbuild  |
+| **DOMParser (Electron native)** [CHOSEN] | Zero bundle cost; native browser-grade parser; already available | Desktop-only assumption (already true for this plugin)                                                |
+| **linkedom as jsdom alternative**        | Lighter than jsdom (~100KB)                                      | Still an unnecessary dependency when DOMParser is available; less battle-tested than jsdom            |
+| **Event emitter for progress**           | More extensible pattern                                          | Over-engineered for 3 progress phases; callback is simpler                                            |
+| **Ingestor as static functions**         | No instantiation needed                                          | Loses DI pattern used everywhere else; harder to test; clutters call sites with vault/settings params |
 
 ---
 
@@ -277,15 +293,15 @@ In `ChatView.handleSubmit()`:
 
 ### New npm Dependencies
 
-| Package | Purpose | Bundle Strategy |
-|---|---|---|
+| Package                | Purpose                              | Bundle Strategy                                        |
+| ---------------------- | ------------------------------------ | ------------------------------------------------------ |
 | `@mozilla/readability` | Article content extraction from HTML | **Bundled** by esbuild (DO NOT add to `external` list) |
-| `turndown` | HTML-to-Markdown conversion | **Bundled** by esbuild (DO NOT add to `external` list) |
+| `turndown`             | HTML-to-Markdown conversion          | **Bundled** by esbuild (DO NOT add to `external` list) |
 
 ### Type Declarations
 
-| Package | Purpose |
-|---|---|
+| Package           | Purpose                       |
+| ----------------- | ----------------------------- |
 | `@types/turndown` | TypeScript types for turndown |
 
 `@mozilla/readability` ships its own TypeScript types — no separate `@types/` package needed.
@@ -312,7 +328,7 @@ export interface PluginSettings {
 
 export const DEFAULT_SETTINGS: PluginSettings = {
   // ... existing defaults unchanged ...
-  ingestFolder: "Ingested",
+  ingestFolder: 'Ingested',
 };
 ```
 
@@ -324,19 +340,19 @@ Add a new "URL Ingestor" section after the existing "Chat (LLM)" section and bef
 
 ```typescript
 // ─── URL Ingestor Section ───
-containerEl.createEl("h3", { text: "URL Ingestor" });
+containerEl.createEl('h3', { text: 'URL Ingestor' });
 
 new Setting(containerEl)
-  .setName("Ingested Notes Folder")
-  .setDesc("Vault folder where ingested web pages are saved.")
+  .setName('Ingested Notes Folder')
+  .setDesc('Vault folder where ingested web pages are saved.')
   .addText((text) =>
     text
-      .setPlaceholder("Ingested")
+      .setPlaceholder('Ingested')
       .setValue(this.plugin.settings.ingestFolder)
       .onChange(async (value) => {
         this.plugin.settings.ingestFolder = value;
         await this.plugin.saveSettings();
-      })
+      }),
   );
 ```
 
@@ -364,15 +380,15 @@ new Setting(containerEl)
 
 ## Risks and Mitigations
 
-| Risk | Likelihood | Impact | Mitigation |
-|---|---|---|---|
-| **DOMParser not available** in some Obsidian environment | Low | High | Plugin is desktop-only. Add a runtime check: if `typeof DOMParser === "undefined"`, throw a clear error message. |
-| **Readability fails on non-article pages** (SPAs, login walls, JS-rendered content) | Medium | Low | This is expected behavior. The error message "Could not extract article content" is clear. Users learn which pages work. Future phases could add fallback extractors. |
-| **requestUrl blocked by CORS or returns non-HTML** | Medium | Low | `requestUrl` bypasses CORS (Obsidian's native HTTP). For non-HTML responses, Readability will return null, triggering the standard error path. |
-| **Turndown produces poor Markdown for complex HTML** | Low | Low | Turndown handles standard article HTML well. Edge cases (tables, nested lists) may be imperfect but readable. Turndown plugins can be added later. |
-| **Filename collision loop** | Very Low | Low | Capped at 100 iterations. Practically impossible to hit since it requires 100+ articles with identical titles. |
-| **Large HTML pages cause memory pressure** | Low | Medium | Readability extracts only the article body, discarding the rest. The full HTML is held in memory briefly during parsing but GC'd after extraction. No mitigation needed for typical web pages. |
-| **ChatView constructor signature change breaks view registration** | Low | Medium | The `registerView` callback in `main.ts` is the only call site. Update it in the same step. No external consumers. |
+| Risk                                                                                | Likelihood | Impact | Mitigation                                                                                                                                                                                     |
+| ----------------------------------------------------------------------------------- | ---------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **DOMParser not available** in some Obsidian environment                            | Low        | High   | Plugin is desktop-only. Add a runtime check: if `typeof DOMParser === "undefined"`, throw a clear error message.                                                                               |
+| **Readability fails on non-article pages** (SPAs, login walls, JS-rendered content) | Medium     | Low    | This is expected behavior. The error message "Could not extract article content" is clear. Users learn which pages work. Future phases could add fallback extractors.                          |
+| **requestUrl blocked by CORS or returns non-HTML**                                  | Medium     | Low    | `requestUrl` bypasses CORS (Obsidian's native HTTP). For non-HTML responses, Readability will return null, triggering the standard error path.                                                 |
+| **Turndown produces poor Markdown for complex HTML**                                | Low        | Low    | Turndown handles standard article HTML well. Edge cases (tables, nested lists) may be imperfect but readable. Turndown plugins can be added later.                                             |
+| **Filename collision loop**                                                         | Very Low   | Low    | Capped at 100 iterations. Practically impossible to hit since it requires 100+ articles with identical titles.                                                                                 |
+| **Large HTML pages cause memory pressure**                                          | Low        | Medium | Readability extracts only the article body, discarding the rest. The full HTML is held in memory briefly during parsing but GC'd after extraction. No mitigation needed for typical web pages. |
+| **ChatView constructor signature change breaks view registration**                  | Low        | Medium | The `registerView` callback in `main.ts` is the only call site. Update it in the same step. No external consumers.                                                                             |
 
 ---
 

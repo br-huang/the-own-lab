@@ -59,11 +59,11 @@ ssh-add -l
 
 ### 有 Keychain vs 沒有 Keychain
 
-| | 沒有 Keychain | 有 Keychain |
-|---|---|---|
-| 開機後第一次 SSH | 輸入 passphrase | 輸入 passphrase |
-| 之後（同次開機） | agent 記住，不用輸入 | agent 記住，不用輸入 |
-| **重開機後** | **又要重新輸入** | **Keychain 自動提供，不用輸入** |
+|                  | 沒有 Keychain        | 有 Keychain                     |
+| ---------------- | -------------------- | ------------------------------- |
+| 開機後第一次 SSH | 輸入 passphrase      | 輸入 passphrase                 |
+| 之後（同次開機） | agent 記住，不用輸入 | agent 記住，不用輸入            |
+| **重開機後**     | **又要重新輸入**     | **Keychain 自動提供，不用輸入** |
 
 ---
 

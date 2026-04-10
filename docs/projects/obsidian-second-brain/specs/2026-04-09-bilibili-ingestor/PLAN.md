@@ -14,4 +14,3 @@
 5. Update UI phase text in Chat view and Ingest URL modal.
 6. Run `npm run build`.
 7. Write review/test notes documenting the current verification level.
-

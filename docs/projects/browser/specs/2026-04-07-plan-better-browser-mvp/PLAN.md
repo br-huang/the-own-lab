@@ -48,7 +48,7 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
       "typecheck": "tsc --noEmit"
     }
     ```
-  Also install: `npm install -D concurrently`
+    Also install: `npm install -D concurrently`
 - **Do NOT**: Add any application source code yet. This step is only project scaffolding.
 - **Verify**: `cat package.json` shows correct name, main, scripts. `ls node_modules/electron` exists. `ls node_modules/lit` exists.
 - **Dependencies**: None.
@@ -64,6 +64,7 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
 - **Action**: Create three tsconfig files.
 
 **`tsconfig.json`** (shared base config):
+
 ```json
 {
   "compilerOptions": {
@@ -92,6 +93,7 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
 ```
 
 **`tsconfig.main.json`** (main process — Node target):
+
 ```json
 {
   "extends": "./tsconfig.json",
@@ -107,6 +109,7 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
 ```
 
 **`tsconfig.renderer.json`** (renderer — browser target):
+
 ```json
 {
   "extends": "./tsconfig.json",
@@ -130,6 +133,7 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
 - **Files**: `vite.config.ts`
 - **Action**: Create Vite config that builds the renderer (UI) code.
 - **Details**:
+
   ```typescript
   import { defineConfig } from 'vite';
   import { resolve } from 'path';
@@ -153,6 +157,7 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
     },
   });
   ```
+
 - **Do NOT**: Add any Electron-specific Vite plugins. The renderer is pure browser code — no Node.js access.
 - **Verify**: `npx vite build` should succeed (will warn about missing input file — that is expected, we create it in a later step).
 - **Dependencies**: Steps 1, 2.
@@ -239,13 +244,17 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
 - **Files**: `src/kernel/interfaces/shared.ts`
 - **Action**: Define all shared types used across kernel interfaces.
 - **Signature**:
+
   ```typescript
   export interface KernelEvent<T> {
     subscribe(callback: (data: T) => void): () => void;
   }
 
   export interface Rect {
-    x: number; y: number; width: number; height: number;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
   }
 
   export interface FindOpts {
@@ -271,6 +280,7 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
     isSecure: boolean;
   }
   ```
+
 - **Details**: Copy exactly from DESIGN.md section "Interface Definitions" — the `shared.ts` types.
 - **Do NOT**: Add implementation logic. These are pure type definitions.
 - **Verify**: `npx tsc --project tsconfig.main.json --noEmit` passes.
@@ -284,6 +294,7 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
 - **Action**: Define the `Tab` data type and `TabManager` interface.
 - **Signature**: Copy the full `Tab` interface and `TabManager` interface from DESIGN.md exactly. Import `KernelEvent`, `FindOpts`, `FindResult` from `./shared`.
 - **Details**:
+
   ```typescript
   import { KernelEvent, FindOpts, FindResult } from './shared';
 
@@ -334,6 +345,7 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
     onTabMoved: KernelEvent<{ tabId: string; fromIndex: number; toIndex: number }>;
   }
   ```
+
 - **Do NOT**: Add any implementation. Pure interfaces only.
 - **Verify**: `npx tsc --project tsconfig.main.json --noEmit` passes.
 - **Dependencies**: Step 6.
@@ -345,6 +357,7 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
 - **Files**: `src/kernel/interfaces/workspace.ts`
 - **Action**: Define `Workspace` and `WorkspaceManager` exactly from DESIGN.md.
 - **Signature**:
+
   ```typescript
   import { KernelEvent } from './shared';
 
@@ -374,6 +387,7 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
     onWorkspaceActivated: KernelEvent<{ workspaceId: string; previousId: string }>;
   }
   ```
+
 - **Do NOT**: Implement anything.
 - **Verify**: TypeScript compiles clean.
 - **Dependencies**: Step 6.
@@ -494,6 +508,7 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
 - **Action**: Create the preload script that exposes a typed `window.kernel` API to the renderer via `contextBridge`.
 - **Details**: The preload script uses `contextBridge.exposeInMainWorld` to create a `kernel` object. Each method calls `ipcRenderer.invoke(channel, ...args)`. Each event uses `ipcRenderer.on(channel, callback)`.
 - **Signature**:
+
   ```typescript
   import { contextBridge, ipcRenderer } from 'electron';
   import { IPC_CHANNELS } from './channels';
@@ -575,6 +590,7 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
 
   contextBridge.exposeInMainWorld('kernel', kernelAPI);
   ```
+
 - **Do NOT**: Expose `ipcRenderer` directly. Do NOT expose `require` or any Node.js APIs. The `kernel` object is the ONLY thing exposed.
 - **Verify**: File compiles with `tsc --project tsconfig.main.json --noEmit`.
 - **Dependencies**: Step 11.
@@ -586,6 +602,7 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
 - **Files**: `src/kernel/ipc/register-handlers.ts`
 - **Action**: Create a function that registers `ipcMain.handle` for every channel, delegating to the kernel implementations.
 - **Signature**:
+
   ```typescript
   import { ipcMain, WebContents } from 'electron';
   import { IPC_CHANNELS } from './channels';
@@ -605,50 +622,107 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
     // Tab handlers
     ipcMain.handle(IPC_CHANNELS.tabs.getTab, (_e, tabId: string) => services.tabs.getTab(tabId));
     ipcMain.handle(IPC_CHANNELS.tabs.getAllTabs, () => services.tabs.getAllTabs());
-    ipcMain.handle(IPC_CHANNELS.tabs.getTabsByWorkspace, (_e, wsId: string) => services.tabs.getTabsByWorkspace(wsId));
+    ipcMain.handle(IPC_CHANNELS.tabs.getTabsByWorkspace, (_e, wsId: string) =>
+      services.tabs.getTabsByWorkspace(wsId),
+    );
     ipcMain.handle(IPC_CHANNELS.tabs.getActiveTab, () => services.tabs.getActiveTab());
     ipcMain.handle(IPC_CHANNELS.tabs.createTab, (_e, opts) => services.tabs.createTab(opts));
-    ipcMain.handle(IPC_CHANNELS.tabs.closeTab, (_e, tabId: string) => services.tabs.closeTab(tabId));
-    ipcMain.handle(IPC_CHANNELS.tabs.closeTabs, (_e, tabIds: string[]) => services.tabs.closeTabs(tabIds));
-    ipcMain.handle(IPC_CHANNELS.tabs.activateTab, (_e, tabId: string) => services.tabs.activateTab(tabId));
-    ipcMain.handle(IPC_CHANNELS.tabs.navigateTo, (_e, tabId: string, url: string) => services.tabs.navigateTo(tabId, url));
+    ipcMain.handle(IPC_CHANNELS.tabs.closeTab, (_e, tabId: string) =>
+      services.tabs.closeTab(tabId),
+    );
+    ipcMain.handle(IPC_CHANNELS.tabs.closeTabs, (_e, tabIds: string[]) =>
+      services.tabs.closeTabs(tabIds),
+    );
+    ipcMain.handle(IPC_CHANNELS.tabs.activateTab, (_e, tabId: string) =>
+      services.tabs.activateTab(tabId),
+    );
+    ipcMain.handle(IPC_CHANNELS.tabs.navigateTo, (_e, tabId: string, url: string) =>
+      services.tabs.navigateTo(tabId, url),
+    );
     ipcMain.handle(IPC_CHANNELS.tabs.goBack, (_e, tabId: string) => services.tabs.goBack(tabId));
-    ipcMain.handle(IPC_CHANNELS.tabs.goForward, (_e, tabId: string) => services.tabs.goForward(tabId));
+    ipcMain.handle(IPC_CHANNELS.tabs.goForward, (_e, tabId: string) =>
+      services.tabs.goForward(tabId),
+    );
     ipcMain.handle(IPC_CHANNELS.tabs.reload, (_e, tabId: string) => services.tabs.reload(tabId));
     ipcMain.handle(IPC_CHANNELS.tabs.stop, (_e, tabId: string) => services.tabs.stop(tabId));
-    ipcMain.handle(IPC_CHANNELS.tabs.duplicateTab, (_e, tabId: string) => services.tabs.duplicateTab(tabId));
+    ipcMain.handle(IPC_CHANNELS.tabs.duplicateTab, (_e, tabId: string) =>
+      services.tabs.duplicateTab(tabId),
+    );
     ipcMain.handle(IPC_CHANNELS.tabs.pinTab, (_e, tabId: string) => services.tabs.pinTab(tabId));
-    ipcMain.handle(IPC_CHANNELS.tabs.unpinTab, (_e, tabId: string) => services.tabs.unpinTab(tabId));
+    ipcMain.handle(IPC_CHANNELS.tabs.unpinTab, (_e, tabId: string) =>
+      services.tabs.unpinTab(tabId),
+    );
     ipcMain.handle(IPC_CHANNELS.tabs.muteTab, (_e, tabId: string) => services.tabs.muteTab(tabId));
-    ipcMain.handle(IPC_CHANNELS.tabs.unmuteTab, (_e, tabId: string) => services.tabs.unmuteTab(tabId));
-    ipcMain.handle(IPC_CHANNELS.tabs.moveTab, (_e, tabId: string, toIndex: number) => services.tabs.moveTab(tabId, toIndex));
-    ipcMain.handle(IPC_CHANNELS.tabs.moveTabToWorkspace, (_e, tabId: string, wsId: string) => services.tabs.moveTabToWorkspace(tabId, wsId));
-    ipcMain.handle(IPC_CHANNELS.tabs.setZoom, (_e, tabId: string, factor: number) => services.tabs.setZoom(tabId, factor));
-    ipcMain.handle(IPC_CHANNELS.tabs.findInPage, (_e, tabId: string, query: string, opts?: any) => services.tabs.findInPage(tabId, query, opts));
-    ipcMain.handle(IPC_CHANNELS.tabs.stopFindInPage, (_e, tabId: string) => services.tabs.stopFindInPage(tabId));
+    ipcMain.handle(IPC_CHANNELS.tabs.unmuteTab, (_e, tabId: string) =>
+      services.tabs.unmuteTab(tabId),
+    );
+    ipcMain.handle(IPC_CHANNELS.tabs.moveTab, (_e, tabId: string, toIndex: number) =>
+      services.tabs.moveTab(tabId, toIndex),
+    );
+    ipcMain.handle(IPC_CHANNELS.tabs.moveTabToWorkspace, (_e, tabId: string, wsId: string) =>
+      services.tabs.moveTabToWorkspace(tabId, wsId),
+    );
+    ipcMain.handle(IPC_CHANNELS.tabs.setZoom, (_e, tabId: string, factor: number) =>
+      services.tabs.setZoom(tabId, factor),
+    );
+    ipcMain.handle(IPC_CHANNELS.tabs.findInPage, (_e, tabId: string, query: string, opts?: any) =>
+      services.tabs.findInPage(tabId, query, opts),
+    );
+    ipcMain.handle(IPC_CHANNELS.tabs.stopFindInPage, (_e, tabId: string) =>
+      services.tabs.stopFindInPage(tabId),
+    );
 
     // Workspace handlers
-    ipcMain.handle(IPC_CHANNELS.workspaces.getWorkspace, (_e, id: string) => services.workspaces.getWorkspace(id));
-    ipcMain.handle(IPC_CHANNELS.workspaces.getAllWorkspaces, () => services.workspaces.getAllWorkspaces());
-    ipcMain.handle(IPC_CHANNELS.workspaces.getActiveWorkspace, () => services.workspaces.getActiveWorkspace());
-    ipcMain.handle(IPC_CHANNELS.workspaces.createWorkspace, (_e, opts) => services.workspaces.createWorkspace(opts));
-    ipcMain.handle(IPC_CHANNELS.workspaces.deleteWorkspace, (_e, id: string) => services.workspaces.deleteWorkspace(id));
-    ipcMain.handle(IPC_CHANNELS.workspaces.renameWorkspace, (_e, id: string, name: string) => services.workspaces.renameWorkspace(id, name));
-    ipcMain.handle(IPC_CHANNELS.workspaces.updateWorkspace, (_e, id: string, changes) => services.workspaces.updateWorkspace(id, changes));
-    ipcMain.handle(IPC_CHANNELS.workspaces.activateWorkspace, (_e, id: string) => services.workspaces.activateWorkspace(id));
-    ipcMain.handle(IPC_CHANNELS.workspaces.reorderWorkspace, (_e, id: string, newOrder: number) => services.workspaces.reorderWorkspace(id, newOrder));
+    ipcMain.handle(IPC_CHANNELS.workspaces.getWorkspace, (_e, id: string) =>
+      services.workspaces.getWorkspace(id),
+    );
+    ipcMain.handle(IPC_CHANNELS.workspaces.getAllWorkspaces, () =>
+      services.workspaces.getAllWorkspaces(),
+    );
+    ipcMain.handle(IPC_CHANNELS.workspaces.getActiveWorkspace, () =>
+      services.workspaces.getActiveWorkspace(),
+    );
+    ipcMain.handle(IPC_CHANNELS.workspaces.createWorkspace, (_e, opts) =>
+      services.workspaces.createWorkspace(opts),
+    );
+    ipcMain.handle(IPC_CHANNELS.workspaces.deleteWorkspace, (_e, id: string) =>
+      services.workspaces.deleteWorkspace(id),
+    );
+    ipcMain.handle(IPC_CHANNELS.workspaces.renameWorkspace, (_e, id: string, name: string) =>
+      services.workspaces.renameWorkspace(id, name),
+    );
+    ipcMain.handle(IPC_CHANNELS.workspaces.updateWorkspace, (_e, id: string, changes) =>
+      services.workspaces.updateWorkspace(id, changes),
+    );
+    ipcMain.handle(IPC_CHANNELS.workspaces.activateWorkspace, (_e, id: string) =>
+      services.workspaces.activateWorkspace(id),
+    );
+    ipcMain.handle(IPC_CHANNELS.workspaces.reorderWorkspace, (_e, id: string, newOrder: number) =>
+      services.workspaces.reorderWorkspace(id, newOrder),
+    );
 
     // Navigation handlers
-    ipcMain.handle(IPC_CHANNELS.navigation.resolveInput, (_e, input: string) => services.navigation.resolveInput(input));
-    ipcMain.handle(IPC_CHANNELS.navigation.getSuggestions, (_e, query: string) => services.navigation.getSuggestions(query));
-    ipcMain.handle(IPC_CHANNELS.navigation.getSecurityInfo, (_e, tabId: string) => services.navigation.getSecurityInfo(tabId));
+    ipcMain.handle(IPC_CHANNELS.navigation.resolveInput, (_e, input: string) =>
+      services.navigation.resolveInput(input),
+    );
+    ipcMain.handle(IPC_CHANNELS.navigation.getSuggestions, (_e, query: string) =>
+      services.navigation.getSuggestions(query),
+    );
+    ipcMain.handle(IPC_CHANNELS.navigation.getSecurityInfo, (_e, tabId: string) =>
+      services.navigation.getSecurityInfo(tabId),
+    );
 
     // Window handlers
-    ipcMain.handle(IPC_CHANNELS.window.setContentBounds, (_e, tabId: string, bounds) => services.window.setContentBounds(tabId, bounds));
-    ipcMain.handle(IPC_CHANNELS.window.setSidebarWidth, (_e, width: number) => services.window.setSidebarWidth(width));
+    ipcMain.handle(IPC_CHANNELS.window.setContentBounds, (_e, tabId: string, bounds) =>
+      services.window.setContentBounds(tabId, bounds),
+    );
+    ipcMain.handle(IPC_CHANNELS.window.setSidebarWidth, (_e, width: number) =>
+      services.window.setSidebarWidth(width),
+    );
     ipcMain.handle(IPC_CHANNELS.window.toggleSidebar, () => services.window.toggleSidebar());
   }
   ```
+
 - **Details**: The function takes a `KernelServices` object and registers every channel. This is called once at app startup.
 - **Do NOT**: Import or reference kernel implementations directly — only the interfaces. The wiring happens in `src/main/index.ts`.
 - **Verify**: File compiles. All channels from Step 11 have a corresponding handler registration.
@@ -661,8 +735,16 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
 - **Files**: `src/ui/lib/kernel-client.ts`
 - **Action**: Create a typed wrapper that provides TypeScript types for the `window.kernel` global. This is what all UI components import.
 - **Signature**:
+
   ```typescript
-  import type { Tab, TabManager, WorkspaceManager, NavigationManager, WindowManager, KernelEvent } from '@kernel/interfaces';
+  import type {
+    Tab,
+    TabManager,
+    WorkspaceManager,
+    NavigationManager,
+    WindowManager,
+    KernelEvent,
+  } from '@kernel/interfaces';
 
   // Type definition for what the preload script exposes
   export interface KernelClient {
@@ -697,15 +779,25 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
       getWorkspace(id: string): Promise<import('@kernel/interfaces').Workspace | null>;
       getAllWorkspaces(): Promise<import('@kernel/interfaces').Workspace[]>;
       getActiveWorkspace(): Promise<import('@kernel/interfaces').Workspace>;
-      createWorkspace(opts: { name: string; color?: string; icon?: string }): Promise<import('@kernel/interfaces').Workspace>;
+      createWorkspace(opts: {
+        name: string;
+        color?: string;
+        icon?: string;
+      }): Promise<import('@kernel/interfaces').Workspace>;
       deleteWorkspace(id: string): Promise<void>;
       renameWorkspace(id: string, name: string): Promise<void>;
-      updateWorkspace(id: string, changes: Partial<Omit<import('@kernel/interfaces').Workspace, 'id'>>): Promise<void>;
+      updateWorkspace(
+        id: string,
+        changes: Partial<Omit<import('@kernel/interfaces').Workspace, 'id'>>,
+      ): Promise<void>;
       activateWorkspace(id: string): Promise<void>;
       reorderWorkspace(id: string, newOrder: number): Promise<void>;
       onWorkspaceCreated: KernelEvent<import('@kernel/interfaces').Workspace>;
       onWorkspaceDeleted: KernelEvent<{ workspaceId: string }>;
-      onWorkspaceUpdated: KernelEvent<{ workspaceId: string; changes: Partial<import('@kernel/interfaces').Workspace> }>;
+      onWorkspaceUpdated: KernelEvent<{
+        workspaceId: string;
+        changes: Partial<import('@kernel/interfaces').Workspace>;
+      }>;
       onWorkspaceActivated: KernelEvent<{ workspaceId: string; previousId: string }>;
     };
     navigation: {
@@ -732,6 +824,7 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
     return window.kernel;
   }
   ```
+
 - **Do NOT**: Import Electron modules. This is renderer-only code.
 - **Verify**: File compiles with `tsconfig.renderer.json`.
 - **Dependencies**: Steps 10, 12.
@@ -745,6 +838,7 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
 - **Files**: `src/main/window.ts`
 - **Action**: Create functions to set up the main `BaseWindow` with a UI `WebContentsView` (for the sidebar/toolbar) and manage tab `WebContentsView` instances.
 - **Signature**:
+
   ```typescript
   import { BaseWindow, WebContentsView } from 'electron';
   import path from 'path';
@@ -765,9 +859,14 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
     // Return both the window and uiView
   }
 
-  export function getMainWindow(): BaseWindow | null { return mainWindow; }
-  export function getUIView(): WebContentsView | null { return uiView; }
+  export function getMainWindow(): BaseWindow | null {
+    return mainWindow;
+  }
+  export function getUIView(): WebContentsView | null {
+    return uiView;
+  }
   ```
+
 - **Details**:
   - Use `BaseWindow` (NOT `BrowserWindow`) because we need multiple `WebContentsView` children.
   - The UI view fills the entire window initially. Tab views will be positioned on top of the right portion (content area) by the TabManager.
@@ -785,6 +884,7 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
 - **Files**: `src/main/menu.ts`
 - **Action**: Create the native macOS application menu.
 - **Signature**:
+
   ```typescript
   import { Menu, MenuItemConstructorOptions } from 'electron';
 
@@ -803,6 +903,7 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
     // Return Menu.buildFromTemplate(template)
   }
   ```
+
 - **Details**: The handlers are callbacks that will be connected to kernel services. Do not implement the handlers — just wire the menu accelerators to call the provided callback functions.
 - **Do NOT**: Handle keyboard shortcuts in the menu that we will handle in the renderer (like Cmd+L for omnibar focus). Only include shortcuts that must work even when the renderer is not focused.
 - **Verify**: File compiles.
@@ -815,6 +916,7 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
 - **Files**: `src/main/index.ts`
 - **Action**: Create the app entry point that boots Electron, creates the window, instantiates kernel services, and registers IPC handlers.
 - **Signature**:
+
   ```typescript
   import { app, Menu } from 'electron';
   import { createMainWindow } from './window';
@@ -846,6 +948,7 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
     app.quit();
   });
   ```
+
 - **Details**: For now, leave the kernel service instantiation as TODO comments. The important thing is that the window opens and the UI HTML loads. Steps 20-22 will create the actual implementations, and Step 28 will wire everything together.
 - **Do NOT**: Import kernel implementations that do not exist yet. Use comments as placeholders.
 - **Verify**: After `npm run build`, running `npx electron .` should open a window (with empty/broken UI — that is expected at this stage).
@@ -864,6 +967,7 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
 - **Action**: Create the shared design system.
 
 **`tokens.css`** — CSS custom properties:
+
 ```css
 :root {
   /* Colors — dark theme (primary) */
@@ -871,12 +975,12 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
   --bb-bg-secondary: #16213e;
   --bb-bg-tertiary: #0f3460;
   --bb-bg-hover: rgba(255, 255, 255, 0.06);
-  --bb-bg-active: rgba(255, 255, 255, 0.10);
+  --bb-bg-active: rgba(255, 255, 255, 0.1);
   --bb-text-primary: #e0e0e0;
   --bb-text-secondary: #a0a0b0;
   --bb-text-muted: #606070;
-  --bb-accent: #5B7FFF;
-  --bb-accent-hover: #7B9FFF;
+  --bb-accent: #5b7fff;
+  --bb-accent-hover: #7b9fff;
   --bb-danger: #ff5555;
   --bb-border: rgba(255, 255, 255, 0.08);
 
@@ -909,15 +1013,48 @@ This plan covers the foundational infrastructure: project setup, UI Kernel inter
 ```
 
 **`reset.css`** — Minimal reset:
+
 ```css
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; overflow: hidden; font-family: var(--bb-font-family); font-size: var(--bb-font-size-md); color: var(--bb-text-primary); background: var(--bb-bg-primary); -webkit-font-smoothing: antialiased; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--bb-font-family);
+  font-size: var(--bb-font-size-md);
+  color: var(--bb-text-primary);
+  background: var(--bb-bg-primary);
+  -webkit-font-smoothing: antialiased;
+}
 ```
 
 **`animations.css`**:
+
 ```css
-@keyframes bb-fade-in { from { opacity: 0; } to { opacity: 1; } }
-@keyframes bb-slide-in-left { from { transform: translateX(-8px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes bb-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes bb-slide-in-left {
+  from {
+    transform: translateX(-8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
 ```
 
 - **Do NOT**: Add light mode tokens yet (dark-only for MVP).
@@ -934,26 +1071,31 @@ html, body { height: 100%; overflow: hidden; font-family: var(--bb-font-family);
 - **Action**: Create the root HTML file that Electron loads, and the TypeScript entry point that imports and registers all Web Components.
 
 **`index.html`**:
+
 ```html
 <\!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';">
-  <title>Better Browser</title>
-  <link rel="stylesheet" href="./styles/reset.css">
-  <link rel="stylesheet" href="./styles/tokens.css">
-  <link rel="stylesheet" href="./styles/animations.css">
-</head>
-<body>
-  <bb-app></bb-app>
-  <script type="module" src="./main.ts"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';"
+    />
+    <title>Better Browser</title>
+    <link rel="stylesheet" href="./styles/reset.css" />
+    <link rel="stylesheet" href="./styles/tokens.css" />
+    <link rel="stylesheet" href="./styles/animations.css" />
+  </head>
+  <body>
+    <bb-app></bb-app>
+    <script type="module" src="./main.ts"></script>
+  </body>
 </html>
 ```
 
 **`main.ts`**:
+
 ```typescript
 // Import all components — this registers them as custom elements
 import './components/app/bb-app';
@@ -987,6 +1129,7 @@ console.log('Better Browser UI initialized');
 - **Files**: `src/ui/components/app/bb-app.ts`
 - **Action**: Create the root layout component that arranges sidebar, toolbar, and content area.
 - **Signature**:
+
   ```typescript
   import { LitElement, html, css } from 'lit';
   import { customElement, state } from 'lit/decorators.js';
@@ -1033,7 +1176,7 @@ console.log('Better Browser UI initialized');
     render() {
       return html`
         <bb-sidebar
-          .tabs=${this.tabs.filter(t => t.workspaceId === this.activeWorkspaceId)}
+          .tabs=${this.tabs.filter((t) => t.workspaceId === this.activeWorkspaceId)}
           .workspaces=${this.workspaces}
           .activeWorkspaceId=${this.activeWorkspaceId}
           .activeTabId=${this.activeTabId}
@@ -1041,7 +1184,7 @@ console.log('Better Browser UI initialized');
         ></bb-sidebar>
         <div class="right-panel">
           <bb-toolbar
-            .activeTab=${this.tabs.find(t => t.id === this.activeTabId) ?? null}
+            .activeTab=${this.tabs.find((t) => t.id === this.activeTabId) ?? null}
           ></bb-toolbar>
           <bb-content-area></bb-content-area>
         </div>
@@ -1049,6 +1192,7 @@ console.log('Better Browser UI initialized');
     }
   }
   ```
+
 - **Details**: The `bb-app` component is the top-level state holder in the renderer. It fetches state from the kernel, subscribes to events, and passes data down to children via properties. Children dispatch commands directly to `window.kernel`.
 - **Do NOT**: Put tab management logic here. All mutations go through `window.kernel`. This component only holds reactive UI state.
 - **Verify**: Component class compiles. Custom element is registered as `bb-app`.
@@ -1061,6 +1205,7 @@ console.log('Better Browser UI initialized');
 - **Files**: `src/ui/components/sidebar/bb-sidebar.ts`
 - **Action**: Create the sidebar container that holds the workspace switcher, tab list, and new-tab button.
 - **Signature**:
+
   ```typescript
   import { LitElement, html, css } from 'lit';
   import { customElement, property } from 'lit/decorators.js';
@@ -1084,7 +1229,11 @@ console.log('Better Browser UI initialized');
         /* macOS traffic light spacing */
         padding-top: 38px;
       }
-      .tab-list-container { flex: 1; overflow-y: auto; overflow-x: hidden; }
+      .tab-list-container {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
     `;
 
     render() {
@@ -1097,6 +1246,7 @@ console.log('Better Browser UI initialized');
     }
   }
   ```
+
 - **Details**: The sidebar is a flex column. Workspace switcher at top, scrollable tab list in the middle, new-tab button at bottom. It receives all data via properties from `bb-app`. The `padding-top: 38px` leaves room for macOS traffic light buttons when `titleBarStyle: 'hiddenInset'` is used.
 - **Do NOT**: Fetch data from the kernel. Sidebar receives data from its parent (`bb-app`).
 - **Verify**: Component compiles and renders its children.
@@ -1109,6 +1259,7 @@ console.log('Better Browser UI initialized');
 - **Files**: `src/ui/components/sidebar/bb-tab-item.ts`
 - **Action**: Create the individual tab entry shown in the sidebar.
 - **Signature**:
+
   ```typescript
   import { LitElement, html, css } from 'lit';
   import { customElement, property } from 'lit/decorators.js';
@@ -1179,6 +1330,7 @@ console.log('Better Browser UI initialized');
     }
   }
   ```
+
 - **Details**: This is the most-rendered component. It must be lightweight. Uses CSS `text-overflow: ellipsis` for title truncation. Close button is hidden until hover. Clicking the item activates the tab via kernel. Close button stops propagation to avoid activating while closing.
 - **Do NOT**: Store tab state internally. The `tab` property is the single source of truth, passed down from parent.
 - **Verify**: Component compiles. Has click handler for activate and close.
@@ -1191,6 +1343,7 @@ console.log('Better Browser UI initialized');
 - **Files**: `src/ui/components/sidebar/bb-tab-list.ts`
 - **Action**: Create the scrollable list of tab items.
 - **Signature**:
+
   ```typescript
   import { LitElement, html, css } from 'lit';
   import { customElement, property } from 'lit/decorators.js';
@@ -1202,21 +1355,24 @@ console.log('Better Browser UI initialized');
     @property({ type: String }) activeTabId: string | null = null;
 
     static styles = css`
-      :host { display: block; padding: var(--bb-space-xs) 0; }
+      :host {
+        display: block;
+        padding: var(--bb-space-xs) 0;
+      }
     `;
 
     render() {
       return html`
-        ${this.tabs.map(tab => html`
-          <bb-tab-item
-            .tab=${tab}
-            ?active=${tab.id === this.activeTabId}
-          ></bb-tab-item>
-        `)}
+        ${this.tabs.map(
+          (tab) => html`
+            <bb-tab-item .tab=${tab} ?active=${tab.id === this.activeTabId}></bb-tab-item>
+          `,
+        )}
       `;
     }
   }
   ```
+
 - **Details**: Simple list renderer. Maps over tabs and renders `bb-tab-item` for each. Passes `active` boolean attribute.
 - **Do NOT**: Add virtual scrolling yet — that is a P1 optimization for 50+ tabs.
 - **Verify**: Component compiles.
@@ -1232,6 +1388,7 @@ console.log('Better Browser UI initialized');
 - **Action**: Create the workspace switcher (horizontal row of workspace chips) and individual workspace chip.
 
 **`bb-workspace-switcher`**:
+
 ```typescript
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
@@ -1253,18 +1410,21 @@ export class BbWorkspaceSwitcher extends LitElement {
 
   render() {
     return html`
-      ${this.workspaces.map(ws => html`
-        <bb-workspace-chip
-          .workspace=${ws}
-          ?active=${ws.id === this.activeWorkspaceId}
-        ></bb-workspace-chip>
-      `)}
+      ${this.workspaces.map(
+        (ws) => html`
+          <bb-workspace-chip
+            .workspace=${ws}
+            ?active=${ws.id === this.activeWorkspaceId}
+          ></bb-workspace-chip>
+        `,
+      )}
     `;
   }
 }
 ```
 
 **`bb-workspace-chip`**:
+
 ```typescript
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
@@ -1338,6 +1498,7 @@ export class BbWorkspaceChip extends LitElement {
 - **Files**: `src/ui/components/sidebar/bb-new-tab-button.ts`
 - **Action**: Simple button that creates a new tab in the active workspace.
 - **Signature**:
+
   ```typescript
   import { LitElement, html, css } from 'lit';
   import { customElement } from 'lit/decorators.js';
@@ -1362,7 +1523,10 @@ export class BbWorkspaceChip extends LitElement {
         font-family: var(--bb-font-family);
         transition: all var(--bb-transition-fast);
       }
-      button:hover { background: var(--bb-bg-hover); color: var(--bb-text-primary); }
+      button:hover {
+        background: var(--bb-bg-hover);
+        color: var(--bb-text-primary);
+      }
     `;
 
     private async _onClick() {
@@ -1374,6 +1538,7 @@ export class BbWorkspaceChip extends LitElement {
     }
   }
   ```
+
 - **Verify**: Component compiles. Click calls `kernel.tabs.createTab`.
 - **Dependencies**: Step 14.
 
@@ -1387,6 +1552,7 @@ export class BbWorkspaceChip extends LitElement {
   - `src/ui/components/toolbar/bb-navigation-buttons.ts`
 
 **`bb-toolbar`**:
+
 ```typescript
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
@@ -1409,7 +1575,10 @@ export class BbToolbar extends LitElement {
       /* Allow dragging the window from the toolbar area */
       -webkit-app-region: drag;
     }
-    bb-navigation-buttons, bb-omnibar { -webkit-app-region: no-drag; }
+    bb-navigation-buttons,
+    bb-omnibar {
+      -webkit-app-region: no-drag;
+    }
   `;
 
   render() {
@@ -1422,6 +1591,7 @@ export class BbToolbar extends LitElement {
 ```
 
 **`bb-navigation-buttons`**:
+
 ```typescript
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
@@ -1455,6 +1625,7 @@ export class BbNavigationButtons extends LitElement {
 ```
 
 **`bb-omnibar`**:
+
 ```typescript
 import { LitElement, html, css } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
@@ -1576,6 +1747,7 @@ export class BbOmnibar extends LitElement {
 - **Files**: `src/ui/components/content/bb-content-area.ts`
 - **Action**: Create the content area placeholder. In Electron, actual web pages are rendered by `WebContentsView` instances managed by the main process, positioned over this area. This component serves as the layout placeholder and provides bounds information.
 - **Signature**:
+
   ```typescript
   import { LitElement, html, css } from 'lit';
   import { customElement } from 'lit/decorators.js';
@@ -1604,6 +1776,7 @@ export class BbOmnibar extends LitElement {
     }
   }
   ```
+
 - **Details**: The main process will use `ResizeObserver` or window bounds calculations to position `WebContentsView` instances exactly on top of where this component is rendered. The component itself does not manage web content — it is purely a layout placeholder.
 - **Do NOT**: Try to create `<webview>` or embed any web content from the renderer side.
 - **Verify**: Component compiles.
@@ -1618,6 +1791,7 @@ export class BbOmnibar extends LitElement {
 - **Files**: `src/kernel/impl/kernel-event.ts`
 - **Action**: Create a concrete implementation of the `KernelEvent<T>` interface that manages subscriptions and can emit events.
 - **Signature**:
+
   ```typescript
   import { KernelEvent } from '../interfaces/shared';
 
@@ -1626,7 +1800,9 @@ export class BbOmnibar extends LitElement {
 
     subscribe(callback: (data: T) => void): () => void {
       this.listeners.add(callback);
-      return () => { this.listeners.delete(callback); };
+      return () => {
+        this.listeners.delete(callback);
+      };
     }
 
     emit(data: T): void {
@@ -1636,6 +1812,7 @@ export class BbOmnibar extends LitElement {
     }
   }
   ```
+
 - **Details**: This is used by all kernel implementations to fire events. In addition, the register-handlers code will subscribe to these events and forward them to the renderer via `uiView.webContents.send(channel, data)`.
 - **Do NOT**: Add error handling or async support to emit — keep it simple and synchronous.
 - **Verify**: File compiles.
@@ -1648,6 +1825,7 @@ export class BbOmnibar extends LitElement {
 - **Files**: `src/kernel/impl/electron-tab-manager.ts`
 - **Action**: Create the main TabManager implementation that manages `WebContentsView` instances inside the `BaseWindow`.
 - **Signature**:
+
   ```typescript
   import { BaseWindow, WebContentsView } from 'electron';
   import { Tab, TabManager } from '../interfaces/tab';
@@ -1804,6 +1982,7 @@ export class BbOmnibar extends LitElement {
     }
   }
   ```
+
 - **Details**: This is the most complex class. The key insight is that `WebContentsView` instances are managed as children of `mainWindow.contentView`. Only the active tab's view is visible (positioned over the content area). Inactive tabs have their views removed from the parent or set to zero-size bounds.
   - The `getContentBounds` callback is provided by the main entry point — it calculates the rectangle to the right of the sidebar and below the toolbar.
   - Use `crypto.randomUUID()` for tab IDs (available in Node 19+).
@@ -1818,6 +1997,7 @@ export class BbOmnibar extends LitElement {
 - **Files**: `src/kernel/impl/electron-workspace-manager.ts`
 - **Action**: Create the WorkspaceManager implementation. This is a shallow implementation — workspaces are just metadata. Tab filtering by workspace is done by querying TabManager.
 - **Signature**:
+
   ```typescript
   import { Workspace, WorkspaceManager } from '../interfaces/workspace';
   import { KernelEventEmitter } from './kernel-event';
@@ -1948,6 +2128,7 @@ export class BbOmnibar extends LitElement {
     }
   }
   ```
+
 - **Do NOT**: Implement session persistence. Do NOT implement deep isolation (separate sessions per workspace).
 - **Verify**: File compiles. All WorkspaceManager interface methods are implemented.
 - **Dependencies**: Steps 10, 28, 29.
@@ -1959,6 +2140,7 @@ export class BbOmnibar extends LitElement {
 - **Files**: `src/kernel/impl/electron-navigation-manager.ts`
 - **Action**: Create the NavigationManager that resolves omnibar input to URLs or search queries.
 - **Signature**:
+
   ```typescript
   import { NavigationManager } from '../interfaces/navigation';
   import { Suggestion, SecurityInfo } from '../interfaces/shared';
@@ -1993,6 +2175,7 @@ export class BbOmnibar extends LitElement {
     }
   }
   ```
+
 - **Do NOT**: Implement real suggestion search or full security info. Stubs are fine for Week 1-2.
 - **Verify**: File compiles. `resolveInput` correctly distinguishes URLs from search queries.
 - **Dependencies**: Steps 10, 5.
@@ -2004,6 +2187,7 @@ export class BbOmnibar extends LitElement {
 - **Files**: `src/kernel/impl/electron-window-manager.ts`
 - **Action**: Create the WindowManager that controls sidebar width and content bounds.
 - **Signature**:
+
   ```typescript
   import { BaseWindow, WebContentsView } from 'electron';
   import { WindowManager } from '../interfaces/window';
@@ -2066,6 +2250,7 @@ export class BbOmnibar extends LitElement {
     }
   }
   ```
+
 - **Do NOT**: Implement split view.
 - **Verify**: File compiles. `getContentBounds` correctly subtracts sidebar width and toolbar height.
 - **Dependencies**: Steps 10, 15, 28.
@@ -2079,6 +2264,7 @@ export class BbOmnibar extends LitElement {
 - **Files**: `src/ui/lib/keybindings.ts`
 - **Action**: Create a global keyboard event listener in the renderer that maps shortcut keys to kernel commands.
 - **Signature**:
+
   ```typescript
   // Listen for keyboard shortcuts on the document
   // All shortcuts use Cmd (metaKey) on macOS
@@ -2123,6 +2309,7 @@ export class BbOmnibar extends LitElement {
 
   setupKeybindings();
   ```
+
 - **Details**: The keybinding code runs once when imported. It attaches a single `keydown` listener on `document`. The Cmd+L shortcut needs to reach into the Shadow DOM to focus the omnibar input — this is done via chained `shadowRoot` queries. A cleaner approach would be a custom event, but this works for MVP.
 - **Do NOT**: Handle shortcuts that are already handled by the native macOS menu (Step 16). If there is overlap, the renderer handler takes precedence when the renderer is focused. Keep both since native menu handles cases when renderer is not focused.
 - **Verify**: File compiles. Keybindings are registered on import.
@@ -2137,6 +2324,7 @@ export class BbOmnibar extends LitElement {
 - **Files**: `src/main/index.ts` (modify — replace the TODO comments from Step 17)
 - **Action**: Instantiate all kernel services, register IPC handlers, and wire event forwarding from kernel to renderer.
 - **Signature**:
+
   ```typescript
   import { app, Menu } from 'electron';
   import { createMainWindow } from './window';
@@ -2239,6 +2427,7 @@ export class BbOmnibar extends LitElement {
     app.quit();
   });
   ```
+
 - **Details**: This is the wiring step. The circular dependency between `windowManager` and `tabManager` is resolved by passing a callback (`() => windowManager.getContentBounds()`). The event forwarding subscribes to kernel events and sends them to the renderer via `webContents.send()` — this is how the preload's `onEvent` subscribers receive data.
 - **Do NOT**: Add error handling for edge cases like "last tab closed" or "no workspaces" — keep it simple for now.
 - **Verify**: `npm run build` succeeds. Running `npx electron .` opens a window with sidebar on the left, toolbar at top, and a web page loaded in the content area.
@@ -2251,6 +2440,7 @@ export class BbOmnibar extends LitElement {
 - **Files**: `src/ui/components/app/bb-app.ts` (modify — flesh out connectedCallback from Step 20)
 - **Action**: Implement the full event subscription and initial data loading in `bb-app`.
 - **Details**:
+
   ```typescript
   // Add to the bb-app class:
 
@@ -2322,6 +2512,7 @@ export class BbOmnibar extends LitElement {
     this.unsubscribers = [];
   }
   ```
+
 - **Do NOT**: Add any business logic. This is purely state subscription and propagation.
 - **Verify**: When the app runs, `bb-app` loads initial state and reactively updates when kernel events fire.
 - **Dependencies**: Steps 20, 34.
@@ -2333,6 +2524,7 @@ export class BbOmnibar extends LitElement {
 - **Files**: `src/ui/main.ts` (modify)
 - **Action**: Ensure all component imports are uncommented and the full application builds.
 - **Details**: Update `main.ts` to import all components created in Steps 20-27:
+
   ```typescript
   import './components/app/bb-app';
   import './components/sidebar/bb-sidebar';
@@ -2349,11 +2541,14 @@ export class BbOmnibar extends LitElement {
 
   console.log('Better Browser UI initialized');
   ```
+
   Then run the full build and test:
+
   ```bash
   npm run build
   npx electron .
   ```
+
 - **Verify**:
   1. The app opens a window with a dark sidebar on the left
   2. A toolbar with omnibar appears at the top of the content area
@@ -2374,19 +2569,20 @@ export class BbOmnibar extends LitElement {
 
 ## Summary
 
-| Phase | Steps | Description |
-|-------|-------|-------------|
-| 1: Project Init | 1-5 | package.json, tsconfig, vite, electron-builder, directory structure |
-| 2: Kernel Interfaces | 6-10 | All TypeScript interface definitions for the UI Kernel |
-| 3: IPC Bridge | 11-14 | Channel constants, preload script, handler registration, kernel-client types |
-| 4: Electron Main | 15-17 | BaseWindow setup, macOS menu, app entry point (with TODOs) |
-| 5: Styles & HTML | 18-19 | Design tokens, CSS reset, index.html, main.ts entry |
-| 6: Web Components | 20-27 | bb-app, bb-sidebar, bb-tab-item, bb-tab-list, bb-workspace-*, bb-toolbar, bb-omnibar, bb-content-area |
-| 7: Kernel Impls | 28-32 | KernelEvent utility, ElectronTabManager, ElectronWorkspaceManager, ElectronNavigationManager, ElectronWindowManager |
-| 8: Shortcuts | 33 | Keyboard shortcut manager (Cmd+T/W/L/R) |
-| 9: Wiring | 34-36 | Main entry point wiring, bb-app event subscriptions, full integration test |
+| Phase                | Steps | Description                                                                                                         |
+| -------------------- | ----- | ------------------------------------------------------------------------------------------------------------------- |
+| 1: Project Init      | 1-5   | package.json, tsconfig, vite, electron-builder, directory structure                                                 |
+| 2: Kernel Interfaces | 6-10  | All TypeScript interface definitions for the UI Kernel                                                              |
+| 3: IPC Bridge        | 11-14 | Channel constants, preload script, handler registration, kernel-client types                                        |
+| 4: Electron Main     | 15-17 | BaseWindow setup, macOS menu, app entry point (with TODOs)                                                          |
+| 5: Styles & HTML     | 18-19 | Design tokens, CSS reset, index.html, main.ts entry                                                                 |
+| 6: Web Components    | 20-27 | bb-app, bb-sidebar, bb-tab-item, bb-tab-list, bb-workspace-\*, bb-toolbar, bb-omnibar, bb-content-area              |
+| 7: Kernel Impls      | 28-32 | KernelEvent utility, ElectronTabManager, ElectronWorkspaceManager, ElectronNavigationManager, ElectronWindowManager |
+| 8: Shortcuts         | 33    | Keyboard shortcut manager (Cmd+T/W/L/R)                                                                             |
+| 9: Wiring            | 34-36 | Main entry point wiring, bb-app event subscriptions, full integration test                                          |
 
 At the end of these 36 steps, the developer should have a working browser application where they can:
+
 - See a vertical sidebar with tabs
 - Open new tabs (button or Cmd+T)
 - Close tabs (X button or Cmd+W)

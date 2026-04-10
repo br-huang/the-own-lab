@@ -45,12 +45,14 @@ The implementation is functionally correct, builds cleanly, follows the architec
 `this.fullResponseText` is a single mutable field that serves two purposes: accumulating tokens during live streaming and temporarily holding historical message text during `restoreHistory()`. Because `restoreHistory()` is only called from `onOpen()` before any user interaction, an actual collision is unlikely, but this design makes the class harder to reason about and fragile if the lifecycle ever changes.
 
 **Recommendation**: Extract a local variable in `restoreHistory()`:
+
 ```typescript
 const bubbleEl = this.addAssistantMessage();
 let localText = msg.text;
 // Use a private render helper that takes text as parameter instead of
 // reading this.fullResponseText
 ```
+
 Or add a dedicated `renderMarkdownText(bubbleEl, text)` helper that takes text as a parameter.
 
 ### 2. `vault.cachedRead(file as any)` bypasses type safety (info)
@@ -89,6 +91,7 @@ The `instanceof TFile` guard also prevents accidentally attempting to read a dir
 `this.fullResponseText` is never set in the error path. The `finally` block saves `text: ""` to history. On restore, the error bubble renders empty.
 
 **Fix**:
+
 ```typescript
 } else if (response.type === "error") {
   this.fullResponseText = response.message;
@@ -97,6 +100,7 @@ The `instanceof TFile` guard also prevents accidentally attempting to read a dir
 ```
 
 The same applies to the outer `catch` block:
+
 ```typescript
 } catch (err) {
   this.fullResponseText = (err as Error).message;
@@ -111,6 +115,7 @@ The same applies to the outer `catch` block:
 The `clearBtn` is never disabled when `isStreaming === true`. `handleClearHistory()` does not check `this.isStreaming`. If a user clears during streaming, the `finally` block's `pushHistory()` will write a new single-item history to disk after the clear, silently recreating partial history.
 
 **Fix** — simplest approach:
+
 ```typescript
 private async handleClearHistory(): Promise<void> {
   if (this.isStreaming) {
@@ -126,7 +131,7 @@ private async handleClearHistory(): Promise<void> {
 **Location**: `chat-view.ts:500`
 
 ```typescript
-const confirmed = confirm("Clear all chat history? This cannot be undone.");
+const confirmed = confirm('Clear all chat history? This cannot be undone.');
 ```
 
 The REQUIREMENTS.md says "Obsidian `Modal` or `confirm()` dialog". Using `confirm()` is explicitly listed as acceptable, so this is compliant. However, `confirm()` is a blocking browser dialog that does not match Obsidian's visual theme. A future iteration should use Obsidian's `Modal` API for a consistent experience. Marking as info for awareness.
@@ -155,11 +160,11 @@ The `PluginData` envelope approach is the safest choice for data isolation — i
 
 ## Summary Table
 
-| Issue | Severity | Action Required |
-|-------|----------|-----------------|
-| Error response text not saved to history | warning | Fix before release |
-| Clear History race during streaming | warning | Fix before release |
-| `vault.cachedRead(file as any)` type safety | info | Fix in follow-up |
-| Shared `fullResponseText` field design | warning | Refactor in follow-up |
-| `confirm()` vs Obsidian Modal | info | Improve in follow-up |
-| Chip label `@name` vs `@[[name]]` spec wording | info | Clarify intent |
+| Issue                                          | Severity | Action Required       |
+| ---------------------------------------------- | -------- | --------------------- |
+| Error response text not saved to history       | warning  | Fix before release    |
+| Clear History race during streaming            | warning  | Fix before release    |
+| `vault.cachedRead(file as any)` type safety    | info     | Fix in follow-up      |
+| Shared `fullResponseText` field design         | warning  | Refactor in follow-up |
+| `confirm()` vs Obsidian Modal                  | info     | Improve in follow-up  |
+| Chip label `@name` vs `@[[name]]` spec wording | info     | Clarify intent        |

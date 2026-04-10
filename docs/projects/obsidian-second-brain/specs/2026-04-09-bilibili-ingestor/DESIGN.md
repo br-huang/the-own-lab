@@ -42,4 +42,3 @@ The ingestor will:
 - `yt-dlp` JSON field shape is not fully controlled by this plugin, so parsing should tolerate
   missing optional fields.
 - Auth-detection relies on stderr/stdout text matching; the fallback logic should stay conservative.
-

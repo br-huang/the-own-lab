@@ -1,6 +1,7 @@
 # Code Review: YouTube Ingestor
 
 ## Summary
+
 - Files reviewed: 4 (youtube-ingestor.ts new, url-ingestor.ts modified, chat-view.ts modified, ingest-url-modal.ts modified)
 - Issues found: 0 critical, 2 warning, 2 info
 - Verdict: **APPROVED**

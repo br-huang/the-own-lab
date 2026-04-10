@@ -19,6 +19,7 @@ Read `DESIGN.md` in this same directory for all type definitions, architecture d
 ### Step 1: Initialize the Astro project
 
 **Files to create:**
+
 - `ROOT/package.json`
 - `ROOT/tsconfig.json`
 - `ROOT/astro.config.ts`
@@ -28,36 +29,42 @@ Read `DESIGN.md` in this same directory for all type definitions, architecture d
 **Action:**
 
 1. From `ROOT`, run:
+
    ```bash
    pnpm create astro@latest . --template minimal --typescript strict --no-install --no-git
    ```
+
    If the command fails because the directory is not empty, use `--force` or create in a temp directory and move files. The `docs/` directory must be preserved.
 
 2. Install dependencies:
+
    ```bash
    pnpm add astro@^5 @astrojs/mdx @astrojs/react react@^19 react-dom@^19 tailwindcss@^4 @tailwindcss/vite@^4 @codesandbox/sandpack-react@^2
    pnpm add -D typescript@^5.5 pagefind@^1 @types/react@^19 @types/react-dom@^19
    ```
 
 3. Replace `ROOT/astro.config.ts` with:
+
    ```typescript
-   import { defineConfig } from "astro/config";
-   import mdx from "@astrojs/mdx";
-   import react from "@astrojs/react";
-   import tailwindcss from "@tailwindcss/vite";
+   import { defineConfig } from 'astro/config';
+   import mdx from '@astrojs/mdx';
+   import react from '@astrojs/react';
+   import tailwindcss from '@tailwindcss/vite';
 
    export default defineConfig({
-     site: "https://rongying.co", // placeholder; update before production deploy
-     output: "static",
+     site: 'https://rongying.co', // placeholder; update before production deploy
+     output: 'static',
      integrations: [mdx(), react()],
      vite: {
        plugins: [tailwindcss()],
      },
    });
    ```
+
    Note: Tailwind v4 does NOT use an `@astrojs/tailwind` integration. It uses the `@tailwindcss/vite` plugin directly in the Vite config. There is NO `tailwind.config.js` or `tailwind.config.ts` file — all configuration is done in CSS.
 
 4. Replace `ROOT/tsconfig.json` with:
+
    ```json
    {
      "extends": "astro/tsconfigs/strict",
@@ -73,26 +80,51 @@ Read `DESIGN.md` in this same directory for all type definitions, architecture d
    ```
 
 5. Create `ROOT/src/styles/global.css`:
+
    ```css
-   @import "tailwindcss";
+   @import 'tailwindcss';
 
    /*
     * Phase 1 temporary prose styles.
     * Tailwind v4 typography plugin may be added later.
     * For now, basic content styling via custom CSS.
     */
-   .prose h1 { @apply text-3xl font-bold mt-8 mb-4; }
-   .prose h2 { @apply text-2xl font-semibold mt-6 mb-3; }
-   .prose h3 { @apply text-xl font-semibold mt-4 mb-2; }
-   .prose p { @apply my-3 leading-7; }
-   .prose ul { @apply list-disc pl-6 my-3; }
-   .prose ol { @apply list-decimal pl-6 my-3; }
-   .prose li { @apply my-1; }
-   .prose code { @apply bg-gray-100 px-1.5 py-0.5 rounded text-sm; }
-   .prose pre { @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4; }
-   .prose pre code { @apply bg-transparent p-0; }
-   .prose a { @apply text-blue-600 underline; }
-   .prose blockquote { @apply border-l-4 border-gray-300 pl-4 italic my-4; }
+   .prose h1 {
+     @apply text-3xl font-bold mt-8 mb-4;
+   }
+   .prose h2 {
+     @apply text-2xl font-semibold mt-6 mb-3;
+   }
+   .prose h3 {
+     @apply text-xl font-semibold mt-4 mb-2;
+   }
+   .prose p {
+     @apply my-3 leading-7;
+   }
+   .prose ul {
+     @apply list-disc pl-6 my-3;
+   }
+   .prose ol {
+     @apply list-decimal pl-6 my-3;
+   }
+   .prose li {
+     @apply my-1;
+   }
+   .prose code {
+     @apply bg-gray-100 px-1.5 py-0.5 rounded text-sm;
+   }
+   .prose pre {
+     @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4;
+   }
+   .prose pre code {
+     @apply bg-transparent p-0;
+   }
+   .prose a {
+     @apply text-blue-600 underline;
+   }
+   .prose blockquote {
+     @apply border-l-4 border-gray-300 pl-4 italic my-4;
+   }
    ```
 
 6. Ensure `ROOT/src/env.d.ts` contains:
@@ -101,12 +133,14 @@ Read `DESIGN.md` in this same directory for all type definitions, architecture d
    ```
 
 **Do NOT:**
+
 - Create a `tailwind.config.ts` or `tailwind.config.js` file (Tailwind v4 does not use one)
 - Install `@astrojs/tailwind` (Tailwind v4 uses `@tailwindcss/vite` directly)
 - Install `@astrojs/cloudflare` (not needed for static output)
 - Delete the existing `docs/` directory
 
 **Verify:**
+
 - Run `pnpm run dev`. The Astro dev server starts without errors.
 - Visit `http://localhost:4321/`. You see the default Astro page or a blank page (no crash).
 - `pnpm astro check` reports no type errors.
@@ -116,6 +150,7 @@ Read `DESIGN.md` in this same directory for all type definitions, architecture d
 ### Step 2: Create shared type definitions
 
 **Files to create:**
+
 - `ROOT/src/types/docs.ts`
 
 **Action:**
@@ -123,7 +158,7 @@ Read `DESIGN.md` in this same directory for all type definitions, architecture d
 Create `ROOT/src/types/docs.ts` with the following content (copied verbatim from DESIGN.md "Key Interfaces" section):
 
 ```typescript
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 
 // ─── _meta.ts Schema ───
 
@@ -144,7 +179,7 @@ export interface MetaConfig {
 // ─── Sidebar Tree ───
 
 export interface SidebarLink {
-  kind: "link";
+  kind: 'link';
   title: string;
   href: string;
   order: number;
@@ -153,7 +188,7 @@ export interface SidebarLink {
 }
 
 export interface SidebarSection {
-  kind: "section";
+  kind: 'section';
   title: string;
   order: number;
   children: SidebarNode[];
@@ -175,12 +210,12 @@ export interface TocHeading {
 
 export interface CodePlaygroundProps {
   files: Record<string, string>;
-  template?: "react-ts" | "react" | "vanilla-ts" | "vanilla";
+  template?: 'react-ts' | 'react' | 'vanilla-ts' | 'vanilla';
   showPreview?: boolean;
 }
 
 export interface ParamDef {
-  type: "number" | "boolean" | "select";
+  type: 'number' | 'boolean' | 'select';
   default: number | boolean | string;
   min?: number;
   max?: number;
@@ -207,9 +242,11 @@ export interface AlgoVisualizerProps {
 ```
 
 **Do NOT:**
+
 - Add any runtime logic to this file — it is types only.
 
 **Verify:**
+
 - `pnpm astro check` passes with no errors.
 
 ---
@@ -217,6 +254,7 @@ export interface AlgoVisualizerProps {
 ### Step 3: Configure Astro Content Collections for docs
 
 **Files to create:**
+
 - `ROOT/src/content.config.ts`
 
 **Action:**
@@ -224,11 +262,11 @@ export interface AlgoVisualizerProps {
 Create `ROOT/src/content.config.ts` (note: Astro 5.x uses `content.config.ts` at the `src/` level, NOT `src/content/config.ts`):
 
 ```typescript
-import { defineCollection, z } from "astro:content";
-import { glob } from "astro/loaders";
+import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
 
 const docs = defineCollection({
-  loader: glob({ pattern: "**/*.mdx", base: "./src/content/docs" }),
+  loader: glob({ pattern: '**/*.mdx', base: './src/content/docs' }),
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
@@ -241,15 +279,18 @@ export const collections = { docs };
 ```
 
 Key points about Astro 5.x Content Layer API:
+
 - The file is `src/content.config.ts` (not `src/content/config.ts`).
 - Uses `glob()` loader from `astro/loaders`, not `type: "content"`.
 - The `glob()` loader generates IDs from file paths relative to `base`. For a file at `src/content/docs/algorithms/binary-search.mdx`, the ID will be `algorithms/binary-search`.
 
 **Do NOT:**
+
 - Create `src/content/config.ts` (that is the old Astro v4 location).
 - Use `type: "content"` in `defineCollection` (that is the old API).
 
 **Verify:**
+
 - No verification step yet — we need content files first (Step 4).
 
 ---
@@ -257,6 +298,7 @@ Key points about Astro 5.x Content Layer API:
 ### Step 4: Create sample content and `_meta.ts` fixtures
 
 **Files to create:**
+
 - `ROOT/src/content/docs/_meta.ts`
 - `ROOT/src/content/docs/getting-started.mdx`
 - `ROOT/src/content/docs/algorithms/_meta.ts`
@@ -265,22 +307,24 @@ Key points about Astro 5.x Content Layer API:
 **Action:**
 
 1. Create `ROOT/src/content/docs/_meta.ts`:
+
    ```typescript
-   import type { MetaConfig } from "@/types/docs";
+   import type { MetaConfig } from '@/types/docs';
 
    export default {
      items: {
-       "getting-started": { title: "Getting Started", order: 1 },
-       "algorithms": { order: 2 },
+       'getting-started': { title: 'Getting Started', order: 1 },
+       algorithms: { order: 2 },
      },
    } satisfies MetaConfig;
    ```
 
 2. Create `ROOT/src/content/docs/getting-started.mdx`:
-   ```mdx
+
+   ````mdx
    ---
-   title: "Getting Started"
-   description: "Introduction to the docs framework."
+   title: 'Getting Started'
+   description: 'Introduction to the docs framework.'
    order: 1
    ---
 
@@ -295,6 +339,7 @@ Key points about Astro 5.x Content Layer API:
    ```bash
    pnpm install
    ```
+   ````
 
    ## Configuration
 
@@ -303,25 +348,30 @@ Key points about Astro 5.x Content Layer API:
    ### Advanced Options
 
    These options are for advanced users.
+
+   ```
+
    ```
 
 3. Create `ROOT/src/content/docs/algorithms/_meta.ts`:
+
    ```typescript
-   import type { MetaConfig } from "@/types/docs";
+   import type { MetaConfig } from '@/types/docs';
 
    export default {
-     label: "Algorithms",
+     label: 'Algorithms',
      items: {
-       "binary-search": { title: "Binary Search", order: 1 },
+       'binary-search': { title: 'Binary Search', order: 1 },
      },
    } satisfies MetaConfig;
    ```
 
 4. Create `ROOT/src/content/docs/algorithms/binary-search.mdx`:
-   ```mdx
+
+   ````mdx
    ---
-   title: "Binary Search"
-   description: "A walkthrough of the binary search algorithm."
+   title: 'Binary Search'
+   description: 'A walkthrough of the binary search algorithm.'
    order: 1
    ---
 
@@ -340,7 +390,8 @@ Key points about Astro 5.x Content Layer API:
 
    ```typescript
    function binarySearch(arr: number[], target: number): number {
-     let lo = 0, hi = arr.length - 1;
+     let lo = 0,
+       hi = arr.length - 1;
      while (lo <= hi) {
        const mid = Math.floor((lo + hi) / 2);
        if (arr[mid] === target) return mid;
@@ -350,17 +401,22 @@ Key points about Astro 5.x Content Layer API:
      return -1;
    }
    ```
+   ````
 
    ### Complexity Analysis
-
    - Time: O(log n)
    - Space: O(1)
+
+   ```
+
    ```
 
 **Do NOT:**
+
 - Add interactive components to sample content yet — those are added in Phase D after the components exist.
 
 **Verify:**
+
 - Run `pnpm run dev`. No build errors related to content collection.
 - In the terminal, Astro should report finding the content collection entries.
 
@@ -371,6 +427,7 @@ Key points about Astro 5.x Content Layer API:
 ### Step 5: Implement the sidebar tree builder
 
 **Files to create:**
+
 - `ROOT/src/lib/sidebar.ts`
 
 **Action:**
@@ -557,10 +614,12 @@ export function getPagination(
 ```
 
 **Do NOT:**
+
 - Import from `fs` or `path` — this code runs in Astro's Vite context, not Node.
 - Use synchronous file reads — `getCollection` and `import.meta.glob` are the data sources.
 
 **Verify:**
+
 - `pnpm astro check` passes with no type errors.
 - Full verification happens once the route is built (Step 8).
 
@@ -569,6 +628,7 @@ export function getPagination(
 ### Step 6: Implement the TOC heading filter utility
 
 **Files to create:**
+
 - `ROOT/src/lib/toc.ts`
 
 **Action:**
@@ -576,23 +636,25 @@ export function getPagination(
 Create `ROOT/src/lib/toc.ts`:
 
 ```typescript
-import type { TocHeading } from "@/types/docs";
+import type { TocHeading } from '@/types/docs';
 
 /**
  * Filter headings from Astro's render() output to only h2 and h3.
  * The input comes from `entry.render()` which returns `{ headings }`.
  */
 export function filterTocHeadings(
-  headings: Array<{ depth: number; slug: string; text: string }>
+  headings: Array<{ depth: number; slug: string; text: string }>,
 ): TocHeading[] {
   return headings.filter((h) => h.depth === 2 || h.depth === 3);
 }
 ```
 
 **Do NOT:**
+
 - Add scroll-spy logic here. That lives in the React `TableOfContents.tsx` component.
 
 **Verify:**
+
 - `pnpm astro check` passes.
 
 ---
@@ -602,6 +664,7 @@ export function filterTocHeadings(
 ### Step 7: Build the DocsLayout
 
 **Files to create:**
+
 - `ROOT/src/layouts/DocsLayout.astro`
 
 **Action:**
@@ -673,10 +736,12 @@ const { title, description, sidebar, headings, prev, next } = Astro.props;
 ```
 
 **Do NOT:**
+
 - Import components that do not exist yet — we create them in the following steps before this layout is actually rendered.
 - Add `<link>` tags for CSS — Tailwind is imported via `global.css` in the frontmatter.
 
 **Verify:**
+
 - File parses without syntax errors: `pnpm astro check`.
 - Full visual verification after all components exist (end of Phase C).
 
@@ -685,12 +750,14 @@ const { title, description, sidebar, headings, prev, next } = Astro.props;
 ### Step 8: Build the Sidebar Astro components
 
 **Files to create:**
+
 - `ROOT/src/components/docs/Sidebar.astro`
 - `ROOT/src/components/docs/SidebarSection.astro`
 
 **Action:**
 
 1. Create `ROOT/src/components/docs/Sidebar.astro`:
+
    ```astro
    ---
    import type { SidebarNode } from "@/types/docs";
@@ -730,6 +797,7 @@ const { title, description, sidebar, headings, prev, next } = Astro.props;
    ```
 
 2. Create `ROOT/src/components/docs/SidebarSection.astro`:
+
    ```astro
    ---
    import type { SidebarSection as SidebarSectionType } from "@/types/docs";
@@ -755,9 +823,11 @@ const { title, description, sidebar, headings, prev, next } = Astro.props;
    Note: `Sidebar.astro` and `SidebarSection.astro` are mutually recursive. Astro handles this fine because it resolves components at build time per-render.
 
 **Do NOT:**
+
 - Add JavaScript to these components — they are fully static, rendered at build time.
 
 **Verify:**
+
 - `pnpm astro check` passes.
 
 ---
@@ -765,6 +835,7 @@ const { title, description, sidebar, headings, prev, next } = Astro.props;
 ### Step 9: Build the Pagination component
 
 **Files to create:**
+
 - `ROOT/src/components/docs/Pagination.astro`
 
 **Action:**
@@ -804,9 +875,11 @@ const { prev, next } = Astro.props;
 ```
 
 **Do NOT:**
+
 - Add any JavaScript.
 
 **Verify:**
+
 - `pnpm astro check` passes.
 
 ---
@@ -814,6 +887,7 @@ const { prev, next } = Astro.props;
 ### Step 10: Build the TableOfContents React component
 
 **Files to create:**
+
 - `ROOT/src/components/docs/TableOfContents.tsx`
 
 **Action:**
@@ -821,15 +895,15 @@ const { prev, next } = Astro.props;
 Create `ROOT/src/components/docs/TableOfContents.tsx`:
 
 ```tsx
-import { useState, useEffect, useRef } from "react";
-import type { TocHeading } from "@/types/docs";
+import { useState, useEffect, useRef } from 'react';
+import type { TocHeading } from '@/types/docs';
 
 interface Props {
   headings: TocHeading[];
 }
 
 export default function TableOfContents({ headings }: Props) {
-  const [activeId, setActiveId] = useState<string>("");
+  const [activeId, setActiveId] = useState<string>('');
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
@@ -850,9 +924,9 @@ export default function TableOfContents({ headings }: Props) {
         }
       },
       {
-        rootMargin: "0px 0px -80% 0px",
+        rootMargin: '0px 0px -80% 0px',
         threshold: 0,
-      }
+      },
     );
 
     for (const el of elements) {
@@ -875,11 +949,11 @@ export default function TableOfContents({ headings }: Props) {
             <a
               href={`#${heading.slug}`}
               className={`block text-sm py-0.5 transition-colors ${
-                heading.depth === 3 ? "pl-3" : ""
+                heading.depth === 3 ? 'pl-3' : ''
               } ${
                 activeId === heading.slug
-                  ? "text-blue-600 font-medium"
-                  : "text-gray-500 hover:text-gray-900"
+                  ? 'text-blue-600 font-medium'
+                  : 'text-gray-500 hover:text-gray-900'
               }`}
             >
               {heading.text}
@@ -893,10 +967,12 @@ export default function TableOfContents({ headings }: Props) {
 ```
 
 **Do NOT:**
+
 - Use scroll event listeners — IntersectionObserver is the correct approach.
 - Add this component with `client:load` — it must use `client:visible` (set in the layout).
 
 **Verify:**
+
 - `pnpm astro check` passes.
 
 ---
@@ -904,6 +980,7 @@ export default function TableOfContents({ headings }: Props) {
 ### Step 11: Build the Search React component (Pagefind)
 
 **Files to create:**
+
 - `ROOT/src/components/docs/Search.tsx`
 
 **Action:**
@@ -994,10 +1071,12 @@ export default function Search() {
 ```
 
 **Do NOT:**
+
 - Import Pagefind at module top level — it must be lazy-loaded.
 - Expect search to work in `dev` mode — it only works after `pnpm run build`.
 
 **Verify:**
+
 - `pnpm astro check` passes.
 - Search will be verified end-to-end after the build step (Phase E).
 
@@ -1006,6 +1085,7 @@ export default function Search() {
 ### Step 12: Build the MobileNav React component
 
 **Files to create:**
+
 - `ROOT/src/components/docs/MobileNav.tsx`
 
 **Action:**
@@ -1091,9 +1171,11 @@ export default function MobileNav({ sidebar }: Props) {
 ```
 
 **Do NOT:**
+
 - Use a portal or complex animation library — keep it simple for Phase 1.
 
 **Verify:**
+
 - `pnpm astro check` passes.
 
 ---
@@ -1101,6 +1183,7 @@ export default function MobileNav({ sidebar }: Props) {
 ### Step 13: Build the dynamic route `[...slug].astro`
 
 **Files to create:**
+
 - `ROOT/src/pages/docs/[...slug].astro`
 
 **Action:**
@@ -1148,14 +1231,17 @@ const { prev, next } = getPagination(sidebar, entry.id);
 ```
 
 Key points about Astro 5.x Content Layer API:
+
 - `render()` is imported from `astro:content`, not called as `entry.render()`.
 - The `entry.id` is the path-based ID generated by the glob loader (e.g., `"algorithms/binary-search"`), which is also used as the route slug.
 
 **Do NOT:**
+
 - Use `entry.render()` — that is the Astro v4 API. Use `render(entry)` from `astro:content`.
 - Use `entry.slug` — Astro 5.x Content Layer uses `entry.id` for path-based identification.
 
 **Verify:**
+
 - Run `pnpm run dev`.
 - Visit `http://localhost:4321/docs/getting-started/`. You should see the three-column layout with the sidebar on the left, the Getting Started content in the center, and a TOC on the right.
 - Visit `http://localhost:4321/docs/algorithms/binary-search/`. The sidebar should show "Algorithms" as a collapsible section with "Binary Search" highlighted as active.
@@ -1169,6 +1255,7 @@ Key points about Astro 5.x Content Layer API:
 ### Step 14: Build the CodePlayground component
 
 **Files to create:**
+
 - `ROOT/src/components/islands/CodePlayground.tsx`
 
 **Action:**
@@ -1181,26 +1268,20 @@ import {
   SandpackLayout,
   SandpackCodeEditor,
   SandpackPreview,
-} from "@codesandbox/sandpack-react";
-import type { CodePlaygroundProps } from "@/types/docs";
+} from '@codesandbox/sandpack-react';
+import type { CodePlaygroundProps } from '@/types/docs';
 
 export default function CodePlayground({
   files,
-  template = "react-ts",
+  template = 'react-ts',
   showPreview = true,
 }: CodePlaygroundProps) {
   return (
     <div className="my-6 rounded-lg overflow-hidden border border-gray-200">
       <SandpackProvider template={template} files={files}>
         <SandpackLayout>
-          <SandpackCodeEditor
-            showLineNumbers
-            showTabs
-            style={{ minHeight: "300px" }}
-          />
-          {showPreview && (
-            <SandpackPreview style={{ minHeight: "300px" }} />
-          )}
+          <SandpackCodeEditor showLineNumbers showTabs style={{ minHeight: '300px' }} />
+          {showPreview && <SandpackPreview style={{ minHeight: '300px' }} />}
         </SandpackLayout>
       </SandpackProvider>
     </div>
@@ -1209,10 +1290,12 @@ export default function CodePlayground({
 ```
 
 **Do NOT:**
+
 - Add `client:visible` here — that directive is added in the MDX file or layout where the component is used.
 - Add Sandpack themes or customizations beyond the defaults — keep it minimal for Phase 1.
 
 **Verify:**
+
 - `pnpm astro check` passes.
 - Full visual verification after sample content is updated (Step 17).
 
@@ -1221,6 +1304,7 @@ export default function CodePlayground({
 ### Step 15: Build the ParamDemo component
 
 **Files to create:**
+
 - `ROOT/src/components/islands/ParamDemo.tsx`
 
 **Action:**
@@ -1228,8 +1312,8 @@ export default function CodePlayground({
 Create `ROOT/src/components/islands/ParamDemo.tsx`:
 
 ```tsx
-import { useState } from "react";
-import type { ParamDemoProps, ParamDef } from "@/types/docs";
+import { useState } from 'react';
+import type { ParamDemoProps, ParamDef } from '@/types/docs';
 
 function initValues(params: Record<string, ParamDef>): Record<string, number | boolean | string> {
   const values: Record<string, number | boolean | string> = {};
@@ -1252,7 +1336,7 @@ function ControlInput({
 }) {
   const label = def.label ?? name;
 
-  if (def.type === "number") {
+  if (def.type === 'number') {
     return (
       <label className="flex items-center gap-3 text-sm">
         <span className="w-24 text-gray-700">{label}</span>
@@ -1270,7 +1354,7 @@ function ControlInput({
     );
   }
 
-  if (def.type === "boolean") {
+  if (def.type === 'boolean') {
     return (
       <label className="flex items-center gap-3 text-sm">
         <span className="w-24 text-gray-700">{label}</span>
@@ -1284,7 +1368,7 @@ function ControlInput({
     );
   }
 
-  if (def.type === "select" && def.options) {
+  if (def.type === 'select' && def.options) {
     return (
       <label className="flex items-center gap-3 text-sm">
         <span className="w-24 text-gray-700">{label}</span>
@@ -1294,7 +1378,9 @@ function ControlInput({
           className="border border-gray-300 rounded px-2 py-1 text-sm"
         >
           {def.options.map((opt) => (
-            <option key={opt} value={opt}>{opt}</option>
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
           ))}
         </select>
       </label>
@@ -1331,9 +1417,11 @@ export default function ParamDemo({ params, children }: ParamDemoProps) {
 ```
 
 **Do NOT:**
+
 - Store visualization logic in this component — the render prop (`children`) handles that.
 
 **Verify:**
+
 - `pnpm astro check` passes.
 
 ---
@@ -1341,6 +1429,7 @@ export default function ParamDemo({ params, children }: ParamDemoProps) {
 ### Step 16: Build the AlgoVisualizer component
 
 **Files to create:**
+
 - `ROOT/src/components/islands/AlgoVisualizer.tsx`
 
 **Action:**
@@ -1439,9 +1528,11 @@ export default function AlgoVisualizer({
 ```
 
 **Do NOT:**
+
 - Include any specific visualization logic — this is generic.
 
 **Verify:**
+
 - `pnpm astro check` passes.
 
 ---
@@ -1449,20 +1540,22 @@ export default function AlgoVisualizer({
 ### Step 17: Update sample content with interactive components
 
 **Files to modify:**
+
 - `ROOT/src/content/docs/getting-started.mdx`
 - `ROOT/src/content/docs/algorithms/binary-search.mdx`
 
 **Action:**
 
 1. Replace `ROOT/src/content/docs/getting-started.mdx` with:
+
    ````mdx
    ---
-   title: "Getting Started"
-   description: "Introduction to the docs framework."
+   title: 'Getting Started'
+   description: 'Introduction to the docs framework.'
    order: 1
    ---
 
-   import CodePlayground from "@/components/islands/CodePlayground";
+   import CodePlayground from '@/components/islands/CodePlayground';
 
    # Getting Started
 
@@ -1483,9 +1576,9 @@ export default function AlgoVisualizer({
    <CodePlayground
      client:visible
      files={{
-       "/App.tsx": `export default function App() {
+       '/App.tsx': `export default function App() {
      return <h1>Hello from the docs framework\!</h1>;
-   }`
+   }`,
      }}
    />
 
@@ -1499,15 +1592,16 @@ export default function AlgoVisualizer({
    ````
 
 2. Replace `ROOT/src/content/docs/algorithms/binary-search.mdx` with:
+
    ````mdx
    ---
-   title: "Binary Search"
-   description: "A walkthrough of the binary search algorithm."
+   title: 'Binary Search'
+   description: 'A walkthrough of the binary search algorithm.'
    order: 1
    ---
 
-   import AlgoVisualizer from "@/components/islands/AlgoVisualizer";
-   import ParamDemo from "@/components/islands/ParamDemo";
+   import AlgoVisualizer from '@/components/islands/AlgoVisualizer';
+   import ParamDemo from '@/components/islands/ParamDemo';
 
    # Binary Search
 
@@ -1523,10 +1617,10 @@ export default function AlgoVisualizer({
    ## Step-Through Visualization
 
    export const binarySearchSteps = [
-     { label: "Start", data: { array: [1, 3, 5, 7, 9, 11], lo: 0, hi: 5, mid: 2, target: 7 } },
-     { label: "Go right", data: { array: [1, 3, 5, 7, 9, 11], lo: 3, hi: 5, mid: 4, target: 7 } },
-     { label: "Go left", data: { array: [1, 3, 5, 7, 9, 11], lo: 3, hi: 3, mid: 3, target: 7 } },
-     { label: "Found\!", data: { array: [1, 3, 5, 7, 9, 11], lo: 3, hi: 3, mid: 3, target: 7 } },
+     { label: 'Start', data: { array: [1, 3, 5, 7, 9, 11], lo: 0, hi: 5, mid: 2, target: 7 } },
+     { label: 'Go right', data: { array: [1, 3, 5, 7, 9, 11], lo: 3, hi: 5, mid: 4, target: 7 } },
+     { label: 'Go left', data: { array: [1, 3, 5, 7, 9, 11], lo: 3, hi: 3, mid: 3, target: 7 } },
+     { label: 'Found\!', data: { array: [1, 3, 5, 7, 9, 11], lo: 3, hi: 3, mid: 3, target: 7 } },
    ];
 
    export const StepView = ({ data, index }) => (
@@ -1536,16 +1630,20 @@ export default function AlgoVisualizer({
            <div
              key={i}
              className={`w-10 h-10 flex items-center justify-center rounded border ${
-               i === data.mid ? "bg-yellow-200 border-yellow-500" :
-               i >= data.lo && i <= data.hi ? "bg-blue-50 border-blue-300" :
-               "bg-gray-50 border-gray-200"
+               i === data.mid
+                 ? 'bg-yellow-200 border-yellow-500'
+                 : i >= data.lo && i <= data.hi
+                   ? 'bg-blue-50 border-blue-300'
+                   : 'bg-gray-50 border-gray-200'
              }`}
            >
              {val}
            </div>
          ))}
        </div>
-       <div className="text-gray-500">Target: {data.target} | lo: {data.lo} | hi: {data.hi} | mid: {data.mid}</div>
+       <div className="text-gray-500">
+         Target: {data.target} | lo: {data.lo} | hi: {data.hi} | mid: {data.mid}
+       </div>
      </div>
    );
 
@@ -1555,7 +1653,12 @@ export default function AlgoVisualizer({
 
    ## Array Size Impact
 
-   <ParamDemo params={{ size: { type: "number", default: 10, min: 1, max: 1000, step: 1, label: "Array size (n)" } }} client:visible>
+   <ParamDemo
+     params={{
+       size: { type: 'number', default: 10, min: 1, max: 1000, step: 1, label: 'Array size (n)' },
+     }}
+     client:visible
+   >
      {(values) => (
        <div className="text-sm font-mono">
          <p>Array size: {values.size}</p>
@@ -1569,7 +1672,8 @@ export default function AlgoVisualizer({
 
    ```typescript
    function binarySearch(arr: number[], target: number): number {
-     let lo = 0, hi = arr.length - 1;
+     let lo = 0,
+       hi = arr.length - 1;
      while (lo <= hi) {
        const mid = Math.floor((lo + hi) / 2);
        if (arr[mid] === target) return mid;
@@ -1587,9 +1691,11 @@ export default function AlgoVisualizer({
    ````
 
 **Do NOT:**
+
 - Remove any heading levels — they are needed to verify TOC generation.
 
 **Verify:**
+
 - Run `pnpm run dev`.
 - Visit `http://localhost:4321/docs/getting-started/`. The Sandpack code editor should appear and be interactive.
 - Visit `http://localhost:4321/docs/algorithms/binary-search/`. The AlgoVisualizer should show step-through controls. The ParamDemo should show a slider.
@@ -1602,6 +1708,7 @@ export default function AlgoVisualizer({
 ### Step 18: Configure the build script with Pagefind
 
 **Files to modify:**
+
 - `ROOT/package.json`
 
 **Action:**
@@ -1620,9 +1727,11 @@ Add or update the `scripts` section in `ROOT/package.json`:
 ```
 
 **Do NOT:**
+
 - Change any other fields in `package.json`.
 
 **Verify:**
+
 - Run `pnpm run build`. The build should complete without errors.
 - After build, verify `ROOT/dist/pagefind/` directory exists and contains `pagefind.js` and index files.
 - Run `pnpm run preview` and visit `http://localhost:4321/docs/getting-started/`.
@@ -1633,6 +1742,7 @@ Add or update the `scripts` section in `ROOT/package.json`:
 ### Step 19: Add a docs index redirect
 
 **Files to create:**
+
 - `ROOT/src/pages/docs/index.astro`
 
 **Action:**
@@ -1655,9 +1765,11 @@ return Astro.redirect(firstPage);
 Note: For static builds, `Astro.redirect()` generates a meta-refresh HTML page or a redirect rule. This is fine for Phase 1.
 
 **Do NOT:**
+
 - Create a full index page with custom content — just redirect to the first doc.
 
 **Verify:**
+
 - Run `pnpm run dev`.
 - Visit `http://localhost:4321/docs/`. You should be redirected to `http://localhost:4321/docs/getting-started/`.
 
@@ -1691,6 +1803,7 @@ This step has no files to create. Run through this checklist manually:
 15. No JavaScript is loaded for off-screen interactive components on initial page load (verify in browser DevTools Network tab — Sandpack JS should not appear until you scroll to the CodePlayground).
 
 **If any check fails:** Debug and fix before considering the implementation complete. The most likely failure points are:
+
 - MDX inline function children not working (see Step 17 fallback note)
 - `_meta.ts` files being picked up by Content Collections (rename to `_meta.config.ts` if needed)
 - Pagefind path issues (adjust the import path in `Search.tsx`)

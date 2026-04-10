@@ -10,25 +10,25 @@
 
 **Last updated:** 2026-04-09
 
-| Milestone | Status | Notes |
-|----------|--------|-------|
-| 1. Project Scaffolding | Complete | Workspace, project, and three local SPM packages are in place. |
-| 2. Supabase Backend | Skipped for now | Phase 1 currently runs on an in-memory repository. `supabase-swift` remains wired into `NFLNetwork` for later phases. |
-| 3. Data Models (`NFLCore`) | Complete | `NFLTask`, `TaskList`, `TaskTag`, `TaskPriority`, `SidebarDestination`, `AppSnapshot`, and preview seed data are implemented. |
-| 4. Network Layer (`NFLNetwork`) | Complete (InMemory) | `TaskRepository` and `InMemoryTaskRepository` are implemented. |
-| 5. App Shell and Navigation | Complete | `NavigationSplitView` app shell and `AppViewModel` are implemented. |
-| 6. Sidebar | Complete | Smart Lists, My Lists, and badge counts are present. |
-| 7. Task List | Mostly complete | Quick entry, task rows, completion toggle, swipe delete, and manual reorder within list views are implemented. |
-| 8. Task Detail | Mostly complete | Title, priority, due date, notes, completion state, and tag assignment are editable. |
-| 9. Rich Text Editor | Simplified | `TextEditor` plus Markdown preview is used instead of a custom rich-text bridge. |
-| 10. List/Group Management | Mostly complete | Create, rename, and delete list flows exist. Groups are not implemented. |
-| 11. Tag Management | Mostly complete | Tags can be created, renamed, deleted, selected in the sidebar, and assigned from task detail. Color/edit metadata is not implemented yet. |
-| 12. Smart Lists | Complete | `Today`, `Upcoming`, `All Tasks`, and `Completed` filters are implemented. |
-| 13. Search | Complete | Local search over title, notes, and tags is implemented with `.searchable`. |
-| 14. Settings | Not started | No settings screen yet. |
-| 15. Localization | Not started | User-facing strings are still hardcoded in English. |
-| 16. Polish | Not started | Accessibility, visual polish, and final QA still remain. |
-| Validation | Complete for current slice | `NFLCore` tests pass, `NFLNetwork` tests pass, and the macOS app target builds successfully with `CODE_SIGNING_ALLOWED=NO`. Reorder coverage has been added in `NFLNetworkTests`. |
+| Milestone                       | Status                     | Notes                                                                                                                                                                             |
+| ------------------------------- | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Project Scaffolding          | Complete                   | Workspace, project, and three local SPM packages are in place.                                                                                                                    |
+| 2. Supabase Backend             | Skipped for now            | Phase 1 currently runs on an in-memory repository. `supabase-swift` remains wired into `NFLNetwork` for later phases.                                                             |
+| 3. Data Models (`NFLCore`)      | Complete                   | `NFLTask`, `TaskList`, `TaskTag`, `TaskPriority`, `SidebarDestination`, `AppSnapshot`, and preview seed data are implemented.                                                     |
+| 4. Network Layer (`NFLNetwork`) | Complete (InMemory)        | `TaskRepository` and `InMemoryTaskRepository` are implemented.                                                                                                                    |
+| 5. App Shell and Navigation     | Complete                   | `NavigationSplitView` app shell and `AppViewModel` are implemented.                                                                                                               |
+| 6. Sidebar                      | Complete                   | Smart Lists, My Lists, and badge counts are present.                                                                                                                              |
+| 7. Task List                    | Mostly complete            | Quick entry, task rows, completion toggle, swipe delete, and manual reorder within list views are implemented.                                                                    |
+| 8. Task Detail                  | Mostly complete            | Title, priority, due date, notes, completion state, and tag assignment are editable.                                                                                              |
+| 9. Rich Text Editor             | Simplified                 | `TextEditor` plus Markdown preview is used instead of a custom rich-text bridge.                                                                                                  |
+| 10. List/Group Management       | Mostly complete            | Create, rename, and delete list flows exist. Groups are not implemented.                                                                                                          |
+| 11. Tag Management              | Mostly complete            | Tags can be created, renamed, deleted, selected in the sidebar, and assigned from task detail. Color/edit metadata is not implemented yet.                                        |
+| 12. Smart Lists                 | Complete                   | `Today`, `Upcoming`, `All Tasks`, and `Completed` filters are implemented.                                                                                                        |
+| 13. Search                      | Complete                   | Local search over title, notes, and tags is implemented with `.searchable`.                                                                                                       |
+| 14. Settings                    | Not started                | No settings screen yet.                                                                                                                                                           |
+| 15. Localization                | Not started                | User-facing strings are still hardcoded in English.                                                                                                                               |
+| 16. Polish                      | Not started                | Accessibility, visual polish, and final QA still remain.                                                                                                                          |
+| Validation                      | Complete for current slice | `NFLCore` tests pass, `NFLNetwork` tests pass, and the macOS app target builds successfully with `CODE_SIGNING_ALLOWED=NO`. Reorder coverage has been added in `NFLNetworkTests`. |
 
 ---
 
@@ -51,15 +51,15 @@
 
 **Action:** Open Xcode > File > New > Project > Multiplatform > App.
 
-| Field | Value |
-|-------|-------|
-| Product Name | `NotForgetList` |
-| Team | Your Apple Developer team |
+| Field                   | Value                           |
+| ----------------------- | ------------------------------- |
+| Product Name            | `NotForgetList`                 |
+| Team                    | Your Apple Developer team       |
 | Organization Identifier | `com.briandev` (or your domain) |
-| Interface | SwiftUI |
-| Language | Swift |
-| Storage | None |
-| Include Tests | Yes (both Unit and UI) |
+| Interface               | SwiftUI                         |
+| Language                | Swift                           |
+| Storage                 | None                            |
+| Include Tests           | Yes (both Unit and UI)          |
 
 Save the project **inside** `$ROOT`, so the `.xcodeproj` lands at `$ROOT/NotForgetList.xcodeproj`.
 
@@ -90,12 +90,14 @@ mkdir -p "NotForgetList/Preview Content"
 Move the generated `NotForgetListApp.swift` into `NotForgetList/App/`.
 
 In Xcode, set the deployment targets:
+
 - iOS: **17.0**
 - macOS: **14.0**
 
 In Build Settings, set **Swift Language Version** to **Swift 6** (or "6" if listed numerically). If strict concurrency errors are overwhelming, set `SWIFT_STRICT_CONCURRENCY` to `complete` instead and migrate incrementally.
 
 **Done when:**
+
 - `Cmd+B` builds and runs successfully on both an iOS Simulator and macOS.
 - The folder structure inside `$ROOT/NotForgetList/` matches the skeleton above.
 
@@ -151,6 +153,7 @@ mkdir -p Sources/NFLCore/Enums
 In Xcode: drag the `Packages/NFLCore` folder into the Project Navigator's root. Xcode detects the `Package.swift` and shows it as a local package. Then go to the **NotForgetList** app target > General > Frameworks, Libraries, and Embedded Content > click "+" > select `NFLCore` (from your workspace).
 
 **Done when:**
+
 - `import NFLCore` compiles in `NotForgetListApp.swift` (add the import, build, then remove it).
 - `NFLCoreTests` target appears and runs (even if empty).
 
@@ -215,6 +218,7 @@ mkdir -p Sources/NFLNetwork/Protocols
 In Xcode: drag `Packages/NFLNetwork` into the Project Navigator. Add `NFLNetwork` as a framework dependency to the app target (same as Step 1.2).
 
 **Done when:**
+
 - `import NFLNetwork` compiles in the app target.
 - `import Supabase` compiles inside `NFLNetwork` source files.
 - Xcode has resolved the `supabase-swift` package (check Package Dependencies in the Project Navigator sidebar).
@@ -351,7 +355,7 @@ supabase migration new initial_schema
 
 This creates a file like `$ROOT/supabase/migrations/20260408XXXXXX_initial_schema.sql`. Open it and paste the **entire SQL schema** from DESIGN.md Section 4.1 — everything from `CREATE EXTENSION` through the `on_auth_user_created` trigger. That is approximately 200 lines of SQL.
 
-However, for Phase 1, we only need these tables to be *active*: `profiles`, `list_groups`, `lists`, `tasks`, `tags`, `task_tags`. The `reminders`, `kanban_statuses`, and `pomodoro_sessions` tables should still be created (they are referenced by foreign keys and the triggers apply to them), but we will not use them in app code.
+However, for Phase 1, we only need these tables to be _active_: `profiles`, `list_groups`, `lists`, `tasks`, `tags`, `task_tags`. The `reminders`, `kanban_statuses`, and `pomodoro_sessions` tables should still be created (they are referenced by foreign keys and the triggers apply to them), but we will not use them in app code.
 
 Copy the full schema as-is from DESIGN.md Section 4.1 into this migration file. Do not split it — one migration for the initial schema is cleaner.
 
@@ -364,11 +368,13 @@ Copy the full schema as-is from DESIGN.md Section 4.1 into this migration file. 
 **Action:**
 
 If using local Supabase:
+
 ```bash
 supabase db reset    # applies all migrations from scratch
 ```
 
 If using remote (cloud) Supabase:
+
 ```bash
 supabase db push
 ```
@@ -385,6 +391,7 @@ supabase db inspect
 For cloud, open the Supabase Dashboard > Table Editor and confirm all tables are listed.
 
 **Done when:**
+
 - All 9 tables exist: `profiles`, `list_groups`, `lists`, `kanban_statuses`, `tasks`, `tags`, `task_tags`, `reminders`, `pomodoro_sessions`.
 - The `idx_tasks_search` GIN index exists on the `tasks` table.
 - The `on_auth_user_created` trigger is active on `auth.users`.
@@ -396,6 +403,7 @@ For cloud, open the Supabase Dashboard > Table Editor and confirm all tables are
 ### Step 2.4: Configure anonymous auth
 
 **Action:** In Supabase Dashboard:
+
 1. Go to **Authentication** > **Providers**.
 2. Ensure **Email** provider is enabled (it is by default).
 3. Go to **Authentication** > **Settings**.
@@ -546,6 +554,7 @@ public struct NFLTask: Codable, Identifiable, Hashable, Sendable {
 ```
 
 **Key points:**
+
 - All properties are `public` because this is a library target consumed by the app and other packages.
 - `CodingKeys` map Swift camelCase to Supabase snake_case column names.
 - `tags` is optional and populated only when fetched with a join query; it is `nil` when encoding for writes.
@@ -1775,6 +1784,7 @@ struct TaskRepositoryIntegrationTests {
 ```
 
 **Done when:**
+
 - The test file compiles.
 - If you run the test with a real Supabase instance, it passes. (It is acceptable to skip this in CI for now and run manually.)
 - The anonymous sign-in creates a user, the trigger creates an Inbox list, and a task can be created and fetched.
@@ -1858,6 +1868,7 @@ final class AppState {
 ```
 
 **Done when:**
+
 - The app launches without crashing on both iOS and macOS.
 - The console does NOT show any auth errors (if Supabase is configured correctly).
 - `appState.userID` has a value after launch.
@@ -1967,6 +1978,7 @@ enum SidebarItem: Hashable {
 ```
 
 **Done when:**
+
 - The app displays a split view on macOS (sidebar + content + detail).
 - The app displays a split view on iOS (sidebar + detail).
 - Empty state messages appear in the content and detail columns.
@@ -1974,6 +1986,7 @@ enum SidebarItem: Hashable {
 **Gotcha:** At this point, `SidebarView`, `TaskListView`, and `TaskDetailView` do not exist yet. Create placeholder files for them now so the project compiles:
 
 Create `$ROOT/NotForgetList/Features/Sidebar/SidebarView.swift`:
+
 ```swift
 import SwiftUI
 struct SidebarView: View {
@@ -1986,6 +1999,7 @@ struct SidebarView: View {
 ```
 
 Create `$ROOT/NotForgetList/Features/TaskList/TaskListView.swift`:
+
 ```swift
 import SwiftUI
 struct TaskListView: View {
@@ -1998,6 +2012,7 @@ struct TaskListView: View {
 ```
 
 Create `$ROOT/NotForgetList/Features/TaskDetail/TaskDetailView.swift`:
+
 ```swift
 import SwiftUI
 struct TaskDetailView: View {
@@ -2389,6 +2404,7 @@ struct SidebarView: View {
 **Note:** `CreateListSheet` and `CreateGroupSheet` are built in Milestone 10. For now, create stub files so the project compiles:
 
 **File:** `$ROOT/NotForgetList/Features/Sidebar/CreateListSheet.swift`
+
 ```swift
 import SwiftUI
 struct CreateListSheet: View {
@@ -2417,6 +2433,7 @@ struct CreateListSheet: View {
 ```
 
 **File:** `$ROOT/NotForgetList/Features/Sidebar/CreateGroupSheet.swift`
+
 ```swift
 import SwiftUI
 struct CreateGroupSheet: View {
@@ -2445,6 +2462,7 @@ struct CreateGroupSheet: View {
 ```
 
 **Done when:**
+
 - The sidebar renders with Smart Lists, Inbox, and any user-created lists/groups/tags.
 - Tapping/clicking a sidebar item updates the `selection` binding (visible in the content area changing, even if it is just a placeholder).
 - Context menu on lists shows Archive and Delete options.
@@ -2756,6 +2774,7 @@ struct TaskListView: View {
 ```
 
 **Done when:**
+
 - Selecting a list in the sidebar shows its tasks (or empty state).
 - The quick entry text field appears at the top of concrete lists.
 - Typing a title and pressing Enter creates a new task.
@@ -2952,6 +2971,7 @@ extension Color {
 ```
 
 **Done when:**
+
 - Task rows display title, priority badge, due date, and tag chips.
 - Completed tasks show strikethrough text and a filled checkmark.
 - Swipe left to delete, swipe right to complete on iOS.
@@ -3413,6 +3433,7 @@ struct FlowLayout: Layout {
 ```
 
 **Done when:**
+
 - Tapping a task in the list view navigates to the detail view.
 - Title is editable inline.
 - Priority picker changes the priority.
@@ -3422,6 +3443,7 @@ struct FlowLayout: Layout {
 - Description section shows a plain text editor (upgraded in Milestone 9).
 
 **Gotcha:** On macOS, `Color(.secondarySystemBackground)` does not exist. Use `Color(nsColor: .controlBackgroundColor)` instead. You can wrap this with a platform check:
+
 ```swift
 #if os(macOS)
 .background(Color(nsColor: .controlBackgroundColor))
@@ -3757,6 +3779,7 @@ public struct MarkdownEditor: View {
 ```
 
 **Done when:**
+
 - `MarkdownEditor(text: .constant("**bold** and *italic*"), isEditable: true)` renders in a SwiftUI preview with bold and italic formatting visible.
 - Typing into the editor updates the `text` binding with raw markdown.
 - The editor works on both iOS and macOS.
@@ -3800,6 +3823,7 @@ private func descriptionSection(_ task: NFLTask, vm: TaskDetailViewModel) -> som
 Add `import NFLEditor` at the top of the file.
 
 **Done when:**
+
 - The task detail description field renders Markdown formatting live.
 - Typing `**test**` shows "test" in bold.
 - Checklist items (`- [ ] item`) display with checkbox characters.
@@ -3923,6 +3947,7 @@ The stub from Step 6.2 is already functional enough. Enhance `CreateGroupSheet.s
 These features are already wired in `SidebarViewModel` (Step 6.1) and `SidebarView` (Step 6.2) via context menus. Drag-to-reorder for sidebar lists can be added with:
 
 Add to the list/group `ForEach` in `SidebarView`:
+
 ```swift
 .onMove { source, destination in
     // Reorder logic similar to TaskListViewModel.reorder
@@ -4003,6 +4028,7 @@ func deleteTag(id: UUID) async {
 ```
 
 **Done when:**
+
 - Tags are visible in the sidebar.
 - Clicking a tag in the sidebar filters the task list to show only tasks with that tag.
 - Tags can be created and deleted.
@@ -4075,6 +4101,7 @@ if sidebarItem == .upcoming {
 ```
 
 **Done when:**
+
 - **Today** shows tasks due today + overdue tasks.
 - **Tomorrow** shows tasks due tomorrow.
 - **Upcoming** shows tasks due in the next 7 days, grouped by date with date headers.
@@ -4224,6 +4251,7 @@ struct SearchView: View {
 Wire search into the app. Add a search toolbar item or integrate it with the sidebar. The simplest approach for Phase 1 is to add a `.searchable` modifier to the root view or a dedicated search button that pushes `SearchView`.
 
 **Done when:**
+
 - A search interface is accessible from the app.
 - Typing a query with a 300ms pause triggers a search.
 - Results display as task rows.
@@ -4290,6 +4318,7 @@ Add a settings button to the sidebar (bottom toolbar or gear icon).
 ### Step 15.1: Create .xcstrings catalog
 
 **Action:** In Xcode:
+
 1. Select the `NotForgetList` project in the navigator.
 2. Select the project (not the target) > Info tab > Localizations.
 3. Click "+" and add "Chinese, Traditional (zh-Hant)".
@@ -4307,32 +4336,33 @@ Then: File > New > File > String Catalog. Name it `Localizable.xcstrings`. Save 
 
 Key strings to localize (add to `Localizable.xcstrings`):
 
-| Key | en | zh-Hant |
-|-----|-----|---------|
-| "Today" | "Today" | "今天" |
-| "Tomorrow" | "Tomorrow" | "明天" |
-| "Upcoming" | "Upcoming" | "即將到來" |
-| "All Tasks" | "All Tasks" | "所有任務" |
-| "Completed" | "Completed" | "已完成" |
-| "Inbox" | "Inbox" | "收件匣" |
-| "New task" | "New task" | "新任務" |
+| Key               | en                | zh-Hant       |
+| ----------------- | ----------------- | ------------- |
+| "Today"           | "Today"           | "今天"        |
+| "Tomorrow"        | "Tomorrow"        | "明天"        |
+| "Upcoming"        | "Upcoming"        | "即將到來"    |
+| "All Tasks"       | "All Tasks"       | "所有任務"    |
+| "Completed"       | "Completed"       | "已完成"      |
+| "Inbox"           | "Inbox"           | "收件匣"      |
+| "New task"        | "New task"        | "新任務"      |
 | "Search tasks..." | "Search tasks..." | "搜尋任務..." |
-| "Settings" | "Settings" | "設定" |
-| "Tags" | "Tags" | "標籤" |
-| "Lists" | "Lists" | "清單" |
-| "Smart Lists" | "Smart Lists" | "智慧清單" |
-| "Priority" | "Priority" | "優先級" |
-| "Due date" | "Due date" | "到期日" |
-| "Repeat" | "Repeat" | "重複" |
-| "Notes" | "Notes" | "備註" |
-| "Delete" | "Delete" | "刪除" |
-| "Cancel" | "Cancel" | "取消" |
-| "Create" | "Create" | "建立" |
-| "Save" | "Save" | "儲存" |
+| "Settings"        | "Settings"        | "設定"        |
+| "Tags"            | "Tags"            | "標籤"        |
+| "Lists"           | "Lists"           | "清單"        |
+| "Smart Lists"     | "Smart Lists"     | "智慧清單"    |
+| "Priority"        | "Priority"        | "優先級"      |
+| "Due date"        | "Due date"        | "到期日"      |
+| "Repeat"          | "Repeat"          | "重複"        |
+| "Notes"           | "Notes"           | "備註"        |
+| "Delete"          | "Delete"          | "刪除"        |
+| "Cancel"          | "Cancel"          | "取消"        |
+| "Create"          | "Create"          | "建立"        |
+| "Save"            | "Save"            | "儲存"        |
 
 In Xcode, open the `.xcstrings` file. Xcode shows a table editor where you can type translations for each string. Build the project (Cmd+B) and Xcode will auto-detect string literals used in `Text()`, etc., and add them to the catalog.
 
 **Done when:**
+
 - Building the project populates the string catalog with discovered strings.
 - Each string has both en and zh-Hant translations.
 - Running the app on a device set to zh-Hant shows Chinese strings.
@@ -4346,6 +4376,7 @@ In Xcode, open the `.xcstrings` file. Xcode shows a table editor where you can t
 ### Step 16.1: Accessibility audit
 
 **Action:** On each platform:
+
 1. Enable VoiceOver (macOS: Cmd+F5; iOS: Settings > Accessibility > VoiceOver).
 2. Navigate through every screen and verify:
    - Every interactive element is announced with a meaningful label.
@@ -4362,6 +4393,7 @@ Fix any issues by adding `.accessibilityLabel()` or `.accessibilityValue()` modi
 ### Step 16.2: Dark mode verification
 
 **Action:** On both platforms, switch to dark mode and verify:
+
 - All text is readable (no white-on-white or dark-on-dark).
 - The editor background, card backgrounds, and tag chips have appropriate contrast.
 - The color picker colors are distinguishable in both modes.
@@ -4408,6 +4440,7 @@ extension Notification.Name {
 ```
 
 Add to the `App` scene:
+
 ```swift
 var body: some Scene {
     WindowGroup { ... }
@@ -4454,14 +4487,14 @@ var body: some Scene {
 
 Cross-reference with REQUIREMENTS.md Section 7 — Phase 1 Done When:
 
-| Criterion | How to verify |
-|-----------|---------------|
-| Task CRUD on both platforms | Steps 3-7 of the E2E test |
-| Lists, groups, tags fully CRUD-able | Steps 11-14 of the E2E test |
-| 5 smart lists return correct results | Open each; verify task counts match expectations |
-| Search returns results within 300ms on 1000 tasks | Seed 1000 tasks via SQL; time the search |
-| Description editor renders bold, italic, bullet lists, numbered lists, inline checklists | Type each syntax in the editor; verify visual output |
-| Manual sort order persists across restarts | Reorder tasks, force-quit app, relaunch, verify order |
+| Criterion                                                                                | How to verify                                         |
+| ---------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Task CRUD on both platforms                                                              | Steps 3-7 of the E2E test                             |
+| Lists, groups, tags fully CRUD-able                                                      | Steps 11-14 of the E2E test                           |
+| 5 smart lists return correct results                                                     | Open each; verify task counts match expectations      |
+| Search returns results within 300ms on 1000 tasks                                        | Seed 1000 tasks via SQL; time the search              |
+| Description editor renders bold, italic, bullet lists, numbered lists, inline checklists | Type each syntax in the editor; verify visual output  |
+| Manual sort order persists across restarts                                               | Reorder tasks, force-quit app, relaunch, verify order |
 
 **Done when:** All six Phase 1 criteria pass.
 
@@ -4469,22 +4502,22 @@ Cross-reference with REQUIREMENTS.md Section 7 — Phase 1 Done When:
 
 ## Summary
 
-| Milestone | Steps | Estimated Effort |
-|-----------|-------|-----------------|
-| 1. Project Scaffolding | 1.1–1.5 | 1–2 hours |
-| 2. Supabase Backend | 2.1–2.5 | 1–2 hours |
-| 3. Data Models | 3.1–3.8 | 2–3 hours |
-| 4. Network Layer | 4.1–4.9 | 3–4 hours |
-| 5. App Shell | 5.1–5.3 | 1–2 hours |
-| 6. Sidebar | 6.1–6.2 | 2–3 hours |
-| 7. Task List | 7.1–7.3 | 3–4 hours |
-| 8. Task Detail | 8.1–8.2 | 3–4 hours |
-| 9. Rich Text Editor | 9.1–9.5 | 4–6 hours |
-| 10. List/Group Management | 10.1–10.5 | 2–3 hours |
-| 11. Tag Management | 11.1–11.3 | 1–2 hours |
-| 12. Smart Lists | 12.1–12.5 | 2–3 hours |
-| 13. Search | 13.1–13.2 | 1–2 hours |
-| 14. Settings | 14.1 | 0.5–1 hour |
-| 15. Localization | 15.1–15.2 | 2–3 hours |
-| 16. Polish & Verification | 16.1–16.5 | 3–4 hours |
-| **Total** | | **30–46 hours** |
+| Milestone                 | Steps     | Estimated Effort |
+| ------------------------- | --------- | ---------------- |
+| 1. Project Scaffolding    | 1.1–1.5   | 1–2 hours        |
+| 2. Supabase Backend       | 2.1–2.5   | 1–2 hours        |
+| 3. Data Models            | 3.1–3.8   | 2–3 hours        |
+| 4. Network Layer          | 4.1–4.9   | 3–4 hours        |
+| 5. App Shell              | 5.1–5.3   | 1–2 hours        |
+| 6. Sidebar                | 6.1–6.2   | 2–3 hours        |
+| 7. Task List              | 7.1–7.3   | 3–4 hours        |
+| 8. Task Detail            | 8.1–8.2   | 3–4 hours        |
+| 9. Rich Text Editor       | 9.1–9.5   | 4–6 hours        |
+| 10. List/Group Management | 10.1–10.5 | 2–3 hours        |
+| 11. Tag Management        | 11.1–11.3 | 1–2 hours        |
+| 12. Smart Lists           | 12.1–12.5 | 2–3 hours        |
+| 13. Search                | 13.1–13.2 | 1–2 hours        |
+| 14. Settings              | 14.1      | 0.5–1 hour       |
+| 15. Localization          | 15.1–15.2 | 2–3 hours        |
+| 16. Polish & Verification | 16.1–16.5 | 3–4 hours        |
+| **Total**                 |           | **30–46 hours**  |

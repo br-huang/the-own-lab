@@ -14,6 +14,7 @@
 ### Step 1: Project Scaffold — package.json, tsconfig.json, manifest.json
 
 **Files**:
+
 - `/Users/rong/Workspaces/1-Projects/11-Brian-Projects/110-Obsidian-RAG/package.json` (create)
 - `/Users/rong/Workspaces/1-Projects/11-Brian-Projects/110-Obsidian-RAG/tsconfig.json` (create)
 - `/Users/rong/Workspaces/1-Projects/11-Brian-Projects/110-Obsidian-RAG/manifest.json` (create)
@@ -22,6 +23,7 @@
 **What to do**:
 
 1. Create `package.json` with the following content:
+
    ```json
    {
      "name": "obsidian-kb",
@@ -48,6 +50,7 @@
    ```
 
 2. Create `tsconfig.json`:
+
    ```json
    {
      "compilerOptions": {
@@ -73,6 +76,7 @@
    ```
 
 3. Create `manifest.json` (Obsidian plugin manifest):
+
    ```json
    {
      "id": "obsidian-kb",
@@ -86,6 +90,7 @@
    ```
 
 4. Create `.gitignore`:
+
    ```
    node_modules/
    main.js
@@ -108,43 +113,45 @@
 ### Step 2: esbuild Config and Install Dependencies
 
 **Files**:
+
 - `/Users/rong/Workspaces/1-Projects/11-Brian-Projects/110-Obsidian-RAG/esbuild.config.mjs` (create)
 
 **What to do**:
 
 1. Create `esbuild.config.mjs`:
-   ```javascript
-   import esbuild from "esbuild";
-   import process from "process";
 
-   const prod = process.argv[2] === "production";
+   ```javascript
+   import esbuild from 'esbuild';
+   import process from 'process';
+
+   const prod = process.argv[2] === 'production';
 
    const context = await esbuild.context({
-     entryPoints: ["src/main.ts"],
+     entryPoints: ['src/main.ts'],
      bundle: true,
      external: [
-       "obsidian",
-       "electron",
-       "@codemirror/autocomplete",
-       "@codemirror/collab",
-       "@codemirror/commands",
-       "@codemirror/language",
-       "@codemirror/lint",
-       "@codemirror/search",
-       "@codemirror/state",
-       "@codemirror/view",
-       "@lezer/common",
-       "@lezer/highlight",
-       "@lezer/lr",
-       "@lancedb/lancedb",
-       "apache-arrow",
+       'obsidian',
+       'electron',
+       '@codemirror/autocomplete',
+       '@codemirror/collab',
+       '@codemirror/commands',
+       '@codemirror/language',
+       '@codemirror/lint',
+       '@codemirror/search',
+       '@codemirror/state',
+       '@codemirror/view',
+       '@lezer/common',
+       '@lezer/highlight',
+       '@lezer/lr',
+       '@lancedb/lancedb',
+       'apache-arrow',
      ],
-     format: "cjs",
-     target: "es2022",
-     logLevel: "info",
-     sourcemap: prod ? false : "inline",
+     format: 'cjs',
+     target: 'es2022',
+     logLevel: 'info',
+     sourcemap: prod ? false : 'inline',
      treeShaking: true,
-     outfile: "main.js",
+     outfile: 'main.js',
      minify: prod,
    });
 
@@ -173,6 +180,7 @@
 ### Step 3: Shared Types
 
 **Files**:
+
 - `/Users/rong/Workspaces/1-Projects/11-Brian-Projects/110-Obsidian-RAG/src/types.ts` (create)
 
 **What to do**:
@@ -193,9 +201,9 @@ export interface PluginSettings {
 }
 
 export const DEFAULT_SETTINGS: PluginSettings = {
-  openaiApiKey: "",
-  chatModel: "gpt-4o",
-  embeddingModel: "text-embedding-3-small",
+  openaiApiKey: '',
+  chatModel: 'gpt-4o',
+  embeddingModel: 'text-embedding-3-small',
   topK: 5,
   embeddingBatchSize: 20,
   chunkSize: 500,
@@ -219,7 +227,7 @@ export interface Chunk {
 // ─── Vector Store ───
 
 export interface VectorChunk {
-  id: string;              // deterministic: `${filePath}::${chunkIndex}`
+  id: string; // deterministic: `${filePath}::${chunkIndex}`
   text: string;
   filePath: string;
   fileTitle: string;
@@ -230,13 +238,13 @@ export interface VectorChunk {
 // ─── LLM ───
 
 export interface Message {
-  role: "system" | "user" | "assistant";
+  role: 'system' | 'user' | 'assistant';
   content: string;
 }
 
 export interface ChatOptions {
-  temperature?: number;    // default: 0.3
-  maxTokens?: number;      // default: 1024
+  temperature?: number; // default: 0.3
+  maxTokens?: number; // default: 1024
 }
 
 // ─── RAG ───
@@ -244,21 +252,21 @@ export interface ChatOptions {
 export interface SourceReference {
   filePath: string;
   fileTitle: string;
-  chunkText: string;       // first 200 chars for preview
+  chunkText: string; // first 200 chars for preview
 }
 
 export interface RagResponseToken {
-  type: "token";
+  type: 'token';
   token: string;
 }
 
 export interface RagResponseSources {
-  type: "sources";
+  type: 'sources';
   sources: SourceReference[];
 }
 
 export interface RagResponseError {
-  type: "error";
+  type: 'error';
   message: string;
 }
 
@@ -267,7 +275,7 @@ export type RagResponse = RagResponseToken | RagResponseSources | RagResponseErr
 // ─── Indexer ───
 
 export interface FileHashManifest {
-  [filePath: string]: string;  // filePath → MD5 hash of content
+  [filePath: string]: string; // filePath → MD5 hash of content
 }
 ```
 
@@ -280,6 +288,7 @@ export interface FileHashManifest {
 ### Step 4: LLM Provider Interface
 
 **Files**:
+
 - `/Users/rong/Workspaces/1-Projects/11-Brian-Projects/110-Obsidian-RAG/src/llm/provider.ts` (create)
 
 **What to do**:
@@ -287,7 +296,7 @@ export interface FileHashManifest {
 Create `src/llm/provider.ts` with the abstract LLM provider interface:
 
 ```typescript
-import { Message, ChatOptions } from "../types";
+import { Message, ChatOptions } from '../types';
 
 export interface LLMProvider {
   readonly name: string;
@@ -315,6 +324,7 @@ export interface LLMProvider {
 ### Step 5: OpenAI Provider Implementation
 
 **Files**:
+
 - `/Users/rong/Workspaces/1-Projects/11-Brian-Projects/110-Obsidian-RAG/src/llm/openai.ts` (create)
 
 **What to do**:
@@ -322,12 +332,12 @@ export interface LLMProvider {
 Create `src/llm/openai.ts` implementing the `LLMProvider` interface using the `openai` npm package.
 
 ```typescript
-import OpenAI from "openai";
-import { Message, ChatOptions } from "../types";
-import { LLMProvider } from "./provider";
+import OpenAI from 'openai';
+import { Message, ChatOptions } from '../types';
+import { LLMProvider } from './provider';
 
 export class OpenAIProvider implements LLMProvider {
-  readonly name = "openai";
+  readonly name = 'openai';
   readonly maxTokens: number;
   private client: OpenAI;
   private chatModel: string;
@@ -354,6 +364,7 @@ export class OpenAIProvider implements LLMProvider {
 ```
 
 **`chat()` implementation details**:
+
 - Call `this.client.chat.completions.create({ model: this.chatModel, messages, stream: true, temperature: options?.temperature ?? 0.3, max_tokens: options?.maxTokens ?? 1024 })`.
 - Iterate over the stream: `for await (const chunk of stream)`.
 - For each chunk, extract `chunk.choices[0]?.delta?.content`. If it is a non-empty string, `yield` it.
@@ -363,6 +374,7 @@ export class OpenAIProvider implements LLMProvider {
   - Otherwise, throw `new Error("OpenAI API error: " + (error as Error).message)`.
 
 **`embed()` implementation details**:
+
 - Call `this.client.embeddings.create({ model: this.embeddingModel, input: texts })`.
 - The response has a `data` array. Map over it: `response.data.map(item => item.embedding)`.
 - Return the resulting `number[][]`.
@@ -377,6 +389,7 @@ export class OpenAIProvider implements LLMProvider {
 ### Step 6: Chunker
 
 **Files**:
+
 - `/Users/rong/Workspaces/1-Projects/11-Brian-Projects/110-Obsidian-RAG/src/core/chunker.ts` (create)
 
 **What to do**:
@@ -384,8 +397,9 @@ export class OpenAIProvider implements LLMProvider {
 Create `src/core/chunker.ts` — a pure function with no external dependencies.
 
 **Exports**:
+
 ```typescript
-import { Chunk, ChunkMetadata } from "../types";
+import { Chunk, ChunkMetadata } from '../types';
 
 /**
  * Estimate token count using the ~4 chars per token approximation.
@@ -399,8 +413,8 @@ export function estimateTokens(text: string): number {
  */
 export function chunk(
   content: string,
-  metadata: Omit<ChunkMetadata, "chunkIndex">,
-  options?: { chunkSize?: number; chunkOverlap?: number }
+  metadata: Omit<ChunkMetadata, 'chunkIndex'>,
+  options?: { chunkSize?: number; chunkOverlap?: number },
 ): Chunk[] {
   // implementation below
 }
@@ -414,8 +428,9 @@ export function chunk(
 2. If `content.trim().length === 0`, return `[]`.
 
 3. Define an array of separators in priority order:
+
    ```typescript
-   const separators = ["\n## ", "\n### ", "\n\n", "\n", ". "];
+   const separators = ['\n## ', '\n### ', '\n\n', '\n', '. '];
    ```
 
 4. Implement a recursive `splitText(text: string, sepIndex: number): string[]` function:
@@ -448,6 +463,7 @@ export function chunk(
 ### Step 7: Vector Store
 
 **Files**:
+
 - `/Users/rong/Workspaces/1-Projects/11-Brian-Projects/110-Obsidian-RAG/src/core/vector-store.ts` (create)
 
 **What to do**:
@@ -455,11 +471,11 @@ export function chunk(
 Create `src/core/vector-store.ts` wrapping LanceDB.
 
 ```typescript
-import * as lancedb from "@lancedb/lancedb";
-import type { Table } from "@lancedb/lancedb";
-import * as fs from "fs";
-import * as path from "path";
-import { VectorChunk } from "../types";
+import * as lancedb from '@lancedb/lancedb';
+import type { Table } from '@lancedb/lancedb';
+import * as fs from 'fs';
+import * as path from 'path';
+import { VectorChunk } from '../types';
 
 export class VectorStore {
   private dbPath: string;
@@ -468,24 +484,36 @@ export class VectorStore {
   private tableReady = false;
 
   constructor(vaultPath: string) {
-    this.dbPath = path.join(vaultPath, ".obsidian-kb", "vectors");
+    this.dbPath = path.join(vaultPath, '.obsidian-kb', 'vectors');
   }
 
-  async initialize(): Promise<void> { /* ... */ }
-  async upsert(chunks: VectorChunk[]): Promise<void> { /* ... */ }
-  async query(embedding: number[], topK: number): Promise<VectorChunk[]> { /* ... */ }
-  async delete(filePath: string): Promise<void> { /* ... */ }
-  async isEmpty(): Promise<boolean> { /* ... */ }
+  async initialize(): Promise<void> {
+    /* ... */
+  }
+  async upsert(chunks: VectorChunk[]): Promise<void> {
+    /* ... */
+  }
+  async query(embedding: number[], topK: number): Promise<VectorChunk[]> {
+    /* ... */
+  }
+  async delete(filePath: string): Promise<void> {
+    /* ... */
+  }
+  async isEmpty(): Promise<boolean> {
+    /* ... */
+  }
 }
 ```
 
 **`initialize()` implementation**:
+
 - Create the data directory if it does not exist: `fs.mkdirSync(this.dbPath, { recursive: true })`.
 - Connect to the database: `this.db = await lancedb.connect(this.dbPath)`.
 - Try to open the existing table: `this.table = await this.db.openTable("chunks")`. If this throws (table does not exist), set `this.tableReady = false` and continue (do NOT throw).
 - If the table opens successfully, set `this.tableReady = true`.
 
 **`upsert()` implementation**:
+
 - If `chunks.length === 0`, return immediately.
 - Build the data array: map each `VectorChunk` to a plain object `{ id, text, filePath, fileTitle, chunkIndex, vector }`.
 - Collect unique file paths from the incoming chunks.
@@ -498,16 +526,19 @@ export class VectorStore {
   - Add new data: `await this.table\!.add(data)`.
 
 **`query()` implementation**:
+
 - If `\!this.tableReady`, return `[]`.
 - Execute search: `const results = await this.table\!.search(embedding).limit(topK).toArray()`.
 - Map each result row to a `VectorChunk` object: `{ id: row.id, text: row.text, filePath: row.filePath, fileTitle: row.fileTitle, chunkIndex: row.chunkIndex, vector: Array.from(row.vector) }`.
 - Return the mapped array.
 
 **`delete()` implementation**:
+
 - If `\!this.tableReady`, return.
 - `await this.table\!.delete('filePath = "' + filePath.replace(/"/g, '\\"') + '"')`.
 
 **`isEmpty()` implementation**:
+
 - If `\!this.tableReady`, return `true`.
 - `const count = await this.table\!.countRows()`.
 - Return `count === 0`.
@@ -521,6 +552,7 @@ export class VectorStore {
 ### Step 8: Vault Indexer
 
 **Files**:
+
 - `/Users/rong/Workspaces/1-Projects/11-Brian-Projects/110-Obsidian-RAG/src/core/vault-indexer.ts` (create)
 
 **What to do**:
@@ -528,14 +560,14 @@ export class VectorStore {
 Create `src/core/vault-indexer.ts`.
 
 ```typescript
-import { Vault, TFile, EventRef } from "obsidian";
-import * as crypto from "crypto";
-import * as fs from "fs";
-import * as path from "path";
-import { PluginSettings, FileHashManifest, VectorChunk } from "../types";
-import { chunk as chunkText } from "./chunker";
-import { VectorStore } from "./vector-store";
-import { LLMProvider } from "../llm/provider";
+import { Vault, TFile, EventRef } from 'obsidian';
+import * as crypto from 'crypto';
+import * as fs from 'fs';
+import * as path from 'path';
+import { PluginSettings, FileHashManifest, VectorChunk } from '../types';
+import { chunk as chunkText } from './chunker';
+import { VectorStore } from './vector-store';
+import { LLMProvider } from '../llm/provider';
 
 export class VaultIndexer {
   private vault: Vault;
@@ -562,19 +594,35 @@ export class VaultIndexer {
     this.statusBarEl = statusBarEl;
     // Vault path: use the vault adapter's basePath
     const vaultPath = (this.vault.adapter as any).basePath as string;
-    this.manifestPath = path.join(vaultPath, ".obsidian-kb", "manifest.json");
+    this.manifestPath = path.join(vaultPath, '.obsidian-kb', 'manifest.json');
   }
 
-  async initialIndex(): Promise<void> { /* ... */ }
-  watchForChanges(): void { /* ... */ }
-  async destroy(): Promise<void> { /* ... */ }
+  async initialIndex(): Promise<void> {
+    /* ... */
+  }
+  watchForChanges(): void {
+    /* ... */
+  }
+  async destroy(): Promise<void> {
+    /* ... */
+  }
 
   // Private helpers
-  private loadManifest(): void { /* ... */ }
-  private saveManifest(): void { /* ... */ }
-  private hashContent(content: string): string { /* ... */ }
-  private shouldIndex(file: TFile): boolean { /* ... */ }
-  private async indexFile(file: TFile): Promise<void> { /* ... */ }
+  private loadManifest(): void {
+    /* ... */
+  }
+  private saveManifest(): void {
+    /* ... */
+  }
+  private hashContent(content: string): string {
+    /* ... */
+  }
+  private shouldIndex(file: TFile): boolean {
+    /* ... */
+  }
+  private async indexFile(file: TFile): Promise<void> {
+    /* ... */
+  }
 }
 ```
 
@@ -585,11 +633,13 @@ export class VaultIndexer {
 **`hashContent(content: string)`**: Return `crypto.createHash("md5").update(content).digest("hex")`.
 
 **`shouldIndex(file: TFile)`**: Return `true` if:
+
 - `file.extension === "md"`
 - `file.path` does NOT start with `.obsidian/`
 - `file.path` does NOT start with `.obsidian-kb/`
 
 **`initialIndex()` implementation**:
+
 1. Call `this.loadManifest()`.
 2. Get all markdown files: `const files = this.vault.getMarkdownFiles()`.
 3. Filter with `this.shouldIndex(file)`.
@@ -611,6 +661,7 @@ export class VaultIndexer {
 9. Update status bar: `this.statusBarEl.setText("KB: " + Object.keys(this.manifest).length + " notes indexed")`.
 
 **`watchForChanges()` implementation**:
+
 - Register three event listeners on `this.vault`:
   - `vault.on("modify", (file) => { ... })` — if `file instanceof TFile && this.shouldIndex(file)`, debounce by 2 seconds per `file.path`, then call `this.indexFile(file)`.
   - `vault.on("create", (file) => { ... })` — same as modify.
@@ -618,6 +669,7 @@ export class VaultIndexer {
 - Store each `EventRef` returned by `vault.on()` in `this.eventRefs`.
 
 **Debounce logic**: When a modify/create event fires:
+
 ```typescript
 const existing = this.debounceTimers.get(file.path);
 if (existing) clearTimeout(existing);
@@ -629,6 +681,7 @@ this.debounceTimers.set(file.path, timer);
 ```
 
 **`indexFile(file: TFile)` implementation**:
+
 - Read content, compute hash. If hash matches manifest, skip.
 - Chunk the content.
 - If no chunks (empty file), delete from vector store and manifest, return.
@@ -639,6 +692,7 @@ this.debounceTimers.set(file.path, timer);
 - Wrap in try/catch: on error, `console.error("KB: Failed to index " + file.path, err)`. Do NOT throw — a single file failure should not crash the indexer.
 
 **`destroy()` implementation**:
+
 - Clear all debounce timers: `this.debounceTimers.forEach(t => clearTimeout(t)); this.debounceTimers.clear()`.
 - Unregister event refs: `this.eventRefs.forEach(ref => this.vault.offref(ref))`.
 
@@ -651,6 +705,7 @@ this.debounceTimers.set(file.path, timer);
 ### Step 9: RAG Engine
 
 **Files**:
+
 - `/Users/rong/Workspaces/1-Projects/11-Brian-Projects/110-Obsidian-RAG/src/core/rag-engine.ts` (create)
 
 **What to do**:
@@ -658,9 +713,9 @@ this.debounceTimers.set(file.path, timer);
 Create `src/core/rag-engine.ts`.
 
 ```typescript
-import { PluginSettings, RagResponse, SourceReference, Message } from "../types";
-import { VectorStore } from "./vector-store";
-import { LLMProvider } from "../llm/provider";
+import { PluginSettings, RagResponse, SourceReference, Message } from '../types';
+import { VectorStore } from './vector-store';
+import { LLMProvider } from '../llm/provider';
 
 const SYSTEM_PROMPT = `You are a helpful assistant that answers questions based on the user's personal notes.
 You MUST only use the provided context to answer. Do not use external knowledge.
@@ -673,11 +728,7 @@ export class RagEngine {
   private llmProvider: LLMProvider;
   private settings: PluginSettings;
 
-  constructor(
-    vectorStore: VectorStore,
-    llmProvider: LLMProvider,
-    settings: PluginSettings,
-  ) {
+  constructor(vectorStore: VectorStore, llmProvider: LLMProvider, settings: PluginSettings) {
     this.vectorStore = vectorStore;
     this.llmProvider = llmProvider;
     this.settings = settings;
@@ -700,21 +751,24 @@ export class RagEngine {
 4. **Vector search**: `const results = await this.vectorStore.query(questionEmbedding, this.settings.topK)`.
 
 5. **Assemble context**: Build a string from the results:
+
    ```typescript
-   const context = results.map(r =>
-     `[Source: ${r.fileTitle} (${r.filePath})]\n${r.text}`
-   ).join("\n\n");
+   const context = results
+     .map((r) => `[Source: ${r.fileTitle} (${r.filePath})]\n${r.text}`)
+     .join('\n\n');
    ```
 
 6. **Build messages**:
+
    ```typescript
    const messages: Message[] = [
-     { role: "system", content: SYSTEM_PROMPT },
-     { role: "user", content: `Context:\n${context}\n\nQuestion: ${userQuestion}` },
+     { role: 'system', content: SYSTEM_PROMPT },
+     { role: 'user', content: `Context:\n${context}\n\nQuestion: ${userQuestion}` },
    ];
    ```
 
 7. **Stream LLM response**: Wrap in try/catch.
+
    ```typescript
    try {
      for await (const token of this.llmProvider.chat(messages)) {
@@ -752,6 +806,7 @@ export class RagEngine {
 ### Step 10: Settings Tab
 
 **Files**:
+
 - `/Users/rong/Workspaces/1-Projects/11-Brian-Projects/110-Obsidian-RAG/src/settings.ts` (create)
 
 **What to do**:
@@ -759,8 +814,8 @@ export class RagEngine {
 Create `src/settings.ts`. This file depends on `main.ts` for the plugin type, but to avoid circular imports, use a forward reference pattern.
 
 ```typescript
-import { App, PluginSettingTab, Setting } from "obsidian";
-import type ObsidianKBPlugin from "./main";
+import { App, PluginSettingTab, Setting } from 'obsidian';
+import type ObsidianKBPlugin from './main';
 
 export class KBSettingTab extends PluginSettingTab {
   plugin: ObsidianKBPlugin;
@@ -774,58 +829,60 @@ export class KBSettingTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
-    containerEl.createEl("h2", { text: "Obsidian KB Settings" });
+    containerEl.createEl('h2', { text: 'Obsidian KB Settings' });
 
     // 1. OpenAI API Key — password input
     new Setting(containerEl)
-      .setName("OpenAI API Key")
-      .setDesc("Your OpenAI API key for embeddings and chat.")
+      .setName('OpenAI API Key')
+      .setDesc('Your OpenAI API key for embeddings and chat.')
       .addText((text) =>
         text
-          .setPlaceholder("sk-...")
+          .setPlaceholder('sk-...')
           .setValue(this.plugin.settings.openaiApiKey)
           .onChange(async (value) => {
             this.plugin.settings.openaiApiKey = value;
             await this.plugin.saveSettings();
           })
           // Make it a password field
-          .then((text) => { text.inputEl.type = "password"; })
+          .then((text) => {
+            text.inputEl.type = 'password';
+          }),
       );
 
     // 2. Chat Model — dropdown
     new Setting(containerEl)
-      .setName("Chat Model")
-      .setDesc("OpenAI model for chat completions.")
+      .setName('Chat Model')
+      .setDesc('OpenAI model for chat completions.')
       .addDropdown((dropdown) =>
         dropdown
-          .addOption("gpt-4o", "gpt-4o")
-          .addOption("gpt-4o-mini", "gpt-4o-mini")
+          .addOption('gpt-4o', 'gpt-4o')
+          .addOption('gpt-4o-mini', 'gpt-4o-mini')
           .setValue(this.plugin.settings.chatModel)
           .onChange(async (value) => {
             this.plugin.settings.chatModel = value;
             await this.plugin.saveSettings();
-          })
+          }),
       );
 
     // 3. Embedding Model — dropdown
     new Setting(containerEl)
-      .setName("Embedding Model")
-      .setDesc("OpenAI model for generating embeddings.")
+      .setName('Embedding Model')
+      .setDesc('OpenAI model for generating embeddings.')
       .addDropdown((dropdown) =>
         dropdown
-          .addOption("text-embedding-3-small", "text-embedding-3-small")
-          .addOption("text-embedding-3-large", "text-embedding-3-large")
+          .addOption('text-embedding-3-small', 'text-embedding-3-small')
+          .addOption('text-embedding-3-large', 'text-embedding-3-large')
           .setValue(this.plugin.settings.embeddingModel)
           .onChange(async (value) => {
             this.plugin.settings.embeddingModel = value;
             await this.plugin.saveSettings();
-          })
+          }),
       );
 
     // 4. Top-K results — slider
     new Setting(containerEl)
-      .setName("Top-K Results")
-      .setDesc("Number of chunks to retrieve per query (1-20).")
+      .setName('Top-K Results')
+      .setDesc('Number of chunks to retrieve per query (1-20).')
       .addSlider((slider) =>
         slider
           .setLimits(1, 20, 1)
@@ -834,13 +891,13 @@ export class KBSettingTab extends PluginSettingTab {
           .onChange(async (value) => {
             this.plugin.settings.topK = value;
             await this.plugin.saveSettings();
-          })
+          }),
       );
 
     // 5. Embedding Batch Size — slider
     new Setting(containerEl)
-      .setName("Embedding Batch Size")
-      .setDesc("Number of files per embedding batch during indexing (5-50).")
+      .setName('Embedding Batch Size')
+      .setDesc('Number of files per embedding batch during indexing (5-50).')
       .addSlider((slider) =>
         slider
           .setLimits(5, 50, 5)
@@ -849,7 +906,7 @@ export class KBSettingTab extends PluginSettingTab {
           .onChange(async (value) => {
             this.plugin.settings.embeddingBatchSize = value;
             await this.plugin.saveSettings();
-          })
+          }),
       );
   }
 }
@@ -866,6 +923,7 @@ export class KBSettingTab extends PluginSettingTab {
 ### Step 11: Chat UI — View
 
 **Files**:
+
 - `/Users/rong/Workspaces/1-Projects/11-Brian-Projects/110-Obsidian-RAG/src/ui/chat-view.ts` (create)
 
 **What to do**:
@@ -873,11 +931,11 @@ export class KBSettingTab extends PluginSettingTab {
 Create `src/ui/chat-view.ts`.
 
 ```typescript
-import { ItemView, WorkspaceLeaf, MarkdownRenderer, App } from "obsidian";
-import { RagEngine } from "../core/rag-engine";
-import { SourceReference } from "../types";
+import { ItemView, WorkspaceLeaf, MarkdownRenderer, App } from 'obsidian';
+import { RagEngine } from '../core/rag-engine';
+import { SourceReference } from '../types';
 
-export const CHAT_VIEW_TYPE = "obsidian-kb-chat";
+export const CHAT_VIEW_TYPE = 'obsidian-kb-chat';
 
 export class ChatView extends ItemView {
   private ragEngine: RagEngine;
@@ -885,7 +943,7 @@ export class ChatView extends ItemView {
   private inputEl: HTMLTextAreaElement;
   private sendBtn: HTMLButtonElement;
   private isStreaming = false;
-  private fullResponseText = "";
+  private fullResponseText = '';
   private renderThrottleTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(leaf: WorkspaceLeaf, ragEngine: RagEngine) {
@@ -893,26 +951,55 @@ export class ChatView extends ItemView {
     this.ragEngine = ragEngine;
   }
 
-  getViewType(): string { return CHAT_VIEW_TYPE; }
-  getDisplayText(): string { return "KB Chat"; }
-  getIcon(): string { return "message-square"; }
+  getViewType(): string {
+    return CHAT_VIEW_TYPE;
+  }
+  getDisplayText(): string {
+    return 'KB Chat';
+  }
+  getIcon(): string {
+    return 'message-square';
+  }
 
-  async onOpen(): Promise<void> { /* build DOM */ }
-  async onClose(): Promise<void> { /* cleanup */ }
+  async onOpen(): Promise<void> {
+    /* build DOM */
+  }
+  async onClose(): Promise<void> {
+    /* cleanup */
+  }
 
-  private async handleSubmit(question: string): Promise<void> { /* ... */ }
-  private addUserMessage(text: string): void { /* ... */ }
-  private addAssistantMessage(): HTMLElement { /* returns the bubble element */ }
-  private appendToken(bubbleEl: HTMLElement, token: string): void { /* ... */ }
-  private renderMarkdown(bubbleEl: HTMLElement): void { /* ... */ }
-  private renderSources(bubbleEl: HTMLElement, sources: SourceReference[]): void { /* ... */ }
-  private renderError(bubbleEl: HTMLElement, message: string): void { /* ... */ }
-  private setInputEnabled(enabled: boolean): void { /* ... */ }
-  private scrollToBottom(): void { /* ... */ }
+  private async handleSubmit(question: string): Promise<void> {
+    /* ... */
+  }
+  private addUserMessage(text: string): void {
+    /* ... */
+  }
+  private addAssistantMessage(): HTMLElement {
+    /* returns the bubble element */
+  }
+  private appendToken(bubbleEl: HTMLElement, token: string): void {
+    /* ... */
+  }
+  private renderMarkdown(bubbleEl: HTMLElement): void {
+    /* ... */
+  }
+  private renderSources(bubbleEl: HTMLElement, sources: SourceReference[]): void {
+    /* ... */
+  }
+  private renderError(bubbleEl: HTMLElement, message: string): void {
+    /* ... */
+  }
+  private setInputEnabled(enabled: boolean): void {
+    /* ... */
+  }
+  private scrollToBottom(): void {
+    /* ... */
+  }
 }
 ```
 
 **`onOpen()` implementation — build the DOM**:
+
 ```typescript
 const container = this.contentEl;
 container.empty();
@@ -947,11 +1034,13 @@ this.sendBtn.addEventListener("click", () => {
 ```
 
 **`onClose()` implementation**:
+
 ```typescript
 if (this.renderThrottleTimer) clearTimeout(this.renderThrottleTimer);
 ```
 
 **`handleSubmit(question)` implementation**:
+
 1. Trim the question. If empty, return.
 2. Clear the input field.
 3. Call `this.setInputEnabled(false)`.
@@ -967,11 +1056,13 @@ if (this.renderThrottleTimer) clearTimeout(this.renderThrottleTimer);
    - In finally: `this.setInputEnabled(true)`. Also do a final markdown render to make sure the complete text is rendered.
 
 **`addUserMessage(text)`**:
+
 - Create a div with class `kb-chat-message kb-chat-user`: `this.messagesEl.createDiv({ cls: "kb-chat-message kb-chat-user" })`.
 - Set its `textContent` to `text`.
 - Call `this.scrollToBottom()`.
 
 **`addAssistantMessage()`**:
+
 - Create a div with class `kb-chat-message kb-chat-assistant`.
 - Inside it, create a div with class `kb-chat-bubble`.
 - Inside the bubble, create a span with class `kb-chat-loader` and text `"..."` (this is the loading indicator).
@@ -979,6 +1070,7 @@ if (this.renderThrottleTimer) clearTimeout(this.renderThrottleTimer);
 - Return the bubble div (NOT the message div).
 
 **`appendToken(bubbleEl, token)`**:
+
 - Remove the loader element if it still exists: `bubbleEl.querySelector(".kb-chat-loader")?.remove()`.
 - Accumulate: `this.fullResponseText += token`.
 - Throttled Markdown re-render: if `this.renderThrottleTimer` is null, set it:
@@ -990,6 +1082,7 @@ if (this.renderThrottleTimer) clearTimeout(this.renderThrottleTimer);
   ```
 
 **`renderMarkdown(bubbleEl)`**:
+
 - Clear the bubble (but keep sources if they exist — so only clear elements that are NOT `.kb-chat-sources`): `const sourcesEl = bubbleEl.querySelector(".kb-chat-sources"); bubbleEl.empty(); if (sourcesEl) bubbleEl.appendChild(sourcesEl);`
 - Actually, simpler approach: use a dedicated content div inside the bubble. On `addAssistantMessage`, create a content div with class `kb-chat-content` inside the bubble. Then `renderMarkdown` only clears and re-renders within the content div.
 - Revised: `addAssistantMessage` creates:
@@ -1004,32 +1097,36 @@ if (this.renderThrottleTimer) clearTimeout(this.renderThrottleTimer);
 - Use Obsidian's `MarkdownRenderer.render(this.app, this.fullResponseText, contentEl, "", this)` to render the accumulated markdown.
 
 **`renderSources(bubbleEl, sources)`**:
+
 - Create a div with class `kb-chat-sources` inside `bubbleEl`.
 - Add a label: `sourcesEl.createEl("div", { cls: "kb-chat-sources-label", text: "Sources:" })`.
 - For each source:
   ```typescript
-  const link = sourcesEl.createEl("a", {
-    cls: "kb-chat-source-link",
+  const link = sourcesEl.createEl('a', {
+    cls: 'kb-chat-source-link',
     text: source.fileTitle,
   });
-  link.addEventListener("click", (e) => {
+  link.addEventListener('click', (e) => {
     e.preventDefault();
-    this.app.workspace.openLinkText(source.filePath, "");
+    this.app.workspace.openLinkText(source.filePath, '');
   });
   ```
 
 **`renderError(bubbleEl, message)`**:
+
 - Remove loader if present.
 - Get or create the content div.
 - Create an error div: `contentEl.createDiv({ cls: "kb-chat-error", text: message })`.
 
 **`setInputEnabled(enabled)`**:
+
 - `this.inputEl.disabled = \!enabled`.
 - `this.sendBtn.disabled = \!enabled`.
 - `this.isStreaming = \!enabled`.
 - If enabled, focus the input: `this.inputEl.focus()`.
 
 **`scrollToBottom()`**:
+
 - `this.messagesEl.scrollTop = this.messagesEl.scrollHeight`.
 
 **Do NOT**: Persist chat history to disk. Do NOT add conversation context (multi-turn). The `ragEngine.query()` call is single-turn.
@@ -1041,6 +1138,7 @@ if (this.renderThrottleTimer) clearTimeout(this.renderThrottleTimer);
 ### Step 12: Chat UI — Styles
 
 **Files**:
+
 - `/Users/rong/Workspaces/1-Projects/11-Brian-Projects/110-Obsidian-RAG/styles.css` (create)
 
 **What to do**:
@@ -1114,8 +1212,13 @@ Create `styles.css` at the project root (Obsidian automatically loads `styles.cs
 }
 
 @keyframes kb-pulse {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 /* ─── Error Messages ─── */
@@ -1208,6 +1311,7 @@ Create `styles.css` at the project root (Obsidian automatically loads `styles.cs
 ### Step 13: Plugin Main Entry — Wire Everything Together
 
 **Files**:
+
 - `/Users/rong/Workspaces/1-Projects/11-Brian-Projects/110-Obsidian-RAG/src/main.ts` (create)
 
 **What to do**:
@@ -1341,6 +1445,7 @@ export default class ObsidianKBPlugin extends Plugin {
 ```
 
 **Key points**:
+
 - The `onLayoutReady()` wrapper around indexing is CRITICAL. Without it, Obsidian fires `create` events for every file during initial load, which would trigger redundant re-indexing.
 - If no API key is set, indexing is skipped and the status bar shows a message prompting the user to configure it.
 - The `activateChatView()` method checks if the view is already open before creating a new leaf.
@@ -1368,6 +1473,7 @@ export default class ObsidianKBPlugin extends Plugin {
    - `styles.css`
 
 **Manual smoke test** (if an Obsidian vault is available):
+
 1. Copy the entire project directory (or symlink it) into `{vault}/.obsidian/plugins/obsidian-kb/`.
 2. Make sure `node_modules/` is present in the plugin directory (run `npm install` if needed).
 3. Open Obsidian, go to Settings > Community Plugins > enable "Obsidian KB".
@@ -1386,26 +1492,27 @@ export default class ObsidianKBPlugin extends Plugin {
 
 ## Summary of Steps
 
-| Step | Title | Files Created |
-|------|-------|---------------|
-| 1 | Project scaffold | `package.json`, `tsconfig.json`, `manifest.json`, `.gitignore`, `src/` dirs |
-| 2 | esbuild config + npm install | `esbuild.config.mjs` |
-| 3 | Shared types | `src/types.ts` |
-| 4 | LLM Provider interface | `src/llm/provider.ts` |
-| 5 | OpenAI implementation | `src/llm/openai.ts` |
-| 6 | Chunker | `src/core/chunker.ts` |
-| 7 | Vector Store | `src/core/vector-store.ts` |
-| 8 | Vault Indexer | `src/core/vault-indexer.ts` |
-| 9 | RAG Engine | `src/core/rag-engine.ts` |
-| 10 | Settings tab | `src/settings.ts` |
-| 11 | Chat UI view | `src/ui/chat-view.ts` |
-| 12 | Chat UI styles | `styles.css` |
-| 13 | Plugin main entry | `src/main.ts` |
-| 14 | Build and verify | (no new files) |
+| Step | Title                        | Files Created                                                               |
+| ---- | ---------------------------- | --------------------------------------------------------------------------- |
+| 1    | Project scaffold             | `package.json`, `tsconfig.json`, `manifest.json`, `.gitignore`, `src/` dirs |
+| 2    | esbuild config + npm install | `esbuild.config.mjs`                                                        |
+| 3    | Shared types                 | `src/types.ts`                                                              |
+| 4    | LLM Provider interface       | `src/llm/provider.ts`                                                       |
+| 5    | OpenAI implementation        | `src/llm/openai.ts`                                                         |
+| 6    | Chunker                      | `src/core/chunker.ts`                                                       |
+| 7    | Vector Store                 | `src/core/vector-store.ts`                                                  |
+| 8    | Vault Indexer                | `src/core/vault-indexer.ts`                                                 |
+| 9    | RAG Engine                   | `src/core/rag-engine.ts`                                                    |
+| 10   | Settings tab                 | `src/settings.ts`                                                           |
+| 11   | Chat UI view                 | `src/ui/chat-view.ts`                                                       |
+| 12   | Chat UI styles               | `styles.css`                                                                |
+| 13   | Plugin main entry            | `src/main.ts`                                                               |
+| 14   | Build and verify             | (no new files)                                                              |
 
 **Total**: 14 steps, 15 files created (10 TypeScript source files + 4 config files + 1 CSS file).
 
 **Estimated groupings**:
+
 - Infrastructure (Steps 1-3): ~10 min
 - Core modules (Steps 4-9): ~25 min
 - UI layer (Steps 10-12): ~10 min

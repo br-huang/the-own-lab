@@ -13,6 +13,7 @@ Not-Forget-List is a native Apple-ecosystem task management application inspired
 **Vision:** A fast, beautiful, cloud-native todo app that lives entirely in the Apple ecosystem, syncs in real time across devices, and grows from a minimal CRUD tool into a full productivity suite across five incremental phases.
 
 **Reference applications:**
+
 - TickTick — feature philosophy, view breadth (Kanban, Calendar, Gantt, Pomodoro)
 - Apple Reminders — interaction simplicity, native feel, list + tag model
 - Things 3 — architecture model (full-stack Swift, clean data model, desktop + mobile parity)
@@ -21,9 +22,9 @@ Not-Forget-List is a native Apple-ecosystem task management application inspired
 
 ## 2. Target Platforms
 
-| Platform | Minimum OS | Distribution |
-|----------|------------|--------------|
-| iOS      | iOS 17     | TestFlight → App Store |
+| Platform | Minimum OS        | Distribution               |
+| -------- | ----------------- | -------------------------- |
+| iOS      | iOS 17            | TestFlight → App Store     |
 | macOS    | macOS 14 (Sonoma) | TestFlight → Mac App Store |
 
 Both targets share a single SwiftUI codebase using `#if os(iOS)` / `#if os(macOS)` guards only for platform-specific UI overrides. No Android, no web client, no Windows.
@@ -33,6 +34,7 @@ Both targets share a single SwiftUI codebase using `#if os(iOS)` / `#if os(macOS
 ## 3. User Personas
 
 ### Primary — The Developer (Brian)
+
 - React expert, learning Swift/SwiftUI with this project as the vehicle
 - Uses iOS daily and macOS for development
 - Needs real-time sync between iPhone and MacBook
@@ -41,6 +43,7 @@ Both targets share a single SwiftUI codebase using `#if os(iOS)` / `#if os(macOS
 - Traditional Chinese is the preferred UI language
 
 ### Secondary — Future Public Users (post-publish)
+
 - Apple-ecosystem users who want a capable, open-source TickTick alternative
 - May use iPad (must be considered in layout, not explicitly built for Phase 1)
 - Expect reliability, speed, and data ownership transparency
@@ -220,19 +223,19 @@ Both targets share a single SwiftUI codebase using `#if os(iOS)` / `#if os(macOS
 
 ## 6. Technical Constraints
 
-| Constraint | Detail |
-|---|---|
-| Language | Swift 6 (strict concurrency) |
-| UI Framework | SwiftUI (minimum: iOS 17 / macOS 14 API surface) |
-| Backend | Supabase (PostgreSQL 15, Realtime via websocket, Auth, Storage) |
-| Local persistence | None in Phase 1–4 (in-memory only). Phase 5 adds a lightweight pending-ops queue (SwiftData or JSON file) |
-| Networking | Supabase Swift client (`supabase-swift`) for API calls; URLSession for any custom requests |
-| Push notifications | Apple Push Notification service (APNs) via Supabase Edge Functions or a thin server-side trigger |
-| Background timer | ActivityKit (Live Activity), BackgroundTasks framework |
-| No third-party UI libraries | All UI is native SwiftUI + AppKit/UIKit bridges where necessary. No web views. |
-| Testing | XCTest for unit/integration; Swift Testing framework for new tests; XCUITest for critical flows |
-| CI | GitHub Actions — build + test on push to main |
-| Distribution | Xcode Cloud or Fastlane for TestFlight delivery |
+| Constraint                  | Detail                                                                                                    |
+| --------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Language                    | Swift 6 (strict concurrency)                                                                              |
+| UI Framework                | SwiftUI (minimum: iOS 17 / macOS 14 API surface)                                                          |
+| Backend                     | Supabase (PostgreSQL 15, Realtime via websocket, Auth, Storage)                                           |
+| Local persistence           | None in Phase 1–4 (in-memory only). Phase 5 adds a lightweight pending-ops queue (SwiftData or JSON file) |
+| Networking                  | Supabase Swift client (`supabase-swift`) for API calls; URLSession for any custom requests                |
+| Push notifications          | Apple Push Notification service (APNs) via Supabase Edge Functions or a thin server-side trigger          |
+| Background timer            | ActivityKit (Live Activity), BackgroundTasks framework                                                    |
+| No third-party UI libraries | All UI is native SwiftUI + AppKit/UIKit bridges where necessary. No web views.                            |
+| Testing                     | XCTest for unit/integration; Swift Testing framework for new tests; XCUITest for critical flows           |
+| CI                          | GitHub Actions — build + test on push to main                                                             |
+| Distribution                | Xcode Cloud or Fastlane for TestFlight delivery                                                           |
 
 ---
 
@@ -241,6 +244,7 @@ Both targets share a single SwiftUI codebase using `#if os(iOS)` / `#if os(macOS
 Each phase is considered "done" when all of its functional requirements pass acceptance testing on both iOS and macOS, and the following phase-level criteria are met.
 
 ### Phase 1 Done When:
+
 - A task can be created, edited, completed, and deleted on both platforms.
 - Lists, groups, and tags are fully CRUD-able.
 - All five built-in smart lists (Today, Tomorrow, Upcoming, All Tasks, Completed) return correct results.
@@ -249,24 +253,28 @@ Each phase is considered "done" when all of its functional requirements pass acc
 - Manual sort order of tasks persists across app restarts.
 
 ### Phase 2 Done When:
+
 - A scheduled reminder fires a local push notification at the correct time after app restart and device reboot.
 - Tapping the notification navigates to the correct task.
 - Snooze options (15 min, 1 hr, tomorrow 9 AM) work correctly.
 - The daily summary notification fires at the user-configured time and is suppressible.
 
 ### Phase 3 Done When:
+
 - Kanban: drag-and-drop between columns updates task status in real time on a second device.
 - Calendar: tasks appear on the correct day; dragging a task to a new time slot updates the due date.
 - Gantt: bars render for tasks with start + due dates; dragging a bar edge correctly updates dates; dependency arrows render for linked tasks.
 - All three views work on both iOS and macOS without layout regressions.
 
 ### Phase 4 Done When:
+
 - Starting a Pomodoro session on a task and backgrounding the app shows a Live Activity with correct countdown.
 - Audio cue fires at interval end.
 - Completed sessions are stored in Supabase and the task detail shows the correct Pomodoro count.
 - The home screen widget shows the correct today count.
 
 ### Phase 5 Done When:
+
 - A task created on iOS appears on macOS within 3 seconds on a local Wi-Fi network.
 - Editing a task offline and reconnecting results in the edit being synced without user intervention.
 - Sign in on a new device and full data load (1,000 tasks) completes within 10 seconds.
@@ -276,16 +284,16 @@ Each phase is considered "done" when all of its functional requirements pass acc
 
 ## 8. Risks and Mitigations
 
-| # | Risk | Severity | Mitigation |
-|---|---|---|---|
-| R-1 | Rich text editor: no mature SwiftUI package exists | High | Bridge `UITextView` (iOS) / `NSTextView` (macOS) using `UIViewRepresentable` / `NSViewRepresentable`. Target Markdown as storage format to reduce editor complexity. Spike required before Phase 1 is finalized. |
-| R-2 | Gantt chart: no Swift packages available | High | Build with SwiftUI `Canvas`. Scope Phase 3 Gantt to read + basic drag; avoid complex dependency logic in MVP of Phase 3. |
-| R-3 | Swift concurrency learning curve | Medium | Developer is experienced in async patterns from React/JS. Swift's `async/await` and `Actor` model are the primary learning surface. Allocate extra time for Phase 1 architecture. Use TCA or MVVM as a clear, consistent pattern throughout. |
-| R-4 | Supabase Realtime reliability under poor network | Medium | Implement exponential backoff reconnect logic in the sync layer. Use the pending-operations queue (FR-5.3) as the source of truth, not the websocket. |
-| R-5 | Kanban drag-and-drop is limited in SwiftUI | Low-Medium | SwiftUI `.draggable` / `.dropDestination` available since iOS 16. Sufficient for basic Kanban. Custom gesture recognizer may be needed for smooth UX — budget time for this. |
-| R-6 | ActivityKit Live Activity API changes | Low | ActivityKit is stable as of iOS 16.2. Pin to a minimum deployment target that guarantees the API. |
-| R-7 | LexoRank sort order implementation complexity | Low | Use an existing Swift LexoRank implementation or a simpler fractional index library. This is a solved problem — avoid reimplementing from scratch. |
-| R-8 | App Store review for first Swift project | Low | Follow App Store guidelines from day one. Sign in with Apple is required if any other social login is offered (NFR-2.3 complies). |
+| #   | Risk                                               | Severity   | Mitigation                                                                                                                                                                                                                                   |
+| --- | -------------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R-1 | Rich text editor: no mature SwiftUI package exists | High       | Bridge `UITextView` (iOS) / `NSTextView` (macOS) using `UIViewRepresentable` / `NSViewRepresentable`. Target Markdown as storage format to reduce editor complexity. Spike required before Phase 1 is finalized.                             |
+| R-2 | Gantt chart: no Swift packages available           | High       | Build with SwiftUI `Canvas`. Scope Phase 3 Gantt to read + basic drag; avoid complex dependency logic in MVP of Phase 3.                                                                                                                     |
+| R-3 | Swift concurrency learning curve                   | Medium     | Developer is experienced in async patterns from React/JS. Swift's `async/await` and `Actor` model are the primary learning surface. Allocate extra time for Phase 1 architecture. Use TCA or MVVM as a clear, consistent pattern throughout. |
+| R-4 | Supabase Realtime reliability under poor network   | Medium     | Implement exponential backoff reconnect logic in the sync layer. Use the pending-operations queue (FR-5.3) as the source of truth, not the websocket.                                                                                        |
+| R-5 | Kanban drag-and-drop is limited in SwiftUI         | Low-Medium | SwiftUI `.draggable` / `.dropDestination` available since iOS 16. Sufficient for basic Kanban. Custom gesture recognizer may be needed for smooth UX — budget time for this.                                                                 |
+| R-6 | ActivityKit Live Activity API changes              | Low        | ActivityKit is stable as of iOS 16.2. Pin to a minimum deployment target that guarantees the API.                                                                                                                                            |
+| R-7 | LexoRank sort order implementation complexity      | Low        | Use an existing Swift LexoRank implementation or a simpler fractional index library. This is a solved problem — avoid reimplementing from scratch.                                                                                           |
+| R-8 | App Store review for first Swift project           | Low        | Follow App Store guidelines from day one. Sign in with Apple is required if any other social login is offered (NFR-2.3 complies).                                                                                                            |
 
 ---
 
@@ -308,4 +316,4 @@ The following are explicitly excluded from this product. They may be revisited p
 
 ---
 
-*End of Requirements Document*
+_End of Requirements Document_

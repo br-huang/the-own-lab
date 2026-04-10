@@ -51,17 +51,17 @@ cp -r /path/to/110-Obsidian-RAG \
 
 ### Chat (LLM)
 
-| 設定 | 說明 | 預設值 |
-|------|------|--------|
-| OpenAI API Key | 用於聊天回答（不用於 Embedding） | 無 |
-| Chat Model | OpenAI 聊天模型 | gpt-4o |
+| 設定           | 說明                             | 預設值 |
+| -------------- | -------------------------------- | ------ |
+| OpenAI API Key | 用於聊天回答（不用於 Embedding） | 無     |
+| Chat Model     | OpenAI 聊天模型                  | gpt-4o |
 
 ### Advanced
 
-| 設定 | 說明 | 預設值 |
-|------|------|--------|
-| Top-K Results | 每次查詢檢索的 chunk 數量（1-20） | 5 |
-| Embedding Batch Size | 索引時每批處理的檔案數（5-50） | 20 |
+| 設定                 | 說明                              | 預設值 |
+| -------------------- | --------------------------------- | ------ |
+| Top-K Results        | 每次查詢檢索的 chunk 數量（1-20） | 5      |
+| Embedding Batch Size | 索引時每批處理的檔案數（5-50）    | 20     |
 
 ---
 
@@ -116,13 +116,13 @@ cp -r /path/to/110-Obsidian-RAG \
 
 **AJSON**（Append-only JSON）是 Smart Connections 自創的格式，每行一筆向量記錄，只追加不覆寫。本質上就是把向量存成純文字檔案。
 
-| | 純文字檔案（JSON / AJSON） | 向量資料庫（LanceDB / Chroma / Pinecone） |
-|---|---|---|
-| **搜索方式** | 暴力遍歷 cosine similarity O(n) | 索引結構（HNSW / IVF）O(log n) |
-| **適用規模** | < 10,000 chunks | 百萬級以上 |
-| **依賴** | 零（純 JS） | native binary / 雲端服務 |
-| **精確度** | 100%（遍歷所有向量） | 近似搜索（可能漏掉結果） |
-| **Obsidian 相容** | 完美（無 native binary 問題） | 有 Electron ABI 相容風險 |
+|                   | 純文字檔案（JSON / AJSON）      | 向量資料庫（LanceDB / Chroma / Pinecone） |
+| ----------------- | ------------------------------- | ----------------------------------------- |
+| **搜索方式**      | 暴力遍歷 cosine similarity O(n) | 索引結構（HNSW / IVF）O(log n)            |
+| **適用規模**      | < 10,000 chunks                 | 百萬級以上                                |
+| **依賴**          | 零（純 JS）                     | native binary / 雲端服務                  |
+| **精確度**        | 100%（遍歷所有向量）            | 近似搜索（可能漏掉結果）                  |
+| **Obsidian 相容** | 完美（無 native binary 問題）   | 有 Electron ABI 相容風險                  |
 
 **結論**：個人 Vault 幾千篇筆記產生幾萬個 chunks，暴力搜索在毫秒級完成，不需要向量資料庫。
 
@@ -136,16 +136,16 @@ cp -r /path/to/110-Obsidian-RAG \
 
 差異在於模型在哪裡執行：
 
-| | Transformers.js（本地） | OpenAI Embedding API（雲端） |
-|---|---|---|
-| **執行位置** | 你的電腦（WASM） | OpenAI 伺服器 |
-| **模型** | BGE-small-en（33MB） | text-embedding-3-small |
-| **向量維度** | 384 維 | 1536 維 |
-| **費用** | 免費 | ~$0.02 / 百萬 tokens |
-| **速度** | 首次載入 2-3 秒，之後每次幾 ms | 每次需 HTTP 請求 ~200ms |
-| **離線** | 模型下載後完全離線 | 需要網路 |
-| **品質** | 良好（英文佳，中文一般） | 較好（多語言支援） |
-| **隱私** | 資料不離開你的電腦 | 資料送到 OpenAI |
+|              | Transformers.js（本地）        | OpenAI Embedding API（雲端） |
+| ------------ | ------------------------------ | ---------------------------- |
+| **執行位置** | 你的電腦（WASM）               | OpenAI 伺服器                |
+| **模型**     | BGE-small-en（33MB）           | text-embedding-3-small       |
+| **向量維度** | 384 維                         | 1536 維                      |
+| **費用**     | 免費                           | ~$0.02 / 百萬 tokens         |
+| **速度**     | 首次載入 2-3 秒，之後每次幾 ms | 每次需 HTTP 請求 ~200ms      |
+| **離線**     | 模型下載後完全離線             | 需要網路                     |
+| **品質**     | 良好（英文佳，中文一般）       | 較好（多語言支援）           |
+| **隱私**     | 資料不離開你的電腦             | 資料送到 OpenAI              |
 
 **Transformers.js** 是 HuggingFace 開發的 JavaScript ML 推論庫。它把 Python 訓練的模型轉成 ONNX 格式，用 WebAssembly（WASM）在瀏覽器或 Electron 環境中執行。不需要 Python、不需要 GPU，純粹靠 CPU 就能跑。
 

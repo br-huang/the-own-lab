@@ -11,19 +11,19 @@ Use it as the default source for reusable UI primitives before creating app-loca
 - Prefer package entrypoint imports:
 
 ```ts
-import { Button, Dialog, Sidebar, Table } from "ui";
+import { Button, Dialog, Sidebar, Table } from 'ui';
 ```
 
 - Use file-level imports only when necessary:
 
 ```ts
-import { Button } from "ui/components/button";
+import { Button } from 'ui/components/button';
 ```
 
 - Import shared styles from:
 
 ```ts
-import "ui/styles/theme.css";
+import 'ui/styles/theme.css';
 ```
 
 ## When To Use `packages/ui`

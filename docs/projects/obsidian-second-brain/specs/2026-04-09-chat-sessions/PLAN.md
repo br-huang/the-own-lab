@@ -1,6 +1,7 @@
 # Implementation Plan: Chat Sessions
 
 ## Prerequisites
+
 - Read and understand: `src/types.ts`, `src/main.ts`, `src/ui/chat-view.ts`, `styles.css`
 - The plugin uses Node.js `fs` for file I/O (see `VectorStore` for the pattern)
 - Vault path is obtained via `FileSystemAdapter.getBasePath()`
@@ -37,7 +38,7 @@ Update the `PluginData` interface (currently lines 104-107) to:
 ```typescript
 export interface PluginData {
   settings: PluginSettings;
-  chatHistory: ChatMessage[];          // kept for migration; empty post-migration
+  chatHistory: ChatMessage[]; // kept for migration; empty post-migration
   sessionIndex: SessionIndexEntry[];
   activeSessionId: string | null;
 }
@@ -55,9 +56,9 @@ export interface PluginData {
 - **Signature**:
 
 ```typescript
-import * as fs from "fs/promises";
-import * as path from "path";
-import { ChatSession, ChatMessage, SessionIndexEntry, PluginData } from "../types";
+import * as fs from 'fs/promises';
+import * as path from 'path';
+import { ChatSession, ChatMessage, SessionIndexEntry, PluginData } from '../types';
 
 export class SessionStore {
   private sessionsDir: string;
@@ -80,15 +81,18 @@ export class SessionStore {
 - **Details**:
 
 **Constructor:**
+
 - `sessionsDir = path.join(vaultPath, ".obsidian-kb", "sessions")`
 - Store references to `pluginData` and `persistIndex` callback.
 
 **`initialize()`:**
+
 - Create `sessionsDir` recursively: `await fs.mkdir(this.sessionsDir, { recursive: true })`
 - If `pluginData.chatHistory.length > 0` AND `pluginData.sessionIndex.length === 0`, call `migrateFromChatHistory(pluginData.chatHistory)`. After migration, set `pluginData.chatHistory = []` and call `persistIndex()`.
 - If `pluginData.sessionIndex.length === 0`, call `createSession()` to make a default "New Chat" session, set it as active.
 
 **`createSession()`:**
+
 - Generate ID: `crypto.randomUUID()`. If `crypto.randomUUID` is not available, use fallback: `Date.now().toString(36) + Math.random().toString(36).slice(2)`.
 - Create `ChatSession` object: `{ id, title: "New Chat", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), messages: [] }`.
 - Write session file: `await fs.writeFile(path.join(this.sessionsDir, id + ".json"), JSON.stringify(session, null, 2))`.
@@ -98,16 +102,18 @@ export class SessionStore {
 - Return the session.
 
 **`loadSession(id)`:**
+
 - Read file: `await fs.readFile(path.join(this.sessionsDir, id + ".json"), "utf-8")`.
 - Parse JSON. If parse fails or file not found, log error and return a new empty session (also remove the stale index entry).
 - Return `ChatSession`.
 
 **`saveSession(session)`:**
+
 - Update `session.updatedAt = new Date().toISOString()`.
 - Write to temp file first, then rename (atomic write):
   ```typescript
-  const filePath = path.join(this.sessionsDir, session.id + ".json");
-  const tmpPath = filePath + ".tmp";
+  const filePath = path.join(this.sessionsDir, session.id + '.json');
+  const tmpPath = filePath + '.tmp';
   await fs.writeFile(tmpPath, JSON.stringify(session, null, 2));
   await fs.rename(tmpPath, filePath);
   ```
@@ -115,21 +121,26 @@ export class SessionStore {
 - Call `persistIndex()`.
 
 **`deleteSession(id)`:**
+
 - Remove the file: `await fs.unlink(path.join(this.sessionsDir, id + ".json"))`. Catch ENOENT (already deleted).
 - Remove from `pluginData.sessionIndex`.
 - If `pluginData.activeSessionId === id`, set it to the first remaining session's ID, or `null` if none remain.
 - Call `persistIndex()`.
 
 **`getSessionIndex()`:**
+
 - Return `pluginData.sessionIndex` sorted by `updatedAt` descending, sliced to first 50.
 
 **`getActiveSessionId()`:**
+
 - Return `pluginData.activeSessionId`.
 
 **`setActiveSessionId(id)`:**
+
 - Set `pluginData.activeSessionId = id`. Call `persistIndex()`.
 
 **`migrateFromChatHistory(messages)`:**
+
 - Determine title: find first message with `role === "user"`. Take first 30 chars of its `text` (strip leading `@[[...]]` chip mentions with regex: `text.replace(/@\[\[[^\]]*\]\]\s*/g, "").slice(0, 30)`). Fallback: "Migrated Chat".
 - Create a session with those messages, save to file, add to index. Return it.
 
@@ -158,6 +169,7 @@ constructor(
 
 Remove fields: `loadChatHistory`, `saveChatHistory`.
 Add fields:
+
 ```typescript
 private sessionStore: SessionStore;
 private currentSession: ChatSession | null = null;
@@ -186,6 +198,7 @@ private sessionListVisible = true;
 Keep all existing input area, autocomplete, chip tray logic exactly as-is. Move them into `.kb-chat-main`.
 
 At the end of `onOpen()`, load the active session:
+
 ```typescript
 const activeId = this.sessionStore.getActiveSessionId();
 if (activeId) {
@@ -212,6 +225,7 @@ private formatRelativeDate(isoDate: string): string
 - **Details**:
 
 **`renderSessionList()`:**
+
 - Clear `this.sessionListEl` (the `.kb-session-list` div created in Step 3).
 - Call `this.sessionStore.getSessionIndex()` to get sorted entries.
 - For each entry, create a `.kb-session-item` div containing:
@@ -223,6 +237,7 @@ private formatRelativeDate(isoDate: string): string
 - Attach click handler on delete button: `this.handleDeleteSession(entry.id, event)`. The event handler must call `event.stopPropagation()` to prevent triggering the switch.
 
 **`formatRelativeDate(isoDate)`:**
+
 - Parse the ISO string to a Date.
 - Compare to today's date (at midnight):
   - Same day: return `"Today"`
@@ -277,12 +292,14 @@ private async handleDeleteSession(sessionId: string, event: MouseEvent): Promise
 - **Details**:
 
 **`handleNewSession()`:**
+
 - If `this.isStreaming`, return.
 - Save current session if exists: `await this.sessionStore.saveSession(this.currentSession)`.
 - Create new: `const session = await this.sessionStore.createSession()`.
 - Switch to it: `await this.switchToSession(session.id)`.
 
 **`handleDeleteSession(sessionId, event)`:**
+
 - `event.stopPropagation()`.
 - If `this.isStreaming`, return.
 - Show confirmation: `if (\!confirm("Delete this session?")) return`.
@@ -295,6 +312,7 @@ private async handleDeleteSession(sessionId: string, event: MouseEvent): Promise
 - Call `this.renderSessionList()`.
 
 **Also update `handleClearHistory()`**: This now clears the current session's messages (not a global history). Rename or repurpose:
+
 - Clear `this.currentSession.messages = []`.
 - Save session.
 - Clear `this.messagesEl`.
@@ -314,11 +332,12 @@ private async handleDeleteSession(sessionId: string, event: MouseEvent): Promise
 **In the `pushHistory` method** (or wherever a user message is appended to `this.currentSession.messages`):
 
 After pushing the message, check:
+
 ```typescript
-if (message.role === "user" && this.currentSession.title === "New Chat") {
+if (message.role === 'user' && this.currentSession.title === 'New Chat') {
   // Strip @[[...]] mentions, take first 30 chars
-  const cleanText = message.text.replace(/@\[\[[^\]]*\]\]\s*/g, "").trim();
-  this.currentSession.title = cleanText.slice(0, 30) || "New Chat";
+  const cleanText = message.text.replace(/@\[\[[^\]]*\]\]\s*/g, '').trim();
+  this.currentSession.title = cleanText.slice(0, 30) || 'New Chat';
   this.renderSessionList(); // refresh to show new title
 }
 ```
@@ -363,18 +382,21 @@ private async pushHistory(message: ChatMessage): Promise<void> {
 - **Details**:
 
 **Update imports:**
+
 ```typescript
-import { SessionStore } from "./core/session-store";
+import { SessionStore } from './core/session-store';
 ```
 
 Remove imports for `ChatMessage` if no longer used directly.
 
 **Add field:**
+
 ```typescript
 private sessionStore\!: SessionStore;
 ```
 
 **Update `pluginData` default:**
+
 ```typescript
 private pluginData: PluginData = {
   settings: DEFAULT_SETTINGS,
@@ -385,6 +407,7 @@ private pluginData: PluginData = {
 ```
 
 **Update `loadSettings()`** to handle the new fields with defaults:
+
 ```typescript
 // In the new-format branch:
 this.pluginData = {
@@ -396,29 +419,22 @@ this.pluginData = {
 ```
 
 **In `onload()`, after vault path is resolved**, create and initialize SessionStore:
+
 ```typescript
-this.sessionStore = new SessionStore(
-  vaultPath,
-  this.pluginData,
-  () => this.saveSettings(),
-);
+this.sessionStore = new SessionStore(vaultPath, this.pluginData, () => this.saveSettings());
 await this.sessionStore.initialize();
 ```
 
 **Update `registerView`** to pass `sessionStore` instead of callbacks:
+
 ```typescript
 this.registerView(CHAT_VIEW_TYPE, (leaf: WorkspaceLeaf) => {
-  return new ChatView(
-    leaf,
-    this.ragEngine,
-    this.urlIngestor,
-    this.app,
-    this.sessionStore,
-  );
+  return new ChatView(leaf, this.ragEngine, this.urlIngestor, this.app, this.sessionStore);
 });
 ```
 
 **Remove** these methods (they are no longer needed):
+
 - `loadChatHistory()`
 - `saveChatHistory()`
 
@@ -434,6 +450,7 @@ this.registerView(CHAT_VIEW_TYPE, (leaf: WorkspaceLeaf) => {
 - **Details**:
 
 **Modify `.kb-chat-container`** to be horizontal flex:
+
 ```css
 .kb-chat-container {
   display: flex;
@@ -614,6 +631,7 @@ toggleBtn.addEventListener("click", () => {
 Run `npm run build`. Fix any TypeScript errors.
 
 **Verification checklist:**
+
 1. Fresh install (no existing data): Chat view opens with one "New Chat" session. Session list shows it as active.
 2. Send a message: Session title updates to first 30 chars. Message appears. AI responds. Session auto-saves.
 3. Click "+ New": New session created at top of list. Chat area clears. Old session preserved.

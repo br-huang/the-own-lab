@@ -1,6 +1,7 @@
 # ADR-001: Use a Local-First TypeScript CLI Architecture for Claude Code Statusline
 
 ## Status
+
 Proposed
 
 ## Context
@@ -57,12 +58,12 @@ Adopt a local-first TypeScript CLI architecture with the following characteristi
 
 ## Alternatives Considered
 
-| Option | Pros | Cons | Rejected Because |
-|--------|------|------|-----------------|
-| Shell script with `jq` | fastest prototype path, low initial setup | brittle formatting, poor maintainability, weak extensibility | does not meet long-term polish and maintainability goals |
-| Go CLI with `lipgloss` | fast runtime, single binary, strong terminal rendering | higher iteration cost, less flexible for early product exploration | a good future optimization path, but not the best first decision |
-| Server-backed architecture | shared state, advanced aggregation options, future multi-session possibilities | unnecessary complexity, operational burden, higher latency and failure modes | not justified for MVP or local-first usage |
-| TUI framework in v1 | richer interactive configuration | major complexity increase unrelated to core statusline rendering | configuration UI is not necessary to validate product value |
+| Option                     | Pros                                                                           | Cons                                                                         | Rejected Because                                                 |
+| -------------------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Shell script with `jq`     | fastest prototype path, low initial setup                                      | brittle formatting, poor maintainability, weak extensibility                 | does not meet long-term polish and maintainability goals         |
+| Go CLI with `lipgloss`     | fast runtime, single binary, strong terminal rendering                         | higher iteration cost, less flexible for early product exploration           | a good future optimization path, but not the best first decision |
+| Server-backed architecture | shared state, advanced aggregation options, future multi-session possibilities | unnecessary complexity, operational burden, higher latency and failure modes | not justified for MVP or local-first usage                       |
+| TUI framework in v1        | richer interactive configuration                                               | major complexity increase unrelated to core statusline rendering             | configuration UI is not necessary to validate product value      |
 
 ## Implementation Roadmap
 
@@ -88,4 +89,3 @@ Adopt a local-first TypeScript CLI architecture with the following characteristi
 - ANSI/text utilities such as `picocolors`, `string-width`, `strip-ansi`: expected
 - Config validation utility such as `zod`: expected
 - Remote service or daemon: not required
-

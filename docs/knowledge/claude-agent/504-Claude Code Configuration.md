@@ -63,17 +63,17 @@ plugin-name/
 
 Components are auto-discovered from standard directories. You do NOT need to list them in `plugin.json`:
 
-| Component | Discovery Pattern | Notes |
-|-----------|-------------------|-------|
-| Agents | `agents/**/*.md` | YAML frontmatter + markdown body |
-| Commands | `commands/**/*.md` | Same format as skills |
-| Skills | `skills/*/SKILL.md` | Each skill in its own directory |
-| Hooks | `hooks/hooks.json` | Single JSON config file |
-| Rules | `rules/**/*.md` | Always loaded into context |
-| Output styles | `output-styles/**/*.md` | Formatting directives |
-| MCP servers | `.mcp.json` | Or inline in plugin.json |
-| LSP servers | `.lsp.json` | Or inline in plugin.json |
-| Executables | `bin/*` | Added to PATH |
+| Component     | Discovery Pattern       | Notes                            |
+| ------------- | ----------------------- | -------------------------------- |
+| Agents        | `agents/**/*.md`        | YAML frontmatter + markdown body |
+| Commands      | `commands/**/*.md`      | Same format as skills            |
+| Skills        | `skills/*/SKILL.md`     | Each skill in its own directory  |
+| Hooks         | `hooks/hooks.json`      | Single JSON config file          |
+| Rules         | `rules/**/*.md`         | Always loaded into context       |
+| Output styles | `output-styles/**/*.md` | Formatting directives            |
+| MCP servers   | `.mcp.json`             | Or inline in plugin.json         |
+| LSP servers   | `.lsp.json`             | Or inline in plugin.json         |
+| Executables   | `bin/*`                 | Added to PATH                    |
 
 ### Namespacing
 
@@ -197,23 +197,23 @@ A marketplace is a registry of plugins. One repo can be both a marketplace and a
 
 ### Required Fields
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `name` | string | Marketplace identifier (kebab-case) |
-| `owner` | object | `name` (required), `email` (optional) |
-| `plugins` | array | List of plugin entries |
+| Field     | Type   | Notes                                 |
+| --------- | ------ | ------------------------------------- |
+| `name`    | string | Marketplace identifier (kebab-case)   |
+| `owner`   | object | `name` (required), `email` (optional) |
+| `plugins` | array  | List of plugin entries                |
 
 ### Plugin Entry Fields
 
-| Field | Required | Notes |
-|-------|----------|-------|
-| `name` | Yes | Plugin identifier |
-| `source` | Yes | Where to find the plugin (see source types below) |
-| `description` | No | Plugin description |
-| `version` | No | Should match plugin.json version |
-| `author` | No | Author info |
-| `category` | No | Plugin category |
-| `homepage` | No | Documentation URL |
+| Field         | Required | Notes                                             |
+| ------------- | -------- | ------------------------------------------------- |
+| `name`        | Yes      | Plugin identifier                                 |
+| `source`      | Yes      | Where to find the plugin (see source types below) |
+| `description` | No       | Plugin description                                |
+| `version`     | No       | Should match plugin.json version                  |
+| `author`      | No       | Author info                                       |
+| `category`    | No       | Plugin category                                   |
+| `homepage`    | No       | Documentation URL                                 |
 
 ### Source Types
 
@@ -290,26 +290,25 @@ color: green
 effort: medium
 maxTurns: 20
 ---
-
 # Agent prompt content here...
 ```
 
 ### Field Reference
 
-| Field | Required | Type | Notes |
-|-------|----------|------|-------|
-| `name` | Yes | string | Lowercase, hyphens, 3-50 chars |
-| `description` | Yes | string | When to delegate to this agent. Include `<example>` blocks for best results |
-| `model` | No | string | `sonnet`, `opus`, `haiku`, `inherit` (default: inherit from session) |
-| `tools` | No | string\|array | Tools available. Two formats work: comma-separated string OR JSON array |
-| `color` | No | string | `blue`, `cyan`, `green`, `yellow`, `magenta`, `red` |
-| `effort` | No | string | `low`, `medium`, `high`, `max` (Opus 4.6 only) |
-| `maxTurns` | No | number | Maximum agentic turns |
-| `skills` | No | array | Skills preloaded into agent context |
-| `memory` | No | boolean | Enable auto-memory (default: inherits) |
-| `background` | No | string | Background context |
-| `isolation` | No | string | `"worktree"` for git worktree isolation |
-| `disallowedTools` | No | string\|array | Tools denied to agent |
+| Field             | Required | Type          | Notes                                                                       |
+| ----------------- | -------- | ------------- | --------------------------------------------------------------------------- |
+| `name`            | Yes      | string        | Lowercase, hyphens, 3-50 chars                                              |
+| `description`     | Yes      | string        | When to delegate to this agent. Include `<example>` blocks for best results |
+| `model`           | No       | string        | `sonnet`, `opus`, `haiku`, `inherit` (default: inherit from session)        |
+| `tools`           | No       | string\|array | Tools available. Two formats work: comma-separated string OR JSON array     |
+| `color`           | No       | string        | `blue`, `cyan`, `green`, `yellow`, `magenta`, `red`                         |
+| `effort`          | No       | string        | `low`, `medium`, `high`, `max` (Opus 4.6 only)                              |
+| `maxTurns`        | No       | number        | Maximum agentic turns                                                       |
+| `skills`          | No       | array         | Skills preloaded into agent context                                         |
+| `memory`          | No       | boolean       | Enable auto-memory (default: inherits)                                      |
+| `background`      | No       | string        | Background context                                                          |
+| `isolation`       | No       | string        | `"worktree"` for git worktree isolation                                     |
+| `disallowedTools` | No       | string\|array | Tools denied to agent                                                       |
 
 ### Tools Format
 
@@ -329,14 +328,14 @@ tools: ["Read", "Write", "Grep", "Glob", "Bash"]
 
 ### Color Convention (from official plugins)
 
-| Color | Typical Use |
-|-------|------------|
-| `red` | Code review, critical analysis |
-| `green` | Architecture, design |
-| `yellow` | Exploration, analysis |
-| `cyan` | Skills, knowledge |
-| `magenta` | Creation, generation |
-| `blue` | General utility |
+| Color     | Typical Use                    |
+| --------- | ------------------------------ |
+| `red`     | Code review, critical analysis |
+| `green`   | Architecture, design           |
+| `yellow`  | Exploration, analysis          |
+| `cyan`    | Skills, knowledge              |
+| `magenta` | Creation, generation           |
+| `blue`    | General utility                |
 
 ### Description Best Practices
 
@@ -359,6 +358,7 @@ description: |
 ### Plugin Agent Restrictions
 
 Plugin-shipped agents **cannot** use:
+
 - `hooks` (security restriction)
 - `mcpServers` (security restriction)
 - `permissionMode` (security restriction)
@@ -382,18 +382,17 @@ argument-hint: Optional feature description
 allowed-tools: Read, Grep, Bash
 disable-model-invocation: false
 ---
-
 # Command content here...
 ```
 
 ### Field Reference
 
-| Field | Required | Type | Notes |
-|-------|----------|------|-------|
-| `description` | Yes | string | Brief command description |
-| `argument-hint` | No | string | Autocomplete hint (e.g., `[issue-number]`, `[filename]`) |
-| `allowed-tools` | No | string\|array | Tools Claude can use. Supports tool-specific filters |
-| `disable-model-invocation` | No | boolean | Prevent auto-invocation (default: false) |
+| Field                      | Required | Type          | Notes                                                    |
+| -------------------------- | -------- | ------------- | -------------------------------------------------------- |
+| `description`              | Yes      | string        | Brief command description                                |
+| `argument-hint`            | No       | string        | Autocomplete hint (e.g., `[issue-number]`, `[filename]`) |
+| `allowed-tools`            | No       | string\|array | Tools Claude can use. Supports tool-specific filters     |
+| `disable-model-invocation` | No       | boolean       | Prevent auto-invocation (default: false)                 |
 
 ### Tool-Specific Filters
 
@@ -418,7 +417,7 @@ allowed-tools: ["Read", "Write", "Grep", "Glob", "Bash", "TodoWrite"]
 ```yaml
 ---
 name: my-skill
-description: "This skill should be used when the user asks to... Include specific trigger phrases."
+description: 'This skill should be used when the user asks to... Include specific trigger phrases.'
 version: 0.1.0
 allowed-tools: Read Grep Bash
 model: sonnet
@@ -427,29 +426,28 @@ context: fork
 agent: my-agent
 user-invocable: true
 disable-model-invocation: false
-paths: "src/**/*.ts, lib/**/*.py"
+paths: 'src/**/*.ts, lib/**/*.py'
 ---
-
 # Skill content here...
 ```
 
 ### Field Reference
 
-| Field | Required | Type | Notes |
-|-------|----------|------|-------|
-| `name` | No | string | Defaults to directory name. Lowercase, hyphens, max 64 chars |
-| `description` | Recommended | string | **Critical for discovery.** Include specific trigger phrases. Max ~250 chars displayed |
-| `version` | No | string | Semantic versioning |
-| `allowed-tools` | No | string\|array | Tools available when skill active (space-separated or YAML list) |
-| `model` | No | string | Model override when skill active |
-| `effort` | No | string | `low`, `medium`, `high`, `max` |
-| `context` | No | string | `fork` to run in forked subagent context |
-| `agent` | No | string | Subagent type when `context: fork` |
-| `user-invocable` | No | boolean | Show in `/` menu (default: true). Set false for background knowledge |
-| `disable-model-invocation` | No | boolean | Prevent auto-loading (default: false) |
-| `paths` | No | string\|array | Glob patterns limiting activation scope |
-| `hooks` | No | object | Hooks scoped to skill lifecycle |
-| `shell` | No | string | `bash` (default) or `powershell` |
+| Field                      | Required    | Type          | Notes                                                                                  |
+| -------------------------- | ----------- | ------------- | -------------------------------------------------------------------------------------- |
+| `name`                     | No          | string        | Defaults to directory name. Lowercase, hyphens, max 64 chars                           |
+| `description`              | Recommended | string        | **Critical for discovery.** Include specific trigger phrases. Max ~250 chars displayed |
+| `version`                  | No          | string        | Semantic versioning                                                                    |
+| `allowed-tools`            | No          | string\|array | Tools available when skill active (space-separated or YAML list)                       |
+| `model`                    | No          | string        | Model override when skill active                                                       |
+| `effort`                   | No          | string        | `low`, `medium`, `high`, `max`                                                         |
+| `context`                  | No          | string        | `fork` to run in forked subagent context                                               |
+| `agent`                    | No          | string        | Subagent type when `context: fork`                                                     |
+| `user-invocable`           | No          | boolean       | Show in `/` menu (default: true). Set false for background knowledge                   |
+| `disable-model-invocation` | No          | boolean       | Prevent auto-loading (default: false)                                                  |
+| `paths`                    | No          | string\|array | Glob patterns limiting activation scope                                                |
+| `hooks`                    | No          | object        | Hooks scoped to skill lifecycle                                                        |
+| `shell`                    | No          | string        | `bash` (default) or `powershell`                                                       |
 
 ### String Substitutions (in skill body)
 
@@ -521,55 +519,55 @@ skills/my-skill/
 
 **Session Lifecycle:**
 
-| Event | When | Common Use |
-|-------|------|-----------|
-| `SessionStart` | Session begins/resumes | Load context, display status |
-| `SessionEnd` | Session terminates | Cleanup, save state |
-| `InstructionsLoaded` | CLAUDE.md or rules loaded | Modify instructions |
+| Event                | When                      | Common Use                   |
+| -------------------- | ------------------------- | ---------------------------- |
+| `SessionStart`       | Session begins/resumes    | Load context, display status |
+| `SessionEnd`         | Session terminates        | Cleanup, save state          |
+| `InstructionsLoaded` | CLAUDE.md or rules loaded | Modify instructions          |
 
 **User Input:**
 
-| Event | When | Common Use |
-|-------|------|-----------|
+| Event              | When                           | Common Use                |
+| ------------------ | ------------------------------ | ------------------------- |
 | `UserPromptSubmit` | Before Claude processes prompt | Input validation, routing |
-| `Stop` | Claude finishes responding | Post-processing, logging |
-| `StopFailure` | Turn ends due to API error | Error handling |
+| `Stop`             | Claude finishes responding     | Post-processing, logging  |
+| `StopFailure`      | Turn ends due to API error     | Error handling            |
 
 **Tool Execution:**
 
-| Event | When | Common Use |
-|-------|------|-----------|
-| `PreToolUse` | Before tool executes | **Can block tool execution** |
-| `PostToolUse` | After tool succeeds | Logging, validation |
-| `PostToolUseFailure` | After tool fails | Error handling |
-| `PermissionRequest` | Permission dialog appears | Auto-approval logic |
-| `PermissionDenied` | Tool call denied | Notification |
+| Event                | When                      | Common Use                   |
+| -------------------- | ------------------------- | ---------------------------- |
+| `PreToolUse`         | Before tool executes      | **Can block tool execution** |
+| `PostToolUse`        | After tool succeeds       | Logging, validation          |
+| `PostToolUseFailure` | After tool fails          | Error handling               |
+| `PermissionRequest`  | Permission dialog appears | Auto-approval logic          |
+| `PermissionDenied`   | Tool call denied          | Notification                 |
 
 **Agent/Team:**
 
-| Event | When | Common Use |
-|-------|------|-----------|
-| `SubagentStart` | Subagent spawned | Context injection |
-| `SubagentStop` | Subagent finished | Output capture |
-| `TaskCreated` | Task created | Task tracking |
-| `TaskCompleted` | Task completed | Progress reporting |
+| Event           | When              | Common Use         |
+| --------------- | ----------------- | ------------------ |
+| `SubagentStart` | Subagent spawned  | Context injection  |
+| `SubagentStop`  | Subagent finished | Output capture     |
+| `TaskCreated`   | Task created      | Task tracking      |
+| `TaskCompleted` | Task completed    | Progress reporting |
 
 **File & Config:**
 
-| Event | When | Common Use |
-|-------|------|-----------|
-| `FileChanged` | Watched file changes | Auto-reload, validation |
-| `CwdChanged` | Working directory changes | Context switch |
-| `ConfigChange` | Config file changes | Re-apply settings |
-| `WorktreeCreate` | Worktree created | Setup |
-| `WorktreeRemove` | Worktree removed | Cleanup |
+| Event            | When                      | Common Use              |
+| ---------------- | ------------------------- | ----------------------- |
+| `FileChanged`    | Watched file changes      | Auto-reload, validation |
+| `CwdChanged`     | Working directory changes | Context switch          |
+| `ConfigChange`   | Config file changes       | Re-apply settings       |
+| `WorktreeCreate` | Worktree created          | Setup                   |
+| `WorktreeRemove` | Worktree removed          | Cleanup                 |
 
 **Optimization:**
 
-| Event | When | Common Use |
-|-------|------|-----------|
-| `PreCompact` | Before context compaction | **Save state before context loss** |
-| `PostCompact` | After context compaction | **Restore critical context** |
+| Event         | When                      | Common Use                         |
+| ------------- | ------------------------- | ---------------------------------- |
+| `PreCompact`  | Before context compaction | **Save state before context loss** |
+| `PostCompact` | After context compaction  | **Restore critical context**       |
 
 ### Handler Types
 
@@ -636,11 +634,11 @@ Filter hooks to specific tools:
 
 ### Exit Code Semantics (command hooks)
 
-| Exit Code | Meaning |
-|-----------|---------|
-| 0 | Success, stdout parsed as JSON |
-| 2 | **Blocking error**, stderr fed to Claude |
-| Other | Non-blocking error, stderr shown in verbose mode |
+| Exit Code | Meaning                                          |
+| --------- | ------------------------------------------------ |
+| 0         | Success, stdout parsed as JSON                   |
+| 2         | **Blocking error**, stderr fed to Claude         |
+| Other     | Non-blocking error, stderr shown in verbose mode |
 
 ---
 
@@ -653,9 +651,8 @@ Rules are always-loaded guidelines that are injected into every session. They us
 ```yaml
 ---
 name: code-style
-description: "Universal coding standards"
+description: 'Universal coding standards'
 ---
-
 # Code Style Rules
 
 - Functions under 50 lines
@@ -721,12 +718,12 @@ LSP servers provide code intelligence (goto definition, hover, diagnostics). The
 
 ### Installation Scopes
 
-| Scope | File | Affects | Shared |
-|-------|------|---------|--------|
-| `user` | `~/.claude/settings.json` | All projects | No |
-| `project` | `.claude/settings.json` | All team members | Yes (git) |
-| `local` | `.claude/settings.local.json` | You, this project | No (gitignored) |
-| `managed` | Managed settings | Organization-wide | Deployed |
+| Scope     | File                          | Affects           | Shared          |
+| --------- | ----------------------------- | ----------------- | --------------- |
+| `user`    | `~/.claude/settings.json`     | All projects      | No              |
+| `project` | `.claude/settings.json`       | All team members  | Yes (git)       |
+| `local`   | `.claude/settings.local.json` | You, this project | No (gitignored) |
+| `managed` | Managed settings              | Organization-wide | Deployed        |
 
 ### Enabling a Plugin
 
@@ -807,12 +804,12 @@ During development, your local changes are NOT reflected in the running plugin b
 
 ## 13. Environment Variables
 
-| Variable | Description | Example |
-|----------|-------------|---------|
+| Variable                | Description                                                     | Example                            |
+| ----------------------- | --------------------------------------------------------------- | ---------------------------------- |
 | `${CLAUDE_PLUGIN_ROOT}` | Plugin installation directory (cache path). Changes on updates. | Use for scripts, configs, binaries |
-| `${CLAUDE_PLUGIN_DATA}` | Persistent data directory. Survives updates. | `~/.claude/plugins/data/{id}/` |
-| `${CLAUDE_SESSION_ID}` | Current session ID | Use in skills |
-| `${CLAUDE_SKILL_DIR}` | Skill's directory path | Use in skill body |
+| `${CLAUDE_PLUGIN_DATA}` | Persistent data directory. Survives updates.                    | `~/.claude/plugins/data/{id}/`     |
+| `${CLAUDE_SESSION_ID}`  | Current session ID                                              | Use in skills                      |
+| `${CLAUDE_SKILL_DIR}`   | Skill's directory path                                          | Use in skill body                  |
 
 **Where they work:** Hooks, MCP server configs, LSP server configs, skill body text.
 
@@ -862,16 +859,16 @@ claude --debug
 
 ### Critical Mistakes
 
-| Mistake | Impact | Fix |
-|---------|--------|-----|
-| Put agents/commands inside `.claude-plugin/` | Not discovered | Place at plugin root |
-| Use `../` paths | Break after caching | Use relative `./` paths only |
-| Don't bump version | Updates not detected | Always bump version |
-| Wrong hooks.json format (flat array) | Hooks not loaded | Use nested `{ hooks: { EventType: [{ hooks: [...] }] } }` format |
-| Use `allowedSkills` in agents | Field ignored | Use `skills` array instead |
-| Vague skill descriptions | Skill never auto-triggered | Include specific user trigger phrases |
-| Hook scripts not executable | Hooks fail silently | `chmod +x hooks/scripts/*.sh` |
-| Top-level `description` in marketplace.json | Validator warning | Technically works but flagged as unrecognized |
+| Mistake                                      | Impact                     | Fix                                                              |
+| -------------------------------------------- | -------------------------- | ---------------------------------------------------------------- |
+| Put agents/commands inside `.claude-plugin/` | Not discovered             | Place at plugin root                                             |
+| Use `../` paths                              | Break after caching        | Use relative `./` paths only                                     |
+| Don't bump version                           | Updates not detected       | Always bump version                                              |
+| Wrong hooks.json format (flat array)         | Hooks not loaded           | Use nested `{ hooks: { EventType: [{ hooks: [...] }] } }` format |
+| Use `allowedSkills` in agents                | Field ignored              | Use `skills` array instead                                       |
+| Vague skill descriptions                     | Skill never auto-triggered | Include specific user trigger phrases                            |
+| Hook scripts not executable                  | Hooks fail silently        | `chmod +x hooks/scripts/*.sh`                                    |
+| Top-level `description` in marketplace.json  | Validator warning          | Technically works but flagged as unrecognized                    |
 
 ### Agent Format Pitfalls
 
@@ -937,6 +934,7 @@ my-repo/
 ### Cache Staleness
 
 The plugin cache (`~/.claude/plugins/cache/`) can become stale. Signs:
+
 - Old version loaded after push
 - `.orphaned_at` files appearing in cache
 

@@ -1,6 +1,7 @@
 # Implementation Plan: @ File Mention + Chat History Persistence
 
 ## Prerequisites
+
 - Read and understand DESIGN.md in this same directory
 - The project builds with `npm run build` from the project root
 - All file paths below are relative to `/Users/rong/Workspaces/1-Projects/11-Brian-Projects/110-Obsidian-RAG/`
@@ -14,9 +15,10 @@
 **Action**: Add two new interfaces at the bottom of the file, after the existing `FileHashManifest` interface.
 
 **Signatures**:
+
 ```typescript
 export interface ChatMessage {
-  role: "user" | "assistant";
+  role: 'user' | 'assistant';
   text: string;
   sources: SourceReference[];
   timestamp: string; // ISO-8601
@@ -29,11 +31,13 @@ export interface PluginData {
 ```
 
 **Details**:
+
 - Add these after the `FileHashManifest` interface block, under a new section comment `// ─── Chat History ───`
 - `ChatMessage.sources` reuses the existing `SourceReference` interface already in this file
 - `PluginData` wraps the existing `PluginSettings` to create a top-level storage envelope
 
 **Do NOT**:
+
 - Modify any existing interfaces
 - Change `DEFAULT_SETTINGS` or any other existing exports
 - Add any imports (all referenced types are already in this file)
@@ -51,13 +55,15 @@ export interface PluginData {
 **2a. Add Vault import and constructor parameter**:
 
 At the top of the file, change the import to also import `Vault` from `obsidian`:
+
 ```typescript
-import { Vault } from "obsidian";
+import { Vault } from 'obsidian';
 ```
 
 Add `private vault: Vault` as the FIRST parameter of the constructor (before `vectorStore`). Store it as `this.vault = vault;`.
 
 New constructor signature:
+
 ```typescript
 constructor(
   vault: Vault,
@@ -71,6 +77,7 @@ constructor(
 **2b. Add forcedFiles to query()**:
 
 Change the `query` method signature to:
+
 ```typescript
 async *query(userQuestion: string, forcedFiles?: string[]): AsyncGenerator<RagResponse>
 ```
@@ -112,21 +119,24 @@ if (forcedFiles && forcedFiles.length > 0) {
 **2c. Prepend forced context to the LLM context block**:
 
 Change the `context` variable construction. Currently it is:
+
 ```typescript
 const context = results.map(r => ...
 ```
 
 Change to:
+
 ```typescript
-const vectorContext = results.map(r =>
-  `[Source: ${r.fileTitle} (${r.filePath})]\n${r.text}`
-).join("\n\n");
+const vectorContext = results
+  .map((r) => `[Source: ${r.fileTitle} (${r.filePath})]\n${r.text}`)
+  .join('\n\n');
 const context = forcedContext + vectorContext;
 ```
 
 **2d. Merge forced sources into the sources yield, with deduplication**:
 
 In the source-building block at the end of query(), change it to:
+
 ```typescript
 const seen = new Set<string>();
 const sources: SourceReference[] = [];
@@ -154,6 +164,7 @@ yield { type: "sources", sources } as RagResponse;
 ```
 
 **Do NOT**:
+
 - Change the generator pattern (must remain `async *query`)
 - Change the system prompt
 - Change the embedding or vector search logic
@@ -172,18 +183,21 @@ yield { type: "sources", sources } as RagResponse;
 **3a. Add imports**:
 
 Add to the existing imports from `./types`:
+
 ```typescript
-import { PluginSettings, DEFAULT_SETTINGS, ChatMessage, PluginData } from "./types";
+import { PluginSettings, DEFAULT_SETTINGS, ChatMessage, PluginData } from './types';
 ```
 
 **3b. Add a `pluginData` field**:
 
 Add a private field to the plugin class:
+
 ```typescript
 private pluginData: PluginData = { settings: DEFAULT_SETTINGS, chatHistory: [] };
 ```
 
 Keep the existing `settings` field but make it a getter alias:
+
 ```typescript
 get settings(): PluginSettings {
   return this.pluginData.settings;
@@ -242,6 +256,7 @@ async saveChatHistory(messages: ChatMessage[]): Promise<void> {
 **3f. Pass vault to RagEngine**:
 
 In `onload()`, change the RagEngine constructor call to:
+
 ```typescript
 this.ragEngine = new RagEngine(
   this.app.vault,
@@ -257,6 +272,7 @@ Do the same in `refreshProvider()`.
 **3g. Pass callbacks and app to ChatView**:
 
 Change the `registerView` call to:
+
 ```typescript
 this.registerView(CHAT_VIEW_TYPE, (leaf: WorkspaceLeaf) => {
   return new ChatView(
@@ -271,6 +287,7 @@ this.registerView(CHAT_VIEW_TYPE, (leaf: WorkspaceLeaf) => {
 ```
 
 **Do NOT**:
+
 - Change any command registrations
 - Change the indexer, urlIngestor, or pdfIngestor setup
 - Remove `refreshProvider()` -- but update its RagEngine constructor call too
@@ -289,15 +306,17 @@ this.registerView(CHAT_VIEW_TYPE, (leaf: WorkspaceLeaf) => {
 **4a. Update imports and constructor**:
 
 Add imports:
+
 ```typescript
-import { ItemView, WorkspaceLeaf, MarkdownRenderer, App } from "obsidian";
-import { RagEngine } from "../core/rag-engine";
-import { SourceReference, ChatMessage } from "../types";
-import { UrlIngestor, IngestPhase } from "../ingestor/url-ingestor";
-import { detectVideoProvider } from "../ingestor/video-detector";
+import { ItemView, WorkspaceLeaf, MarkdownRenderer, App } from 'obsidian';
+import { RagEngine } from '../core/rag-engine';
+import { SourceReference, ChatMessage } from '../types';
+import { UrlIngestor, IngestPhase } from '../ingestor/url-ingestor';
+import { detectVideoProvider } from '../ingestor/video-detector';
 ```
 
 Add new private fields:
+
 ```typescript
 private appRef: App;
 private loadChatHistory: () => Promise<ChatMessage[]>;
@@ -312,6 +331,7 @@ private autocompleteDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 ```
 
 New constructor signature:
+
 ```typescript
 constructor(
   leaf: WorkspaceLeaf,
@@ -336,18 +356,19 @@ At the top of `onOpen()`, after `container.empty()` and `container.addClass(...)
 
 ```typescript
 // Header bar
-const headerEl = container.createDiv({ cls: "kb-chat-header" });
-headerEl.createEl("span", { cls: "kb-chat-header-title", text: "KB Chat" });
-const clearBtn = headerEl.createEl("button", {
-  cls: "kb-chat-clear-btn",
-  text: "Clear History",
+const headerEl = container.createDiv({ cls: 'kb-chat-header' });
+headerEl.createEl('span', { cls: 'kb-chat-header-title', text: 'KB Chat' });
+const clearBtn = headerEl.createEl('button', {
+  cls: 'kb-chat-clear-btn',
+  text: 'Clear History',
 });
-clearBtn.addEventListener("click", () => this.handleClearHistory());
+clearBtn.addEventListener('click', () => this.handleClearHistory());
 ```
 
 Then the messages area (same as before):
+
 ```typescript
-this.messagesEl = container.createDiv({ cls: "kb-chat-messages" });
+this.messagesEl = container.createDiv({ cls: 'kb-chat-messages' });
 ```
 
 **4c. Rewrite onOpen() -- Input area with chip tray and autocomplete**:
@@ -355,28 +376,28 @@ this.messagesEl = container.createDiv({ cls: "kb-chat-messages" });
 Replace the current input area creation with:
 
 ```typescript
-const inputArea = container.createDiv({ cls: "kb-chat-input-area" });
+const inputArea = container.createDiv({ cls: 'kb-chat-input-area' });
 
-this.inputWrapperEl = inputArea.createDiv({ cls: "kb-chat-input-wrapper" });
+this.inputWrapperEl = inputArea.createDiv({ cls: 'kb-chat-input-wrapper' });
 
 // Chip tray (above textarea, inside wrapper)
-this.chipTrayEl = this.inputWrapperEl.createDiv({ cls: "kb-chat-chip-tray" });
-this.chipTrayEl.style.display = "none"; // hidden when no chips
+this.chipTrayEl = this.inputWrapperEl.createDiv({ cls: 'kb-chat-chip-tray' });
+this.chipTrayEl.style.display = 'none'; // hidden when no chips
 
 // Textarea (inside wrapper)
-this.inputEl = this.inputWrapperEl.createEl("textarea", {
-  cls: "kb-chat-input",
-  attr: { placeholder: "Ask about your notes... (@ to mention a file)", rows: "3" },
+this.inputEl = this.inputWrapperEl.createEl('textarea', {
+  cls: 'kb-chat-input',
+  attr: { placeholder: 'Ask about your notes... (@ to mention a file)', rows: '3' },
 });
 
 // Autocomplete dropdown (inside wrapper, absolutely positioned)
-this.autocompleteEl = this.inputWrapperEl.createDiv({ cls: "kb-chat-autocomplete" });
-this.autocompleteEl.style.display = "none";
+this.autocompleteEl = this.inputWrapperEl.createDiv({ cls: 'kb-chat-autocomplete' });
+this.autocompleteEl.style.display = 'none';
 
 // Send button (outside wrapper, same level as wrapper)
-this.sendBtn = inputArea.createEl("button", {
-  cls: "kb-chat-send",
-  text: "Send",
+this.sendBtn = inputArea.createEl('button', {
+  cls: 'kb-chat-send',
+  text: 'Send',
 });
 ```
 
@@ -433,12 +454,14 @@ this.sendBtn.addEventListener("click", () => {
 **4e. Add history load at end of onOpen()**:
 
 At the very end of `onOpen()`, add:
+
 ```typescript
 // Load chat history
 await this.restoreHistory();
 ```
 
 **Do NOT**:
+
 - Change `getViewType()`, `getDisplayText()`, `getIcon()`, or `onClose()`
 - Remove any existing method bodies yet (they will be updated in later steps)
 - Change the `handleUrlIngest` method
@@ -635,6 +658,7 @@ private hideAutocomplete(): void {
 ```
 
 **Do NOT**:
+
 - Modify `handleSubmit` yet (that is Step 6)
 - Add any npm dependencies
 - Change the RagEngine or types files
@@ -773,22 +797,36 @@ private async handleSubmit(question: string): Promise<void> {
 Add history persistence calls inside the existing `handleUrlIngest` method:
 
 After `this.addUserMessage(url)`:
+
 ```typescript
-this.pushHistory({ role: "user", text: url, sources: [], timestamp: new Date().toISOString() });
+this.pushHistory({ role: 'user', text: url, sources: [], timestamp: new Date().toISOString() });
 ```
 
 After the result is displayed (inside the `try` block, after setting contentEl text):
+
 ```typescript
 const resultText = `Ingested: "${result.title}" → ${result.filePath}`;
-this.pushHistory({ role: "assistant", text: resultText, sources: [], timestamp: new Date().toISOString() });
+this.pushHistory({
+  role: 'assistant',
+  text: resultText,
+  sources: [],
+  timestamp: new Date().toISOString(),
+});
 ```
 
 In the `catch` block, after `renderError`:
+
 ```typescript
-this.pushHistory({ role: "assistant", text: `Error: ${(err as Error).message}`, sources: [], timestamp: new Date().toISOString() });
+this.pushHistory({
+  role: 'assistant',
+  text: `Error: ${(err as Error).message}`,
+  sources: [],
+  timestamp: new Date().toISOString(),
+});
 ```
 
 **Do NOT**:
+
 - Change the streaming pattern or async generator consumption
 - Modify `renderSources`, `renderError`, `appendToken`, or `renderMarkdown`
 - Add any new files
@@ -872,6 +910,7 @@ private async handleClearHistory(): Promise<void> {
 ```
 
 **Do NOT**:
+
 - Modify the data storage methods (those are in main.ts)
 - Add any new imports beyond what was already added in Step 4
 - Change the message rendering methods
@@ -986,6 +1025,7 @@ private async handleClearHistory(): Promise<void> {
 ```
 
 **Do NOT**:
+
 - Modify any existing CSS rules
 - Change class names used by existing code
 - Add any `@import` statements
@@ -1020,5 +1060,6 @@ npm run build
 12. **Settings preserved**: Check plugin settings are still intact after data migration
 
 **Do NOT**:
+
 - Skip the build step
 - Push to remote without user approval

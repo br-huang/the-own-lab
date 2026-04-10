@@ -45,22 +45,22 @@
    * Detects whether a URL points to a video platform that requires
    * specialized handling (not yet implemented).
    */
-  export function detectVideoProvider(url: string): "youtube" | "bilibili" | null {
+  export function detectVideoProvider(url: string): 'youtube' | 'bilibili' | null {
     let hostname: string;
     try {
-      hostname = new URL(url).hostname.replace(/^www\./, "");
+      hostname = new URL(url).hostname.replace(/^www\./, '');
     } catch {
       return null;
     }
 
-    const youtubeHosts = ["youtube.com", "youtu.be"];
+    const youtubeHosts = ['youtube.com', 'youtu.be'];
     if (youtubeHosts.includes(hostname)) {
-      return "youtube";
+      return 'youtube';
     }
 
-    const bilibiliHosts = ["bilibili.com", "b23.tv"];
+    const bilibiliHosts = ['bilibili.com', 'b23.tv'];
     if (bilibiliHosts.includes(hostname)) {
-      return "bilibili";
+      return 'bilibili';
     }
 
     return null;
@@ -408,19 +408,19 @@
   ```typescript
   // ─── URL Ingestor Section ───
 
-  containerEl.createEl("h3", { text: "URL Ingestor" });
+  containerEl.createEl('h3', { text: 'URL Ingestor' });
 
   new Setting(containerEl)
-    .setName("Ingested Notes Folder")
-    .setDesc("Vault folder where ingested web pages are saved.")
+    .setName('Ingested Notes Folder')
+    .setDesc('Vault folder where ingested web pages are saved.')
     .addText((text) =>
       text
-        .setPlaceholder("Ingested")
+        .setPlaceholder('Ingested')
         .setValue(this.plugin.settings.ingestFolder)
         .onChange(async (value) => {
           this.plugin.settings.ingestFolder = value;
           await this.plugin.saveSettings();
-        })
+        }),
     );
   ```
 
@@ -435,11 +435,13 @@
 - **What to do**: Make four changes to this file:
 
   **(7a)** Add an import at the top of the file (after the existing imports):
+
   ```typescript
-  import { UrlIngestor, IngestPhase } from "../ingestor/url-ingestor";
+  import { UrlIngestor, IngestPhase } from '../ingestor/url-ingestor';
   ```
 
   **(7b)** Add a new private field and update the constructor. The constructor currently has signature `constructor(leaf: WorkspaceLeaf, ragEngine: RagEngine)`. Change it to accept a third parameter:
+
   ```typescript
   private urlIngestor: UrlIngestor;
 
@@ -451,16 +453,18 @@
   ```
 
   **(7c)** Add URL detection at the top of `handleSubmit()`. Insert the following **after** the empty-check guard (`if (trimmed.length === 0) { return; }`) and **before** `this.inputEl.value = "";`:
+
   ```typescript
   // URL detection: if the entire message is a single URL, treat as ingest request
   if (/^https?:\/\/\S+$/.test(trimmed)) {
-    this.inputEl.value = "";
+    this.inputEl.value = '';
     await this.handleUrlIngest(trimmed);
     return;
   }
   ```
 
   **(7d)** Add a new private method `handleUrlIngest` to the class (place it after `handleSubmit`):
+
   ```typescript
   private async handleUrlIngest(url: string): Promise<void> {
     this.setInputEnabled(false);
@@ -507,25 +511,26 @@
 - **What to do**: Make four changes:
 
   **(8a)** Add imports at the top (after existing import lines):
+
   ```typescript
-  import { UrlIngestor } from "./ingestor/url-ingestor";
-  import { IngestUrlModal } from "./ui/ingest-url-modal";
+  import { UrlIngestor } from './ingestor/url-ingestor';
+  import { IngestUrlModal } from './ui/ingest-url-modal';
   ```
 
   **(8b)** Add a new field to the `ObsidianKBPlugin` class (after the existing `private statusBarEl\!: HTMLElement;` line):
+
   ```typescript
   private urlIngestor\!: UrlIngestor;
   ```
 
   **(8c)** In the `onload()` method, **after** the `this.ragEngine = new RagEngine(...)` block (around line 65) and **before** the `this.registerView(...)` call, add:
+
   ```typescript
-  this.urlIngestor = new UrlIngestor(
-    this.app.vault,
-    () => this.settings.ingestFolder,
-  );
+  this.urlIngestor = new UrlIngestor(this.app.vault, () => this.settings.ingestFolder);
   ```
 
   **(8d)** Update the `registerView` callback to pass `urlIngestor` as the third argument to `ChatView`:
+
   ```typescript
   this.registerView(CHAT_VIEW_TYPE, (leaf: WorkspaceLeaf) => {
     return new ChatView(leaf, this.ragEngine, this.urlIngestor);
@@ -533,10 +538,11 @@
   ```
 
   **(8e)** Register the `kb-ingest-url` command. Add this **after** the existing `this.addCommand({ id: "open-kb-chat", ... })` block:
+
   ```typescript
   this.addCommand({
-    id: "kb-ingest-url",
-    name: "KB: Ingest URL",
+    id: 'kb-ingest-url',
+    name: 'KB: Ingest URL',
     callback: () => {
       new IngestUrlModal(this.app, this.urlIngestor).open();
     },
@@ -552,9 +558,11 @@
 
 - **File(s)**: None (verification step only)
 - **What to do**: Run the full build from the project root:
+
   ```bash
   npm run build
   ```
+
   This runs `node esbuild.config.mjs production`, which bundles everything into `main.js`.
 
 - **Verification checklist**:
@@ -578,13 +586,13 @@
 
 ## Summary of All Changes
 
-| File | Action | Description |
-|---|---|---|
-| `package.json` | MOD | Added `@mozilla/readability`, `turndown`, `@types/turndown` |
-| `src/types.ts` | MOD | Added `ingestFolder: string` to `PluginSettings` and `DEFAULT_SETTINGS` |
-| `src/ingestor/video-detector.ts` | NEW | `detectVideoProvider()` function — YouTube/Bilibili guard |
-| `src/ingestor/url-ingestor.ts` | NEW | `UrlIngestor` class — fetch, extract, convert, save pipeline |
-| `src/ui/ingest-url-modal.ts` | NEW | `IngestUrlModal` — command palette modal UI |
-| `src/settings.ts` | MOD | Added "URL Ingestor" section with `ingestFolder` text input |
-| `src/ui/chat-view.ts` | MOD | Added URL detection in `handleSubmit`, `handleUrlIngest` method, `urlIngestor` constructor param |
-| `src/main.ts` | MOD | Instantiate `UrlIngestor`, register `kb-ingest-url` command, pass ingestor to `ChatView` |
+| File                             | Action | Description                                                                                      |
+| -------------------------------- | ------ | ------------------------------------------------------------------------------------------------ |
+| `package.json`                   | MOD    | Added `@mozilla/readability`, `turndown`, `@types/turndown`                                      |
+| `src/types.ts`                   | MOD    | Added `ingestFolder: string` to `PluginSettings` and `DEFAULT_SETTINGS`                          |
+| `src/ingestor/video-detector.ts` | NEW    | `detectVideoProvider()` function — YouTube/Bilibili guard                                        |
+| `src/ingestor/url-ingestor.ts`   | NEW    | `UrlIngestor` class — fetch, extract, convert, save pipeline                                     |
+| `src/ui/ingest-url-modal.ts`     | NEW    | `IngestUrlModal` — command palette modal UI                                                      |
+| `src/settings.ts`                | MOD    | Added "URL Ingestor" section with `ingestFolder` text input                                      |
+| `src/ui/chat-view.ts`            | MOD    | Added URL detection in `handleSubmit`, `handleUrlIngest` method, `urlIngestor` constructor param |
+| `src/main.ts`                    | MOD    | Instantiate `UrlIngestor`, register `kb-ingest-url` command, pass ingestor to `ChatView`         |

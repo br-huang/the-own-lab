@@ -20,20 +20,20 @@
 
 ## Acceptance Criteria Verification
 
-| Criterion | Status | Evidence |
-|-----------|--------|----------|
-| App opens a window with dark sidebar on the left | PASS | `window.ts` creates a `BaseWindow`, `bb-sidebar.ts` renders with `--bb-bg-secondary` dark background at fixed width |
-| Toolbar with omnibar at the top of content area | PASS | `bb-toolbar.ts` renders `bb-navigation-buttons` + `bb-omnibar`; height is 40px; positioned above `bb-content-area` in `bb-app.ts` |
-| Default tab loads a webpage | FAIL | App creates a tab and calls `loadURL(DEFAULT_URL)` — but the tab will not appear because `window.ts` resolves the renderer HTML to the wrong path (see Issue 1) and the preload resolves to the wrong path (see Issue 2). The app cannot start. |
-| Tab appears in the sidebar | FAIL | Blocked by Issues 1 and 2; additionally, tabs created from the UI have an empty `workspaceId` and are filtered out by `bb-app.ts` (see Issue 3) |
-| "+ New Tab" creates a new tab | FAIL | `bb-new-tab-button.ts` calls `createTab({ active: true })` without `workspaceId`, so new tabs would not appear in the active workspace's sidebar list (Issue 3) |
-| Clicking a tab switches to it | PASS (code review) | `bb-tab-item.ts` calls `window.kernel.tabs.activateTab(tab.id)`; `ElectronTabManager.activateTab` adds the `WebContentsView` to the window and sets its bounds |
-| Omnibar navigates URLs and searches | PASS (code review) | `bb-omnibar.ts` handles `Enter` key, calls `navigation.resolveInput`, then `tabs.navigateTo`; `ElectronNavigationManager.resolveInput` correctly distinguishes URLs from search queries |
-| Cmd+T shortcut creates a new tab | FAIL | `keybindings.ts` Cmd+T calls `createTab({ active: true })` without `workspaceId`; new tab will have empty workspaceId and not appear in sidebar (Issue 3) |
-| Cmd+W shortcut closes active tab | PASS (code review) | `keybindings.ts` Cmd+W retrieves active tab and calls `closeTab` |
-| Cmd+L shortcut focuses omnibar | PARTIAL | `keybindings.ts` Cmd+L uses deep shadow DOM traversal which is fragile but functional. The native menu's "Focus Address Bar" sends `kernel:focus-omnibar` IPC but no renderer listener exists (Issue 4). |
-| Cmd+R shortcut reloads tab | PASS (code review) | `keybindings.ts` Cmd+R retrieves active tab and calls `reload`; native menu also wires `CmdOrCtrl+R` to `handlers.onReload` |
-| Default workspace chip visible | FAIL | Workspace chip would not render because the app cannot start (Issues 1 and 2) |
+| Criterion                                        | Status             | Evidence                                                                                                                                                                                                                                        |
+| ------------------------------------------------ | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| App opens a window with dark sidebar on the left | PASS               | `window.ts` creates a `BaseWindow`, `bb-sidebar.ts` renders with `--bb-bg-secondary` dark background at fixed width                                                                                                                             |
+| Toolbar with omnibar at the top of content area  | PASS               | `bb-toolbar.ts` renders `bb-navigation-buttons` + `bb-omnibar`; height is 40px; positioned above `bb-content-area` in `bb-app.ts`                                                                                                               |
+| Default tab loads a webpage                      | FAIL               | App creates a tab and calls `loadURL(DEFAULT_URL)` — but the tab will not appear because `window.ts` resolves the renderer HTML to the wrong path (see Issue 1) and the preload resolves to the wrong path (see Issue 2). The app cannot start. |
+| Tab appears in the sidebar                       | FAIL               | Blocked by Issues 1 and 2; additionally, tabs created from the UI have an empty `workspaceId` and are filtered out by `bb-app.ts` (see Issue 3)                                                                                                 |
+| "+ New Tab" creates a new tab                    | FAIL               | `bb-new-tab-button.ts` calls `createTab({ active: true })` without `workspaceId`, so new tabs would not appear in the active workspace's sidebar list (Issue 3)                                                                                 |
+| Clicking a tab switches to it                    | PASS (code review) | `bb-tab-item.ts` calls `window.kernel.tabs.activateTab(tab.id)`; `ElectronTabManager.activateTab` adds the `WebContentsView` to the window and sets its bounds                                                                                  |
+| Omnibar navigates URLs and searches              | PASS (code review) | `bb-omnibar.ts` handles `Enter` key, calls `navigation.resolveInput`, then `tabs.navigateTo`; `ElectronNavigationManager.resolveInput` correctly distinguishes URLs from search queries                                                         |
+| Cmd+T shortcut creates a new tab                 | FAIL               | `keybindings.ts` Cmd+T calls `createTab({ active: true })` without `workspaceId`; new tab will have empty workspaceId and not appear in sidebar (Issue 3)                                                                                       |
+| Cmd+W shortcut closes active tab                 | PASS (code review) | `keybindings.ts` Cmd+W retrieves active tab and calls `closeTab`                                                                                                                                                                                |
+| Cmd+L shortcut focuses omnibar                   | PARTIAL            | `keybindings.ts` Cmd+L uses deep shadow DOM traversal which is fragile but functional. The native menu's "Focus Address Bar" sends `kernel:focus-omnibar` IPC but no renderer listener exists (Issue 4).                                        |
+| Cmd+R shortcut reloads tab                       | PASS (code review) | `keybindings.ts` Cmd+R retrieves active tab and calls `reload`; native menu also wires `CmdOrCtrl+R` to `handlers.onReload`                                                                                                                     |
+| Default workspace chip visible                   | FAIL               | Workspace chip would not render because the app cannot start (Issues 1 and 2)                                                                                                                                                                   |
 
 ---
 
@@ -111,8 +111,9 @@ Additionally, `npm test` fails with exit code 1 and the message "No test files f
 
 - **Severity**: critical
 - **Description**: Both `bb-new-tab-button.ts` and the Cmd+T keybinding in `keybindings.ts` call `window.kernel.tabs.createTab({ active: true })` without specifying a `workspaceId`. The `ElectronTabManager.createTab` defaults `workspaceId` to `''`. In `bb-app.ts` line 107, tabs are filtered to only display those whose `workspaceId === this.activeWorkspaceId`. Since the active workspace has a UUID as its ID, tabs with `workspaceId: ''` are filtered out and never appear in the sidebar.
-  
+
   The native menu (Cmd+T shortcut via macOS menu bar) correctly passes the active workspace ID (line 71-73 in `index.ts`), so that path works. The renderer-side paths do not.
+
 - **Reproduction**: Click "+ New Tab" or press Cmd+T — the tab will be created (WebContentsView starts loading) but will not appear in the sidebar.
 - **Suggestion**: Both `bb-new-tab-button.ts` and `keybindings.ts` should first call `window.kernel.workspaces.getActiveWorkspace()` to retrieve the active workspace ID, then pass it to `createTab`. Alternatively, `ElectronTabManager.createTab` could be modified to accept a sentinel value (e.g., `workspaceId: 'active'`) that auto-resolves to the current active workspace, though this would require coupling the two managers.
 
@@ -155,6 +156,7 @@ Three critical issues prevent the application from running correctly:
 Issues 1 and 2 together mean the application cannot reach a usable state at all. All Week 1-2 capability criteria that require the app to actually run are therefore blocked.
 
 **Required fixes before re-verification:**
+
 - Fix the renderer HTML path in `src/main/window.ts` (one directory level up)
 - Fix the preload script path in `src/main/window.ts` (one directory level up)
 - Fix `bb-new-tab-button.ts` and `keybindings.ts` Cmd+T to pass the active workspace ID
