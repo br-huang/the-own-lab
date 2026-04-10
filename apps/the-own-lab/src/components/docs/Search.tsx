@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from 'ui';
 
 interface PagefindResult {
   url: string;
@@ -49,33 +50,43 @@ export default function Search() {
   );
 
   return (
-    <div className="relative">
-      <input
-        ref={inputRef}
-        type="search"
-        placeholder="Search docs..."
-        className="docs-search-input"
-        value={query}
-        onFocus={() => {
-          setIsOpen(true);
-          loadPagefind();
-        }}
-        onChange={(e) => handleSearch(e.target.value)}
-        onBlur={() => setTimeout(() => setIsOpen(false), 200)}
-      />
-      {isOpen && results.length > 0 && (
-        <div className="docs-search-panel">
-          {results.map((result, i) => (
-            <a key={i} href={result.url} className="docs-search-result">
-              <div className="docs-search-result-title">{result.meta.title}</div>
-              <div
-                className="docs-search-result-snippet"
-                dangerouslySetInnerHTML={{ __html: result.excerpt }}
-              />
-            </a>
-          ))}
-        </div>
-      )}
+    <div className="relative w-full">
+      <Command shouldFilter={false} className="overflow-visible border border-input bg-card shadow-xs">
+        <CommandInput
+          ref={inputRef}
+          placeholder="Search docs..."
+          value={query}
+          onFocus={() => {
+            setIsOpen(true);
+            loadPagefind();
+          }}
+          onValueChange={handleSearch}
+          onBlur={() => setTimeout(() => setIsOpen(false), 200)}
+        />
+        {isOpen && (
+          <CommandList className="absolute top-full z-50 mt-1 max-h-80 w-full rounded-lg border border-line-soft bg-popover shadow-popover">
+            {query.trim() ? <CommandEmpty>No results found.</CommandEmpty> : null}
+            {results.map((result, i) => (
+              <CommandItem
+                key={`${result.url}-${i}`}
+                value={result.meta.title}
+                onSelect={() => {
+                  window.location.href = result.url;
+                }}
+                className="items-start border-b border-line-soft px-3 py-2 last:border-b-0"
+              >
+                <div className="min-w-0">
+                  <div className="font-medium text-foreground">{result.meta.title}</div>
+                  <div
+                    className="mt-0.5 line-clamp-2 text-xs text-muted-foreground"
+                    dangerouslySetInnerHTML={{ __html: result.excerpt }}
+                  />
+                </div>
+              </CommandItem>
+            ))}
+          </CommandList>
+        )}
+      </Command>
     </div>
   );
 }

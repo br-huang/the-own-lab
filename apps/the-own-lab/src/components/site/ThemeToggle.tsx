@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Button } from 'ui';
 import { THEME_STORAGE_KEY } from '@/lib/theme';
 
 type ThemeMode = 'light' | 'dark';
@@ -54,16 +55,17 @@ export default function ThemeToggle() {
   };
 
   return (
-    <button
+    <Button
       type="button"
-      className="theme-toggle"
+      variant="ghost"
+      size="icon"
       onClick={toggleTheme}
       aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+      className="rounded-full border border-line-soft bg-card text-card-foreground shadow-soft hover:bg-surface-strong"
     >
-      <span className="theme-toggle-icon" aria-hidden="true">
+      <span className="text-base leading-none text-primary" aria-hidden="true">
         {theme === 'dark' ? '☼' : '◐'}
       </span>
-      <span className="theme-toggle-label">{theme === 'dark' ? 'Dark' : 'Light'}</span>
-    </button>
+    </Button>
   );
 }
