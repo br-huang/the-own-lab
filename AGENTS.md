@@ -23,6 +23,8 @@ You are working in a Nx + pnpm monorepo. Read CLAUDE.md first.
 - Modify root config files (`nx.json`, `pnpm-workspace.yaml`, `lefthook.yml`) without explicit user approval
 - Skip the commit hook or use `--no-verify`
 - Create `docs/` directories inside `apps/`, `packages/`, or `scripts/` — all documentation goes in `docs/projects/`
+- Use `git merge` to integrate feature branches — use `git rebase` then `git merge --ff-only`
+- Use `git push --force` — use `--force-with-lease` only when absolutely necessary
 
 ## Shared UI Policy
 
