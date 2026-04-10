@@ -1,7 +1,7 @@
 {
   "extends": "nx/presets/npm.json",
   "defaultBase": "main",
-  "nxCloudId": "69748ae2e63a2e7d78ef9ded",
+  "nxCloudId": "69d897b9d10ae19324cfae56",
   "namedInputs": {
     "default": ["{projectRoot}/**/*"],
     "production": [
