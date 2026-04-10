@@ -17,6 +17,15 @@ export { Alert, AlertDescription, AlertTitle } from "./components/ui/alert";
 export { AspectRatio } from "./components/ui/aspect-ratio";
 export { Avatar, AvatarFallback, AvatarImage } from "./components/ui/avatar";
 export { Badge, badgeVariants } from "./components/ui/badge";
+export {
+  Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "./components/ui/breadcrumb";
 export { Button, buttonVariants } from "./components/ui/button";
 export {
   Card,
@@ -79,6 +88,7 @@ export {
   DialogTitle,
   DialogTrigger,
 } from "./components/ui/dialog";
+export { DatePicker } from "./components/ui/date-picker";
 export { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerPortal, DrawerTitle, DrawerTrigger } from "./components/ui/drawer";
 export {
   DropdownMenu,
@@ -130,9 +140,23 @@ export {
   navigationMenuTriggerStyle,
   NavigationMenuViewport,
 } from "./components/ui/navigation-menu";
+export {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "./components/ui/pagination";
 export { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "./components/ui/popover";
 export { Progress } from "./components/ui/progress";
 export { RadioGroup, RadioGroupItem } from "./components/ui/radio-group";
+export {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "./components/ui/resizable";
 export { ScrollArea, ScrollBar } from "./components/ui/scroll-area";
 export { Calendar } from "./components/ui/calendar";
 export {
@@ -166,6 +190,32 @@ export {
   SheetTitle,
   SheetTrigger,
 } from "./components/ui/sheet";
+export {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupAction,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInset,
+  SidebarInput,
+  SidebarMenu,
+  SidebarMenuAction,
+  SidebarMenuBadge,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSkeleton,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  SidebarProvider,
+  SidebarRail,
+  SidebarSeparator,
+  SidebarTrigger,
+  useSidebar,
+} from "./components/ui/sidebar";
 export { Skeleton } from "./components/ui/skeleton";
 export { Slider } from "./components/ui/slider";
 export { Toaster } from "./components/ui/sonner";
