@@ -1,0 +1,19 @@
+---
+import { cn } from "ui";
+
+interface Props {
+  class?: string;
+  as?: keyof HTMLElementTagNameMap;
+}
+
+const { class: className, as = "div", ...rest } = Astro.props;
+const Tag = as;
+---
+
+<Tag
+  data-slot="card-description"
+  class={cn("text-muted-foreground text-sm", className)}
+  {...rest}
+>
+  <slot />
+</Tag>

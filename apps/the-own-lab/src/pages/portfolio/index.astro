@@ -1,5 +1,11 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import Badge from "@/components/ui/Badge.astro";
+import Card from "@/components/ui/Card.astro";
+import CardHeader from "@/components/ui/CardHeader.astro";
+import CardTitle from "@/components/ui/CardTitle.astro";
+import CardDescription from "@/components/ui/CardDescription.astro";
+import CardContent from "@/components/ui/CardContent.astro";
 import { getCollection } from "astro:content";
 
 const portfolioEntries = (await getCollection("portfolio", ({ data }) => {
@@ -69,15 +75,18 @@ const statusLabel = {
 
     <div class="card-grid">
       {featuredEntries.map((entry) => (
-        <article class="site-card">
+        <Card as="article" class="h-full transition-transform duration-200 hover:-translate-y-0.5 hover:bg-surface-elevated hover:shadow-card">
+          <CardHeader>
           <div class="portfolio-card-topline">
-            <p class="site-card-meta">{entry.data.year}</p>
-            <span class="portfolio-status-badge">
+            <CardDescription class="text-xs uppercase tracking-wide">{entry.data.year}</CardDescription>
+            <Badge variant="outline" class="rounded-full border-line-soft bg-state-active px-2.5 py-1 text-[0.7rem] uppercase tracking-wide text-state-active-foreground">
               {statusLabel[entry.data.status]}
-            </span>
+            </Badge>
           </div>
-          <h3 class="site-card-title">{entry.data.title}</h3>
-          <p class="site-card-text">{entry.data.summary}</p>
+          <CardTitle as="h3" class="text-xl tracking-tight">{entry.data.title}</CardTitle>
+          </CardHeader>
+          <CardContent class="flex h-full flex-col gap-4">
+          <p class="text-sm leading-7 text-muted-foreground">{entry.data.summary}</p>
           <dl class="portfolio-meta-list">
             <div class="portfolio-meta-item">
               <dt class="portfolio-meta-label">Role</dt>
@@ -86,11 +95,12 @@ const statusLabel = {
           </dl>
           <div class="portfolio-tag-row">
             {entry.data.stack.map((item) => (
-              <span class="portfolio-tag">{item}</span>
+              <Badge variant="secondary" class="rounded-full px-2.5 py-1">{item}</Badge>
             ))}
           </div>
           <p class="portfolio-card-note">Detail page is planned in the next milestone.</p>
-        </article>
+          </CardContent>
+        </Card>
       ))}
     </div>
   </section>
@@ -112,19 +122,19 @@ const statusLabel = {
         <article class="portfolio-list-item">
           <div class="portfolio-list-main">
             <div class="portfolio-card-topline">
-              <p class="site-card-meta">
+              <p class="text-xs uppercase tracking-wide text-muted-foreground">
                 {entry.data.year} · {entry.data.role}
               </p>
-              <span class="portfolio-status-badge">
+              <Badge variant="outline" class="rounded-full border-line-soft bg-state-active px-2.5 py-1 text-[0.7rem] uppercase tracking-wide text-state-active-foreground">
                 {statusLabel[entry.data.status]}
-              </span>
+              </Badge>
             </div>
             <h3 class="portfolio-list-title">{entry.data.title}</h3>
-            <p class="site-card-text">{entry.data.summary}</p>
+            <p class="text-sm leading-7 text-muted-foreground">{entry.data.summary}</p>
           </div>
           <div class="portfolio-tag-row">
             {entry.data.stack.map((item) => (
-              <span class="portfolio-tag">{item}</span>
+              <Badge variant="secondary" class="rounded-full px-2.5 py-1">{item}</Badge>
             ))}
           </div>
         </article>

@@ -1,5 +1,11 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import Badge from "@/components/ui/Badge.astro";
+import Card from "@/components/ui/Card.astro";
+import CardHeader from "@/components/ui/CardHeader.astro";
+import CardTitle from "@/components/ui/CardTitle.astro";
+import CardDescription from "@/components/ui/CardDescription.astro";
+import CardContent from "@/components/ui/CardContent.astro";
 import { getCollection } from "astro:content";
 
 const blogEntries = (await getCollection("blog", ({ data }) => {
@@ -69,22 +75,26 @@ const formatDate = (date: Date) =>
 
     <div class="card-grid">
       {featuredEntries.map((entry) => (
-        <article class="site-card">
+        <Card as="article" class="h-full transition-transform duration-200 hover:-translate-y-0.5 hover:bg-surface-elevated hover:shadow-card">
+          <CardHeader>
           <div class="blog-card-topline">
-            <p class="site-card-meta">{entry.data.category}</p>
+            <CardDescription class="text-xs uppercase tracking-wide">{entry.data.category}</CardDescription>
             <time class="blog-date" datetime={entry.data.publishedAt.toISOString()}>
               {formatDate(entry.data.publishedAt)}
             </time>
           </div>
-          <h3 class="site-card-title">{entry.data.title}</h3>
-          <p class="site-card-text">{entry.data.summary}</p>
+          <CardTitle as="h3" class="text-xl tracking-tight">{entry.data.title}</CardTitle>
+          </CardHeader>
+          <CardContent class="flex h-full flex-col gap-4">
+          <p class="text-sm leading-7 text-muted-foreground">{entry.data.summary}</p>
           <div class="blog-tag-row">
             {entry.data.tags.map((tag) => (
-              <span class="blog-tag">{tag}</span>
+              <Badge variant="secondary">{tag}</Badge>
             ))}
           </div>
           <p class="blog-card-note">Article page is planned in the next milestone.</p>
-        </article>
+          </CardContent>
+        </Card>
       ))}
     </div>
   </section>
@@ -106,17 +116,17 @@ const formatDate = (date: Date) =>
         <article class="blog-list-item">
           <div class="blog-list-main">
             <div class="blog-card-topline">
-              <p class="site-card-meta">{entry.data.category}</p>
+              <p class="text-xs uppercase tracking-wide text-muted-foreground">{entry.data.category}</p>
               <time class="blog-date" datetime={entry.data.publishedAt.toISOString()}>
                 {formatDate(entry.data.publishedAt)}
               </time>
             </div>
             <h3 class="blog-list-title">{entry.data.title}</h3>
-            <p class="site-card-text">{entry.data.summary}</p>
+            <p class="text-sm leading-7 text-muted-foreground">{entry.data.summary}</p>
           </div>
           <div class="blog-tag-row">
             {entry.data.tags.map((tag) => (
-              <span class="blog-tag">{tag}</span>
+              <Badge variant="secondary">{tag}</Badge>
             ))}
           </div>
         </article>

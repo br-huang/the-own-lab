@@ -1,7 +1,8 @@
 ---
 import type { SidebarNode, TocHeading, SidebarLink } from "@/types/docs";
+import { flattenSidebarLinks } from "@/lib/sidebar";
 import Sidebar from "@/components/docs/Sidebar.astro";
-import Pagination from "@/components/docs/Pagination.astro";
+import DocsPagination from "@/components/docs/DocsPagination.astro";
 import TableOfContents from "@/components/docs/TableOfContents";
 import Search from "@/components/docs/Search";
 import MobileNav from "@/components/docs/MobileNav";
@@ -21,6 +22,9 @@ interface Props {
 
 const { title, description, sidebar, headings, prev, next } = Astro.props;
 const pathname = Astro.url.pathname;
+const allLinks = flattenSidebarLinks(sidebar);
+const currentIndex = allLinks.findIndex((link) => link.href === pathname);
+const currentPage = currentIndex >= 0 ? currentIndex + 1 : 1;
 ---
 
 <!DOCTYPE html>
@@ -61,7 +65,7 @@ const pathname = Astro.url.pathname;
           <article class="prose prose-article">
             <slot />
           </article>
-          <Pagination prev={prev} next={next} />
+          <DocsPagination prev={prev} next={next} current={currentPage} total={allLinks.length} />
         </main>
 
         <!-- Right TOC (hidden on mobile and small tablets) -->

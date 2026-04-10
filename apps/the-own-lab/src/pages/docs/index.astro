@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import Button from "@/components/ui/Button.astro";
 import { buildSidebarTree, flattenSidebarLinks } from "@/lib/sidebar";
 
 const sidebar = await buildSidebarTree("");
@@ -20,7 +21,7 @@ const firstPageHref = links[0]?.href ?? "/docs/getting-started/";
         interactive explanations live. Start with the current entry point below.
       </p>
       <div class="hero-actions">
-        <a href={firstPageHref} class="button-primary">Open first page</a>
+        <Button href={firstPageHref}>Open first page</Button>
       </div>
     </div>
   </section>

@@ -1,0 +1,39 @@
+---
+import Button from "@/components/ui/Button.astro";
+import type { SidebarLink } from "@/types/docs";
+
+interface Props {
+  prev: SidebarLink | null;
+  next: SidebarLink | null;
+  current: number;
+  total: number;
+}
+
+const { prev, next, current, total } = Astro.props;
+---
+
+<nav class="docs-pagination" aria-label="Pagination">
+  {prev ? (
+    <Button href={prev.href} variant="outline" class="h-auto min-h-9 px-4 py-3">
+      <span class="docs-pagination-link">
+        <span class="docs-pagination-eyebrow">Previous</span>
+        <span class="docs-pagination-title">{prev.title}</span>
+      </span>
+    </Button>
+  ) : (
+    <div />
+  )}
+
+  <span class="docs-pagination-position">{current} / {total}</span>
+
+  {next ? (
+    <Button href={next.href} variant="outline" class="h-auto min-h-9 px-4 py-3">
+      <span class="docs-pagination-link docs-pagination-link-end">
+        <span class="docs-pagination-eyebrow">Next</span>
+        <span class="docs-pagination-title">{next.title}</span>
+      </span>
+    </Button>
+  ) : (
+    <div />
+  )}
+</nav>
