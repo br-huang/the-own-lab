@@ -74,25 +74,6 @@ type(scope): description
 - scope: project name from `commitlint.config.js` (e.g., browser, claude-statusline, monorepo, deps)
 - Commit after every meaningful change. Do not batch unrelated changes.
 
-Branch workflow (enforced by lefthook):
-
-```
-git checkout -b feat/browser/dark-mode    # create feature branch
-# ... develop and commit ...
-git checkout main && git pull              # update main
-git checkout feat/browser/dark-mode        # back to feature
-git rebase main                            # rebase onto main (NEVER merge)
-git checkout main                          # switch to main
-git merge --ff-only feat/browser/dark-mode # fast-forward merge only
-git push                                   # push to remote
-git branch -d feat/browser/dark-mode       # cleanup
-```
-
-- ALWAYS rebase, NEVER merge (pre-merge-commit hook will reject)
-- ALWAYS fast-forward merge to main (`git merge --ff-only`)
-- NEVER force push (`--force` is blocked, use `--force-with-lease` only if necessary)
-- Small changes can commit directly to `main`
-
 Subtree remotes (`sub/*`) exist for projects with independent GitHub repos. Check `git remote -v`.
 
 ## Mandatory
