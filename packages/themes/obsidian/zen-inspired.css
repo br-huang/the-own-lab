@@ -36,6 +36,10 @@
   --interactive-accent: #363636;
   --interactive-accent-hover: #2c2c2c;
   --interactive-success: #d1cfc0;
+  --button-text-normal: #e8e3da;
+  --button-text-hover: #ffffff;
+  --button-text-active: #ffffff;
+  --button-text-disabled: #8e8a83;
   --scrollbar-bg: transparent;
   --scrollbar-thumb-bg: #363636;
   --scrollbar-active-thumb-bg: #d1cfc0;
@@ -103,4 +107,36 @@
   --table-header-background: #1c1c1c;
   --table-row-alt-background: rgba(255, 255, 255, 0.02);
   color-scheme: dark;
+}
+
+.theme-dark button,
+.theme-dark .setting-item-control button,
+.theme-dark .mod-cta {
+  color: var(--button-text-normal);
+  background-color: var(--interactive-normal);
+  border: 1px solid var(--background-modifier-border-hover);
+}
+
+.theme-dark button:hover,
+.theme-dark .setting-item-control button:hover,
+.theme-dark .mod-cta:hover {
+  color: var(--button-text-hover);
+  background-color: var(--interactive-hover);
+}
+
+.theme-dark button:active,
+.theme-dark .setting-item-control button:active,
+.theme-dark .mod-cta:active {
+  color: var(--button-text-active);
+  background-color: var(--interactive-accent);
+}
+
+.theme-dark button[disabled],
+.theme-dark button:disabled,
+.theme-dark .setting-item-control button[disabled],
+.theme-dark .setting-item-control button:disabled {
+  color: var(--button-text-disabled);
+  background-color: var(--background-secondary-alt);
+  border-color: var(--background-modifier-border);
+  opacity: 1;
 }
