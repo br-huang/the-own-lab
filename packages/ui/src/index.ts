@@ -40,6 +40,16 @@ export {
 } from "./components/ui/command";
 export { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./components/ui/collapsible";
 export {
+  type ChartConfig,
+  ChartContainer,
+  ChartGrid,
+  ChartLegend,
+  ChartLegendContent,
+  ChartStyle,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "./components/ui/chart";
+export {
   ContextMenu,
   ContextMenuCheckboxItem,
   ContextMenuContent,
@@ -56,6 +66,7 @@ export {
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from "./components/ui/context-menu";
+export { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, useFormField } from "./components/ui/form";
 export {
   Dialog,
   DialogClose,
@@ -68,6 +79,7 @@ export {
   DialogTitle,
   DialogTrigger,
 } from "./components/ui/dialog";
+export { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerPortal, DrawerTitle, DrawerTrigger } from "./components/ui/drawer";
 export {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -87,6 +99,7 @@ export {
 } from "./components/ui/dropdown-menu";
 export { HoverCard, HoverCardContent, HoverCardTrigger } from "./components/ui/hover-card";
 export { Input } from "./components/ui/input";
+export { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "./components/ui/input-otp";
 export { Label } from "./components/ui/label";
 export {
   Menubar,
@@ -121,6 +134,15 @@ export { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "./compon
 export { Progress } from "./components/ui/progress";
 export { RadioGroup, RadioGroupItem } from "./components/ui/radio-group";
 export { ScrollArea, ScrollBar } from "./components/ui/scroll-area";
+export { Calendar } from "./components/ui/calendar";
+export {
+  type CarouselApi,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "./components/ui/carousel";
 export {
   Select,
   SelectContent,
