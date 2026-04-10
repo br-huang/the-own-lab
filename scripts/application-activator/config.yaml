@@ -3,27 +3,27 @@
 
 profiles:
   work:
-    description: "Work essentials"
+    description: 'Work essentials'
     apps:
-      - "Spark Mail"
-      - "Obsidian"
-      - "Visual Studio Code"
-      - "OrbStack"
-      - "Google Chrome"
-      - "Bartender"
+      - 'Spark Mail'
+      - 'Obsidian'
+      - 'Visual Studio Code'
+      - 'OrbStack'
+      - 'Google Chrome'
+      - 'Bartender'
   creative:
-    description: "Creative workflow"
+    description: 'Creative workflow'
     apps:
-      - "CleanShot X"
-      - "TextSniper"
+      - 'CleanShot X'
+      - 'TextSniper'
   daily:
-    description: "Daily drivers"
+    description: 'Daily drivers'
     apps:
-      - "Raycast"
-      - "1Password"
-      - "Bartender"
-      - "AlDente Pro"
-      - "Yoink"
+      - 'Raycast'
+      - '1Password'
+      - 'Bartender'
+      - 'AlDente Pro'
+      - 'Yoink'
   setapp:
     description: Open the apps on Setapp
     apps:
