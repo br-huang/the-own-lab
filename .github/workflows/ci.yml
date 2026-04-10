@@ -20,14 +20,8 @@ jobs:
 
       - uses: jdx/mise-action@v2
 
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: 'mise.toml'
-          cache: 'pnpm'
-
-      - run: pnpm install --frozen-lockfile
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - uses: nrwl/nx-set-shas@v4
 
