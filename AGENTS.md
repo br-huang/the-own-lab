@@ -12,6 +12,7 @@ You are working in a Nx + pnpm monorepo. Read CLAUDE.md first.
 - Write all specs, ADRs, and issues in `docs/projects/<project>/` — read existing specs before modifying a project
 - Start every new feature with `docs/projects/<project>/specs/YYYY-MM-DD-<slug>/REQUIREMENTS.md`
 - Use exact file names: `REQUIREMENTS.md`, `DESIGN.md`, `PLAN.md`, `REVIEW.md`, `TEST.md` (uppercase)
+- Prefer `packages/ui` shared components before creating app-local UI primitives
 
 ## You MUST NOT
 
@@ -20,6 +21,12 @@ You are working in a Nx + pnpm monorepo. Read CLAUDE.md first.
 - Modify root config files (`nx.json`, `pnpm-workspace.yaml`, `lefthook.yml`) without explicit user approval
 - Skip the commit hook or use `--no-verify`
 - Create `docs/` directories inside `apps/`, `packages/`, or `scripts/` — all documentation goes in `docs/projects/`
+
+## Shared UI Policy
+
+- Check `packages/ui` first before building a new button, form control, overlay, navigation element, or layout primitive.
+- If the component is generic and reusable, add it to `packages/ui` instead of duplicating it in an app.
+- Keep app-local UI focused on business-specific composition and workflows.
 
 <!-- nx configuration start-->
 <!-- Leave the start & end comments to automatically receive updates. -->

@@ -18,6 +18,15 @@ Dependency: `apps/ → packages/`, `packages/ → packages/`. No `apps/ → apps
 
 New project placement: runs independently → `apps/`, importable → `packages/`, neither → `scripts/`, learning → `learn/`.
 
+## Shared UI
+
+`packages/ui` is the default shared UI library for this monorepo.
+
+- Before creating app-local UI primitives, first check whether the component already exists in `packages/ui`.
+- If a missing component is generic and reusable, add it to `packages/ui` before building an app-local duplicate.
+- Prefer importing shared primitives from `ui` rather than recreating buttons, dialogs, forms, navigation, overlays, or layout helpers inside apps.
+- Keep app-local components focused on business workflows and page composition, not shared primitive reimplementation.
+
 ## Documentation (docs/projects/)
 
 `docs/projects/` is the single source of truth for all project management artifacts. Never create `docs/` inside sub-projects.
