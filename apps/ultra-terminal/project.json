@@ -1,6 +1,6 @@
 {
   "name": "ultra-terminal",
-  "tags": ["scope:app", "lang:swift"],
+  "tags": ["scope:app", "lang:swift", "platform:macos"],
   "targets": {
     "build": {
       "command": "swift build",

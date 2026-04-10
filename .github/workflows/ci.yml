@@ -33,10 +33,10 @@ jobs:
       - uses: nrwl/nx-set-shas@v4
 
       - name: Lint affected
-        run: pnpm nx affected -t lint
+        run: pnpm nx affected -t lint --exclude='tag:platform:macos'
 
       - name: Build affected
-        run: pnpm nx affected -t build
+        run: pnpm nx affected -t build --exclude='tag:platform:macos'
 
       - name: Test affected
-        run: pnpm nx affected -t test
+        run: pnpm nx affected -t test --exclude='tag:platform:macos'

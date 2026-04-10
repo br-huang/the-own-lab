@@ -1,6 +1,6 @@
 {
   "name": "never-forget-list",
-  "tags": ["scope:app", "lang:swift"],
+  "tags": ["scope:app", "lang:swift", "platform:macos"],
   "targets": {
     "build": {
       "command": "xcodebuild -workspace NotForgetList.xcworkspace -scheme NotForgetList -configuration Debug build",
