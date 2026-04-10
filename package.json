@@ -9,6 +9,8 @@
     "lint": "nx run-many -t lint",
     "build:affected": "nx affected -t build",
     "test:affected": "nx affected -t test",
+    "ui:storybook": "nx run ui:storybook",
+    "ui:storybook:build": "nx run ui:build-storybook",
     "graph": "nx graph",
     "projects": "nx show projects"
   },
@@ -21,11 +23,13 @@
     "@nx/storybook": "^22.6.4",
     "@nx/vite": "22.6.4",
     "@nx/web": "22.6.4",
+    "@storybook/addon-docs": "10.3.5",
     "@storybook/react": "10.3.5",
     "@storybook/react-vite": "10.3.5",
     "@swc-node/register": "~1.11.1",
     "@swc/core": "~1.15.5",
     "@swc/helpers": "~0.5.18",
+    "@tailwindcss/vite": "^4.2.2",
     "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.8",
     "lefthook": "^2.1.5",
@@ -37,6 +41,5 @@
     "typescript": "~5.9.2",
     "typescript-eslint": "^8.58.1",
     "vite": "^6.0.0"
-  },
-  "dependencies": {}
+  }
 }

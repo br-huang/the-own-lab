@@ -3,19 +3,23 @@ import { dirname } from 'node:path';
 
 import type { StorybookConfig } from '@storybook/react-vite';
 import { mergeConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.stories.@(js|jsx|ts|tsx|mdx)'],
-  addons: [],
+  addons: ['@storybook/addon-docs'],
   framework: {
     name: getAbsolutePath('@storybook/react-vite'),
     options: {},
   },
+  docs: {
+    autodocs: 'tag',
+  },
 
   viteFinal: async (config) =>
     mergeConfig(config, {
-      plugins: [nxViteTsPaths()],
+      plugins: [tailwindcss(), nxViteTsPaths()],
     }),
 };
 
