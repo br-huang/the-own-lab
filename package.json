@@ -11,6 +11,8 @@
     "test:affected": "nx affected -t test",
     "ui:storybook": "nx run ui:storybook",
     "ui:storybook:build": "nx run ui:build-storybook",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "graph": "nx graph",
     "projects": "nx show projects"
   },
