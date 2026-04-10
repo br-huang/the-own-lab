@@ -40,3 +40,6 @@ jobs:
 
       - name: Test affected
         run: pnpm nx affected -t test
+
+      - run: npx nx fix-ci
+        if: always()
