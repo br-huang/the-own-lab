@@ -58,3 +58,5 @@ package-lock.json
 # obsidian
 .obsidian/
 .obsidian-kb/
+.claude/worktrees
+.claude/settings.local.json
