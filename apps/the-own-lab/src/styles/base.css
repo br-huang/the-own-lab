@@ -105,8 +105,38 @@
   @apply min-h-screen flex flex-col bg-background text-foreground;
 }
 
+.site-body-fixed {
+  @apply h-screen flex flex-col bg-background text-foreground overflow-hidden;
+}
+
 .site-main {
-  @apply flex-1;
+  @apply flex-1 flex flex-col;
+}
+
+/* ─── Isometric hero ─────────────────────────────────────────────── */
+
+.iso-page {
+  @apply h-screen w-screen overflow-hidden bg-background;
+}
+
+.iso-hero {
+  @apply flex-1 flex items-center justify-center overflow-hidden;
+}
+
+.cube {
+  animation: slide-iso 6s ease-in-out infinite alternate;
+  animation-delay: var(--delay, 0s);
+  cursor: pointer;
+  transition: filter 0.3s;
+}
+
+.cube:hover {
+  filter: brightness(1.15) drop-shadow(0 0 12px rgba(255, 200, 100, 0.3));
+}
+
+@keyframes slide-iso {
+  0%   { transform: translate(0, 0); }
+  100% { transform: translate(200px, 140px); }
 }
 
 /* ─── Navbar ──────────────────────────────────────────────────────── */

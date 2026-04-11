@@ -1,113 +1,21 @@
 ---
-import BaseLayout from "@/layouts/BaseLayout.astro";
-import Button from "@/components/ui/Button.astro";
-import Card from "@/components/ui/Card.astro";
-import CardHeader from "@/components/ui/CardHeader.astro";
-import CardTitle from "@/components/ui/CardTitle.astro";
-import CardDescription from "@/components/ui/CardDescription.astro";
-import CardContent from "@/components/ui/CardContent.astro";
-import CardFooter from "@/components/ui/CardFooter.astro";
+import "@/styles/global.css";
+import { themeInitScript } from "@/lib/theme";
+import IsometricScene from "@/components/islands/IsometricScene";
 ---
 
-<BaseLayout
-  title="The Own Lab"
-  description="Build it. Own it. Teach it. A warm technical practice for projects, writing, and documentation."
->
-  <section class="site-section">
-    <div class="hero-shell">
-      <div class="hero-copy">
-        <p class="hero-kicker">The Own Lab</p>
-        <h1 class="hero-title">Build it. Own it. Teach it.</h1>
-        <p class="hero-description">
-          A personal brand and technical studio shaped around shipping real
-          systems, taking responsibility for them, and turning the hard-won
-          lessons into writing that other builders can use.
-        </p>
-        <div class="hero-actions">
-          <Button href="/docs/">Read the docs</Button>
-          <Button href="/portfolio/" variant="outline">Browse projects</Button>
-        </div>
-      </div>
-
-      <aside class="hero-panel">
-        <div class="hero-panel-grid">
-          <div class="hero-stat">
-            <p class="hero-stat-label">Practice</p>
-            <p class="hero-stat-value">Systems with ownership</p>
-          </div>
-          <div class="hero-stat">
-            <p class="hero-stat-label">Writing</p>
-            <p class="hero-stat-value">Clear, reusable explanations</p>
-          </div>
-          <div class="hero-stat">
-            <p class="hero-stat-label">Design system</p>
-            <p class="hero-stat-value">Token-first and brand-replaceable</p>
-          </div>
-        </div>
-      </aside>
-    </div>
-  </section>
-
-  <section class="site-section-tight">
-    <div class="section-heading">
-      <div>
-        <p class="section-kicker">Sections</p>
-        <h2 class="section-title">One system, three ways in</h2>
-      </div>
-      <p class="section-description">
-        The site is organized around shipped work, thoughtful writing, and a
-        self-built documentation framework.
-      </p>
-    </div>
-
-    <div class="card-grid">
-      <Card as="article" class="h-full transition-transform duration-200 hover:-translate-y-0.5 hover:bg-surface-elevated hover:shadow-card">
-        <CardHeader>
-          <CardDescription class="text-xs uppercase tracking-wide">Documentation</CardDescription>
-          <CardTitle as="h3" class="text-xl tracking-tight">Docs framework</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p class="text-sm leading-7 text-muted-foreground">
-            Explore the current Astro-based docs system with search, navigation,
-            and interactive examples.
-          </p>
-        </CardContent>
-        <CardFooter class="mt-auto">
-          <a href="/docs/" class="text-sm font-medium text-primary transition-colors duration-200 hover:text-accent">Open docs</a>
-        </CardFooter>
-      </Card>
-
-      <Card as="article" class="h-full transition-transform duration-200 hover:-translate-y-0.5 hover:bg-surface-elevated hover:shadow-card">
-        <CardHeader>
-          <CardDescription class="text-xs uppercase tracking-wide">Portfolio</CardDescription>
-          <CardTitle as="h3" class="text-xl tracking-tight">Shipped projects</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p class="text-sm leading-7 text-muted-foreground">
-            A curated archive for the work that matters, structured for context
-            rather than vanity.
-          </p>
-        </CardContent>
-        <CardFooter class="mt-auto">
-          <a href="/portfolio/" class="text-sm font-medium text-primary transition-colors duration-200 hover:text-accent">View portfolio</a>
-        </CardFooter>
-      </Card>
-
-      <Card as="article" class="h-full transition-transform duration-200 hover:-translate-y-0.5 hover:bg-surface-elevated hover:shadow-card">
-        <CardHeader>
-          <CardDescription class="text-xs uppercase tracking-wide">Writing</CardDescription>
-          <CardTitle as="h3" class="text-xl tracking-tight">Technical notes</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p class="text-sm leading-7 text-muted-foreground">
-            Essays, implementation notes, and field-tested explanations that make
-            systems easier to understand.
-          </p>
-        </CardContent>
-        <CardFooter class="mt-auto">
-          <a href="/blog/" class="text-sm font-medium text-primary transition-colors duration-200 hover:text-accent">Read the blog</a>
-        </CardFooter>
-      </Card>
-    </div>
-  </section>
-</BaseLayout>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>The Own Lab</title>
+    <meta name="description" content="Build it. Own it. Teach it. A warm technical practice for projects, writing, and documentation." />
+    <script is:inline set:html={themeInitScript} />
+  </head>
+  <body class="iso-page">
+    <IsometricScene client:load />
+  </body>
+</html>

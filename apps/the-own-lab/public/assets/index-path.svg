@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 1620 1080" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(0.655052,-0.271331,0.580798,0.406679,387.856566,989.092848)">
+        <text x="236.609px" y="241.416px" style="font-family:'Helvetica';font-size:200px;fill:rgb(201,100,66);">THE</text>
+        <text x="688.609px" y="241.416px" style="font-family:'Helvetica';font-size:200px;fill:rgb(201,100,66);">OWN</text>
+        <text x="1229.379px" y="241.416px" style="font-family:'Helvetica';font-size:200px;fill:rgb(201,100,66);">LAB</text>
+    </g>
+    <g id="path-1" transform="matrix(1,0,0,1,-3.210654,-89.371547)">
+        <path id="path-11" serif:id="path-1" d="M146.327,596.663L539.52,871.98" style="fill:none;"/>
+    </g>
+    <g id="Cube-1" transform="matrix(1,0,0,1,-101.788918,-34.845888)">
+        <g id="shadow" transform="matrix(1,0,0,1,-3.787272,35.95778)">
+            <path d="M217.835,608.123L404.92,530.63L552.368,633.874L364.211,710.617L217.835,608.123Z" style="fill:rgb(112,109,98);fill-opacity:0.8;"/>
+        </g>
+        <path id="side" d="M220.976,579.436L368.424,682.679L368.424,705.373L220.976,602.601L220.976,579.436Z" style="fill:rgb(183,183,183);"/>
+        <path id="front" d="M548.58,608.056L548.58,630.75L368.424,705.373L368.424,682.679L548.58,608.056Z" style="fill:rgb(183,183,183);"/>
+        <g id="top" transform="matrix(1,0,0,1,-3.787272,-25.81767)">
+            <path d="M224.764,605.253L404.92,530.63L552.368,633.874L372.211,708.497L224.764,605.253Z" style="fill:rgb(255,236,207);"/>
+        </g>
+        <g transform="matrix(1.732274,-0.717531,1.53591,1.075456,-891.300967,121.281976)">
+            <text x="163.162px" y="517.73px" style="font-family:'Helvetica';font-size:26.349px;fill:rgb(246,201,131);">Portfolio</text>
+        </g>
+    </g>
+    <g id="path-2" transform="matrix(1,0,0,1,253.165916,-195.566199)">
+        <g id="path-21" serif:id="path-2">
+            <path id="path-22" serif:id="path-2" d="M146.327,596.663L539.52,871.98" style="fill:none;"/>
+        </g>
+    </g>
+    <g id="Cube-2" transform="matrix(1,0,0,1,285.68045,-10.638719)">
+        <g id="shadow1" serif:id="shadow" transform="matrix(1,0,0,1,-3.787272,35.95778)">
+            <path d="M217.835,608.123L404.92,530.63L552.368,633.874L364.211,710.617L217.835,608.123Z" style="fill:rgb(109,112,98);fill-opacity:0.8;"/>
+        </g>
+        <path id="side1" serif:id="side" d="M220.976,579.436L368.424,682.679L368.424,705.373L220.976,602.601L220.976,579.436Z" style="fill:rgb(183,183,183);"/>
+        <path id="front1" serif:id="front" d="M548.58,608.056L548.58,630.75L368.424,705.373L368.424,682.679L548.58,608.056Z" style="fill:rgb(183,183,183);"/>
+        <g id="top1" serif:id="top" transform="matrix(1,0,0,1,-3.787272,-25.81767)">
+            <path d="M224.764,605.253L404.92,530.63L552.368,633.874L372.211,708.497L224.764,605.253Z" style="fill:rgb(228,255,207);"/>
+        </g>
+        <g transform="matrix(1.732274,-0.717531,1.53591,1.075456,-681.849031,339.823457)">
+            <text x="163.162px" y="517.73px" style="font-family:'Helvetica';font-size:26.349px;fill:rgb(133,208,74);">Blog</text>
+        </g>
+    </g>
+    <g id="path-3" transform="matrix(1,0,0,1,558.046162,-321.851732)">
+        <g id="path-31" serif:id="path-3">
+            <path id="path-32" serif:id="path-3" d="M146.327,596.663L539.52,871.98" style="fill:none;"/>
+        </g>
+    </g>
+    <g id="Cube-3" transform="matrix(1,0,0,1,397.501778,-264.38363)">
+        <g id="shadow2" serif:id="shadow" transform="matrix(1,0,0,1,-3.787272,35.95778)">
+            <path d="M217.835,608.123L404.92,530.63L552.368,633.874L364.211,710.617L217.835,608.123Z" style="fill:rgb(112,101,98);fill-opacity:0.8;"/>
+        </g>
+        <path id="side2" serif:id="side" d="M220.976,579.436L368.424,682.679L368.424,705.373L220.976,602.601L220.976,579.436Z" style="fill:rgb(183,183,183);"/>
+        <path id="front2" serif:id="front" d="M548.58,608.056L548.58,630.75L368.424,705.373L368.424,682.679L548.58,608.056Z" style="fill:rgb(183,183,183);"/>
+        <g id="top2" serif:id="top" transform="matrix(1,0,0,1,-3.787272,-25.81767)">
+            <path d="M224.764,605.253L404.92,530.63L552.368,633.874L372.211,708.497L224.764,605.253Z" style="fill:rgb(255,207,209);"/>
+        </g>
+        <g transform="matrix(1.732274,-0.717531,1.53591,1.075456,-891.88412,137.921144)">
+            <text x="163.162px" y="517.73px" style="font-family:'Helvetica';font-size:26.349px;fill:rgb(242,160,163);">Documentation</text>
+        </g>
+    </g>
+    <g id="path-4" transform="matrix(1,0,0,1,800.564539,-422.306133)">
+        <g id="path-41" serif:id="path-4">
+            <path id="path-42" serif:id="path-4" d="M146.327,596.663L539.52,871.98" style="fill:none;"/>
+        </g>
+    </g>
+    <g id="Cube-4" transform="matrix(1,0,0,1,765.639038,-284.600674)">
+        <g id="shadow3" serif:id="shadow" transform="matrix(1,0,0,1,-3.787272,35.95778)">
+            <path d="M217.835,608.123L404.92,530.63L552.368,633.874L364.211,710.617L217.835,608.123Z" style="fill:rgb(98,112,111);fill-opacity:0.8;"/>
+        </g>
+        <path id="side3" serif:id="side" d="M220.976,579.436L368.424,682.679L368.424,705.373L220.976,602.601L220.976,579.436Z" style="fill:rgb(183,183,183);"/>
+        <path id="front3" serif:id="front" d="M548.58,608.056L548.58,630.75L368.424,705.373L368.424,682.679L548.58,608.056Z" style="fill:rgb(183,183,183);"/>
+        <g id="top3" serif:id="top" transform="matrix(1,0,0,1,-3.787272,-25.81767)">
+            <path d="M224.764,605.253L404.92,530.63L552.368,633.874L372.211,708.497L224.764,605.253Z" style="fill:rgb(207,255,253);"/>
+        </g>
+        <g transform="matrix(1.732274,-0.717531,1.53591,1.075456,-675.304188,340.429745)">
+            <text x="163.162px" y="517.73px" style="font-family:'Helvetica';font-size:26.349px;fill:rgb(150,207,204);">Ask</text>
+            <text x="213.935px" y="517.73px" style="font-family:'Helvetica';font-size:26.349px;fill:rgb(150,207,204);">me</text>
+            <text x="163.162px" y="544.079px" style="font-family:'Helvetica';font-size:26.349px;fill:rgb(150,207,204);">everything</text>
+        </g>
+    </g>
+</svg>

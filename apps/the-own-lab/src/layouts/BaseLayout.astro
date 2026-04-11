@@ -7,9 +7,10 @@ import { themeInitScript } from "@/lib/theme";
 interface Props {
   title: string;
   description?: string;
+  bodyClass?: string;
 }
 
-const { title, description } = Astro.props;
+const { title, description, bodyClass } = Astro.props;
 const pathname = Astro.url.pathname;
 ---
 
@@ -25,7 +26,7 @@ const pathname = Astro.url.pathname;
     {description && <meta name="description" content={description} />}
     <script is:inline set:html={themeInitScript} />
   </head>
-  <body class="site-body">
+  <body class:list={[bodyClass || "site-body"]}>
     <Navbar pathname={pathname} />
     <main class="site-main">
       <slot />
