@@ -18,6 +18,7 @@ export default {
         'claude-company-of-one',
         'claude-statusline',
         'documentation-framework',
+        'theme',
         'ui',
         // scripts
         'scripts',
